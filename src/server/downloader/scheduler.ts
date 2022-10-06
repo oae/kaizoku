@@ -1,7 +1,7 @@
 import { Job, Worker } from 'bullmq';
 import { IComic, IConfig } from './config';
 import { findMissingChapters } from './downloader';
-import { logger } from './logging';
+import { logger } from '../../utils/logging';
 import { checkChaptersQue, downloadQue } from './queue';
 
 const CRON_MAP = {

@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import { diffString } from 'json-diff';
 import path from 'path';
 import { readConfig, updateConfig } from './config';
-import { logger } from './logging';
+import { logger } from '../../utils/logging';
 import { scheduleDownload } from './scheduler';
 import { IFlags } from './utils';
 

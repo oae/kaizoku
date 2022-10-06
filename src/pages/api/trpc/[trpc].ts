@@ -1,33 +1,17 @@
-import { initTRPC } from '@trpc/server';
-import superjson from 'superjson';
-import * as trpcNext from '@trpc/server/adapters/next';
-import { z } from 'zod';
-
-export const t = initTRPC.create({
-  transformer: superjson,
-});
-
-export const appRouter = t.router({
-  hello: t.procedure
-    .input(
-      z
-        .object({
-          text: z.string().nullish(),
-        })
-        .nullish(),
-    )
-    .query(({ input }) => {
-      return {
-        greeting: `hello ${input?.text ?? 'world'}`,
-      };
-    }),
-});
-
-// export type definition of API
-export type AppRouter = typeof appRouter;
+import { createNextApiHandler } from '@trpc/server/adapters/next';
+import { env } from '../../../env/server.mjs';
+import { createContext } from '../../../server/trpc/context';
+import { appRouter } from '../../../server/trpc/router';
 
 // export API handler
-export default trpcNext.createNextApiHandler({
+export default createNextApiHandler({
   router: appRouter,
-  createContext: () => ({}),
+  createContext,
+  onError:
+    env.NODE_ENV === 'development'
+      ? ({ path, error }) => {
+          // eslint-disable-next-line no-console
+          console.error(`❌ tRPC failed on ${path}: ${error}`);
+        }
+      : undefined,
 });

@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import { diffString } from 'json-diff';
 import path from 'path';
 import { parse, stringify } from 'yaml';
-import { logger } from './logging';
+import { logger } from '../../utils/logging';
 import { IFlags } from './utils';
 
 export interface IComic {

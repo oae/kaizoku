@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import next from 'next';
 import { serverAdapter } from './downloader/bullboard';
 import { watchLibrary } from './downloader/library';
-import { logger } from './downloader/logging';
+import { logger } from '../utils/logging';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -27,7 +27,7 @@ const port = process.env.PORT || 3000;
     });
 
     server.listen(port, () => {
-      logger.info(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
+      logger.info(`> Ready on http://localhost:${port} - env ${process.env.NODE_ENV}`);
     });
   } catch (e) {
     logger.error(e);

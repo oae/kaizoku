@@ -3,7 +3,7 @@ import execa from 'execa';
 import fs from 'fs/promises';
 import path from 'path';
 import { IComic } from './config';
-import { logger } from './logging';
+import { logger } from '../../utils/logging';
 import { sendNotification } from './notification';
 
 interface IChapterSearch {

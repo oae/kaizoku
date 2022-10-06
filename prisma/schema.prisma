@@ -11,11 +11,19 @@ datasource db {
   url      = "file:./kaizoku.db"
 }
 
+model Library {
+  id     Int     @id @default(autoincrement())
+  path   String
+  mangas Manga[]
+}
+
 model Manga {
-  id       Int    @id @default(autoincrement())
-  title    String
-  cover    String
-  interval String
-  source   String
-  query    String
+  id        Int      @id @default(autoincrement())
+  title     String
+  cover     String
+  interval  String
+  source    String
+  query     String
+  Library   Library? @relation(fields: [libraryId], references: [id])
+  libraryId Int?
 }

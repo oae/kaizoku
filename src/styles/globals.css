@@ -1,4 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:slnt,wght@-10,300..700;0,300..700&family=Roboto+Mono:ital,wght@0,400..700;1,400..700&display=swap');
-@tailwind base;
-@tailwind components;
+
+@font-face {
+  font-family: 'Ninja Naruto Regular';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Ninja Naruto Regular'), url('/ninja-naruto.regular.woff') format('woff');
+}
+* {
+  font-family: 'Inter';
+}
+/* @tailwind base; */
+/* @tailwind components; */
 @tailwind utilities;
