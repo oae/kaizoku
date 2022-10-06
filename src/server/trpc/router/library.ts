@@ -3,6 +3,9 @@ import { logger } from '../../../utils/logging';
 import { t } from '../trpc';
 
 export const libraryRouter = t.router({
+  query: t.procedure.query(async ({ ctx }) => {
+    return ctx.prisma.library.findFirst();
+  }),
   create: t.procedure
     .input(
       z.object({

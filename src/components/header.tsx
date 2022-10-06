@@ -12,7 +12,7 @@ const useStyles = createStyles((theme) => ({
   },
 
   inner: {
-    height: 56,
+    height: '56px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -20,9 +20,9 @@ const useStyles = createStyles((theme) => ({
 
   title: {
     fontFamily: 'Ninja Naruto Regular',
-    lineHeight: 56,
+    lineHeight: '56px',
     fontWeight: 300,
-    marginTop: 10,
+    marginTop: '10px',
     color: theme.colors.gray[0],
   },
 

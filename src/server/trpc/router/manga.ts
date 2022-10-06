@@ -2,13 +2,17 @@ import { z } from 'zod';
 import { t } from '../trpc';
 
 export const mangaRouter = t.router({
-  create: t.procedure
+  query: t.procedure
     .input(
       z.object({
         library: z.number(),
       }),
     )
-    .mutation(({ input }) => {
-      return input;
+    .query(async ({ input, ctx }) => {
+      return ctx.prisma.manga.findMany({
+        where: {
+          libraryId: input.library,
+        },
+      });
     }),
 });
