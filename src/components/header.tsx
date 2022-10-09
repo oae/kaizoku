@@ -19,7 +19,7 @@ const useStyles = createStyles((theme) => ({
   },
 
   title: {
-    fontFamily: 'Ninja Naruto Regular',
+    fontFamily: 'Ninja Naruto Regular, Inter',
     lineHeight: '56px',
     fontWeight: 300,
     marginTop: '10px',
@@ -88,7 +88,7 @@ export function KaizokuHeader({ links }: HeaderSearchProps) {
           <Link href="/">
             <UnstyledButton component="a">
               <Group spacing={10}>
-                <Image src="/kaizoku.png" height={48} width={48} />
+                <Image alt="header" src="/kaizoku.png" height={48} width={48} />
                 <Title order={2} className={classes.title}>
                   Kaizoku
                 </Title>
