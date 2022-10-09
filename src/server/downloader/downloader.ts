@@ -1,18 +1,10 @@
 import { Job, Worker } from 'bullmq';
-import execa from 'execa';
 import fs from 'fs/promises';
 import path from 'path';
-import { IComic } from './config';
 import { logger } from '../../utils/logging';
+import { downloadChapter, getAvailableSources, getChapters } from '../../utils/mangal';
+import { IComic } from './config';
 import { sendNotification } from './notification';
-
-interface IChapterSearch {
-  Manga: {
-    Chapters: {
-      Index: number;
-    }[];
-  }[];
-}
 
 interface IDownloadWorkerData {
   chapterIndex: number;
@@ -21,36 +13,6 @@ interface IDownloadWorkerData {
   name: string;
   libraryPath: string;
 }
-
-const getAvailableSources = async () => {
-  const { stdout } = await execa('mangal', ['sources', '-r']);
-  return stdout.split('\n').map((s) => s.trim());
-};
-
-const getRemoteChapters = async (source: string, query: string): Promise<number[]> => {
-  try {
-    const { stdout } = await execa('mangal', [
-      'inline',
-      '--source',
-      source,
-      '--query',
-      query,
-      '--manga',
-      'first',
-      '--chapters',
-      'all',
-      '-j',
-    ]);
-    const result: IChapterSearch = JSON.parse(stdout);
-    if (result && result.Manga.length === 1 && result.Manga[0]?.Chapters && result.Manga[0]?.Chapters.length > 0) {
-      return result.Manga[0].Chapters.map((c) => c.Index);
-    }
-  } catch (err) {
-    logger.error(err);
-  }
-
-  return [];
-};
 
 export const findMissingChapters = async (title: IComic, libraryPath: string) => {
   if (!title.download) {
@@ -82,7 +44,7 @@ export const findMissingChapters = async (title: IComic, libraryPath: string) =>
     })
     .filter((index) => index !== -1);
 
-  const remoteChapters = await getRemoteChapters(title.download?.source, title.download?.query);
+  const remoteChapters = await getChapters(title.download?.source, title.download?.query, 'first');
   return remoteChapters.filter((c) => !localChapters.includes(c));
 };
 
@@ -91,24 +53,8 @@ export const downloadWorker = new Worker(
   async (job: Job) => {
     const { chapterIndex, libraryPath, name, query, source }: IDownloadWorkerData = job.data;
     try {
-      logger.info(`Downloading chapter #${chapterIndex} for ${name} from ${source}`);
-      const { stdout, stderr } = await execa(
-        'mangal',
-        ['inline', '--source', source, '--query', query, '--manga', 'first', '--chapters', `${chapterIndex}`, '-d'],
-        {
-          cwd: libraryPath,
-        },
-      );
-
-      if (stderr) {
-        logger.error(`Failed to download the chapter #${chapterIndex} for ${name}. Err:\n${stderr}`);
-        await job.log(stderr);
-        throw new Error(stderr);
-      } else {
-        logger.info(`Downloaded chapter #${chapterIndex} for ${name}. Result:\n${stdout}`);
-      }
+      downloadChapter(name, source, query, chapterIndex, 'first', libraryPath);
     } catch (err) {
-      logger.error(`Failed to download the chapter #${chapterIndex} for ${name}. Err:\n${err}`);
       await job.log(`${err}`);
       throw err;
     }

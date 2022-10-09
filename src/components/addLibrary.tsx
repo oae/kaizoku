@@ -2,9 +2,9 @@ import { Box, Button, Code, LoadingOverlay, Text, TextInput } from '@mantine/cor
 import { useForm } from '@mantine/form';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
+import { IconCheck, IconX } from '@tabler/icons';
 import { useState } from 'react';
-import { IoCloseCircle } from 'react-icons/io5';
-import { MdCheckCircleOutline, MdOutlineCreateNewFolder } from 'react-icons/md';
+import { MdOutlineCreateNewFolder } from 'react-icons/md';
 import { trpc } from '../utils/trpc';
 
 function Form({ onClose }: { onClose: () => void }) {
@@ -35,7 +35,7 @@ function Form({ onClose }: { onClose: () => void }) {
           });
         } catch (err) {
           showNotification({
-            icon: <IoCloseCircle size={48} />,
+            icon: <IconX size={18} />,
             color: 'red',
             autoClose: true,
             title: 'Library',
@@ -55,7 +55,7 @@ function Form({ onClose }: { onClose: () => void }) {
         onClose();
         setVisible((v) => !v);
         showNotification({
-          icon: <MdCheckCircleOutline size={48} />,
+          icon: <IconCheck size={18} />,
           color: 'teal',
           autoClose: true,
           title: 'Library',

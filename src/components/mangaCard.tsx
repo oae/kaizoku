@@ -1,4 +1,5 @@
 import { Badge, Button, createStyles, Paper, Title } from '@mantine/core';
+import { IconExternalLink } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -35,7 +36,7 @@ const useStyles = createStyles((theme) => ({
 interface ArticleCardImageProps {
   image: string;
   title: string;
-  category: string;
+  category?: string;
 }
 
 export function MangaCard({ image, title, category }: ArticleCardImageProps) {
@@ -50,16 +51,22 @@ export function MangaCard({ image, title, category }: ArticleCardImageProps) {
       className={classes.card}
     >
       <div>
-        <Badge color="teal" variant="filled" className={classes.category} size="md">
-          {category}
-        </Badge>
+        {category && (
+          <Badge color="teal" variant="filled" className={classes.category} size="md">
+            {category}
+          </Badge>
+        )}
         <Title order={3} className={classes.title}>
           {title}
         </Title>
       </div>
-      <Button variant="filled" color="indigo" size="xs">
+      <Button leftIcon={<IconExternalLink size={16} />} variant="filled" color="indigo" size="xs">
         Read
       </Button>
     </Paper>
   );
 }
+
+MangaCard.defaultProps = {
+  category: '',
+};
