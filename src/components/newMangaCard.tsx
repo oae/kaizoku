@@ -22,7 +22,7 @@ import { useForm, UseFormReturnType, zodResolver } from '@mantine/form';
 import { getHotkeyHandler } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
-import { IconArrowRight, IconBook, IconCheck, IconSearch, IconX } from '@tabler/icons';
+import { IconArrowRight, IconCheck, IconPlus, IconSearch, IconX } from '@tabler/icons';
 import { useState } from 'react';
 import { z } from 'zod';
 import { trpc } from '../utils/trpc';
@@ -33,11 +33,10 @@ const useStyles = createStyles((theme) => ({
     height: 350,
     width: 210,
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.gray[4],
+    cursor: 'pointer',
 
     transition: 'transform 150ms ease, box-shadow 150ms ease',
 
@@ -326,6 +325,11 @@ function Form({ onClose }: { onClose: () => void }) {
   };
 
   const prevStep = () => {
+    if (active === 0) {
+      setVisible(false);
+      onClose();
+      form.reset();
+    }
     if (active === 1) {
       form.setFieldValue('query', '');
       form.setFieldValue('source', '');
@@ -419,7 +423,7 @@ function Form({ onClose }: { onClose: () => void }) {
 
       <Group position="right" className={classes.buttonGroup}>
         <Button variant="default" onClick={prevStep}>
-          Back
+          {active === 0 ? 'Cancel' : 'Back'}
         </Button>
         <Button hidden={active !== 2} type="submit">
           Add
@@ -441,6 +445,7 @@ export function NewMangaCard({ onAdd }: { onAdd: () => void }) {
       overflow: 'inside',
       trapFocus: true,
       size: 'xl',
+      closeOnClickOutside: false,
       title: 'Add a new manga',
       centered: true,
       children: (
@@ -455,25 +460,10 @@ export function NewMangaCard({ onAdd }: { onAdd: () => void }) {
   };
 
   return (
-    <Paper
-      shadow="lg"
-      p="md"
-      radius="md"
-      sx={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url('https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx53390-1RsuABC34P9D.jpg')`,
-      }}
-      className={classes.card}
-    >
-      <Button
-        variant="filled"
-        leftIcon={<IconBook size={18} />}
-        onClick={openCreateModal}
-        fullWidth
-        color="indigo"
-        size="xs"
-      >
-        Add new
-      </Button>
-    </Paper>
+    <Tooltip label="Add a new manga" position="bottom">
+      <Paper shadow="lg" p="md" radius="md" className={classes.card} onClick={openCreateModal}>
+        <IconPlus color="darkblue" opacity={0.5} size={96} />
+      </Paper>
+    </Tooltip>
   );
 }

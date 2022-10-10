@@ -96,14 +96,21 @@ function Form({ onClose }: { onClose: () => void }) {
   );
 }
 
-export function AddLibrary() {
+export function AddLibrary({ onCreate }: { onCreate: () => void }) {
   const modals = useModals();
 
   const openCreateModal = () => {
     const id = modals.openModal({
       title: 'Create a Library',
       centered: true,
-      children: <Form onClose={() => modals.closeModal(id)} />,
+      children: (
+        <Form
+          onClose={() => {
+            modals.closeModal(id);
+            onCreate();
+          }}
+        />
+      ),
     });
   };
 

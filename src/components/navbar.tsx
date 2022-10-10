@@ -1,20 +1,22 @@
 import {
-  ActionIcon,
   Badge,
-  Code,
   createStyles,
+  Divider,
+  Grid,
   Group,
+  LoadingOverlay,
   Navbar,
   Text,
-  TextInput,
   Tooltip,
   UnstyledButton,
 } from '@mantine/core';
-import { AiOutlineBulb, AiOutlineCheckSquare, AiOutlinePlus, AiOutlineSearch, AiOutlineUser } from 'react-icons/ai';
+import { IconActivity, IconAlertTriangle, IconClock } from '@tabler/icons';
+import { trpc } from '../utils/trpc';
 
 const useStyles = createStyles((theme) => ({
   navbar: {
     paddingTop: 0,
+    boxShadow: theme.shadows.md,
   },
 
   section: {
@@ -68,9 +70,8 @@ const useStyles = createStyles((theme) => ({
   },
 
   mainLinkBadge: {
-    padding: 0,
-    width: 20,
-    height: 20,
+    padding: 5,
+    minWidth: 20,
     pointerEvents: 'none',
   },
 
@@ -104,29 +105,31 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const links = [
-  { icon: AiOutlineBulb, label: 'Activity', notifications: 3 },
-  { icon: AiOutlineCheckSquare, label: 'Tasks', notifications: 4 },
-  { icon: AiOutlineUser, label: 'Contacts' },
+  { icon: IconActivity, label: 'Activity', notifications: 862, color: 'teal' },
+  { icon: IconClock, label: 'Queue', notifications: 38, color: 'indigo' },
+  { icon: IconAlertTriangle, label: 'Failed', notifications: 4, color: 'red' },
 ];
 
 const collections = [
-  { emoji: '👍', label: 'Sales' },
-  {
-    emoji: '🚚',
-    label:
-      'DeliveriesDeliveriesDeliveriesDeliveriesDeliveriesDeliveriesDeliveriesDeliveriesDeliveriesDeliveriesDeliveries',
-  },
-  { emoji: '💸', label: 'Discounts' },
-  { emoji: '💰', label: 'Profits' },
-  { emoji: '✨', label: 'Reports' },
-  { emoji: '🛒', label: 'Orders' },
-  { emoji: '📅', label: 'Events' },
-  { emoji: '🙈', label: 'Debts' },
-  { emoji: '💁‍♀️', label: 'Customers' },
+  { chapter: 123, label: 'Jujutsu Kaisen' },
+  { chapter: 2, label: 'One Piece' },
+  { chapter: 42, label: 'Bleach' },
+  { chapter: 36, label: 'Naruto' },
+  { chapter: 98, label: 'Black Clover' },
+  { chapter: 610, label: 'Fairy Tail' },
+  { chapter: 133, label: 'Hunter x Hunter' },
+  { chapter: 51, label: 'Noblesse' },
+  { chapter: 24, label: 'Berserk' },
+  { chapter: 23, label: 'Berserk' },
 ];
 
 export function KaizokuNavbar() {
   const { classes } = useStyles();
+  const libraryQuery = trpc.library.query.useQuery(undefined, {
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchInterval: Infinity,
+  });
 
   const mainLinks = links.map((link) => (
     <UnstyledButton key={link.label} className={classes.mainLink}>
@@ -135,7 +138,7 @@ export function KaizokuNavbar() {
         <span>{link.label}</span>
       </div>
       {link.notifications && (
-        <Badge size="sm" variant="filled" className={classes.mainLinkBadge}>
+        <Badge size="md" variant="dot" color={link.color} className={classes.mainLinkBadge}>
           {link.notifications}
         </Badge>
       )}
@@ -151,39 +154,43 @@ export function KaizokuNavbar() {
       className={classes.collectionLink}
       style={{ width: 'inherit', overflowX: 'hidden' }}
     >
-      <span style={{ marginRight: 9, fontSize: 16, overflowX: 'hidden', textOverflow: 'ellipsis', width: 'inherit' }}>
-        {collection.emoji}
-      </span>{' '}
-      {collection.label}
+      <Grid gutter={5}>
+        <Grid.Col span="content" style={{ maxWidth: 180, whiteSpace: 'nowrap', overflow: 'hidden' }}>
+          <Tooltip label={collection.label}>
+            <Text weight={600}>{collection.label}</Text>
+          </Tooltip>
+        </Grid.Col>
+        <Grid.Col span="auto">
+          <Divider mt="xs" variant="dotted" />
+        </Grid.Col>
+        <Grid.Col span="content">
+          <Badge size="sm" variant="light" color="indigo" className={classes.mainLinkBadge}>
+            #{collection.chapter}
+          </Badge>
+        </Grid.Col>
+      </Grid>
     </a>
   ));
 
+  if (libraryQuery.isLoading) {
+    return <LoadingOverlay visible overlayBlur={2} />;
+  }
+
+  if (!libraryQuery.data) {
+    return null;
+  }
+
   return (
     <Navbar width={{ sm: 300 }} p="md" className={classes.navbar} fixed>
-      <TextInput
-        placeholder="Search"
-        size="xs"
-        icon={<AiOutlineSearch size={12} strokeWidth={1.5} />}
-        rightSectionWidth={70}
-        rightSection={<Code className={classes.searchCode}>Ctrl + K</Code>}
-        styles={{ rightSection: { pointerEvents: 'none' } }}
-        mb="sm"
-      />
-
       <Navbar.Section className={classes.section}>
         <div className={classes.mainLinks}>{mainLinks}</div>
       </Navbar.Section>
 
       <Navbar.Section className={classes.section}>
         <Group className={classes.collectionsHeader} position="apart">
-          <Text size="xs" weight={500} color="dimmed">
-            Collections
+          <Text size="md" weight={500} color="dimmed">
+            Latest Downloads
           </Text>
-          <Tooltip label="Create collection" withArrow position="right">
-            <ActionIcon variant="default" size={18}>
-              <AiOutlinePlus size={12} strokeWidth={1.5} />
-            </ActionIcon>
-          </Tooltip>
         </Group>
         <div className={classes.collections}>{collectionLinks}</div>
       </Navbar.Section>

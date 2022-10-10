@@ -8,7 +8,7 @@ const useStyles = createStyles((theme) => ({
   header: {
     backgroundColor: theme.colors.red[8],
     borderBottom: 0,
-    boxShadow: theme.shadows.xl,
+    boxShadow: theme.shadows.md,
   },
 
   inner: {

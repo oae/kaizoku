@@ -4,6 +4,7 @@ import { NotificationsProvider } from '@mantine/notifications';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { KaizokuHeader, KaizokuLinks } from '../components/header';
+import { KaizokuNavbar } from '../components/navbar';
 import '../styles/globals.css';
 import { trpc } from '../utils/trpc';
 
@@ -27,6 +28,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <NotificationsProvider position="top-center" limit={5}>
             <AppShell
               padding="md"
+              navbar={<KaizokuNavbar />}
               header={<KaizokuHeader links={KaizokuLinks} />}
               styles={(theme) => ({
                 main: { backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0] },

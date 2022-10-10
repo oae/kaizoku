@@ -11,7 +11,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function EmptyPrompt() {
+export function EmptyPrompt({ onCreate }: { onCreate: () => void }) {
   const { classes } = useStyles();
 
   return (
@@ -22,7 +22,7 @@ export function EmptyPrompt() {
         <Text size="sm" className={classes.description}>
           To be able to add new manga, you need to create a library
         </Text>
-        <AddLibrary />
+        <AddLibrary onCreate={onCreate} />
       </Stack>
     </Center>
   );
