@@ -12,6 +12,7 @@ import {
   LoadingOverlay,
   Paper,
   Select,
+  Stack,
   Stepper,
   Text,
   TextInput,
@@ -22,7 +23,7 @@ import { useForm, UseFormReturnType, zodResolver } from '@mantine/form';
 import { getHotkeyHandler } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
-import { IconArrowRight, IconCheck, IconPlus, IconSearch, IconX } from '@tabler/icons';
+import { IconArrowRight, IconCheck, IconFolderPlus, IconPlus, IconSearch, IconX } from '@tabler/icons';
 import { useState } from 'react';
 import { z } from 'zod';
 import { trpc } from '../utils/trpc';
@@ -72,11 +73,14 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
+const availableIntervals = ['daily', 'hourly', 'weekly', 'minutely'];
+
 const schema = z.object({
   source: z.string().min(1, { message: 'You must select a source' }),
   query: z.string().min(1, { message: 'Cannot be empty' }),
   mangaOrder: z.number().gte(0, { message: 'Please select a manga' }),
   mangaTitle: z.string().min(1, { message: 'Please select a manga' }),
+  interval: z.string().min(1, { message: 'Please select an interval' }),
 });
 
 type FormType = z.TypeOf<typeof schema>;
@@ -103,6 +107,47 @@ function SourceStep({ form }: { form: UseFormReturnType<FormType> }) {
         placeholder="Select a source"
         {...form.getInputProps('source')}
       />
+    </Box>
+  );
+}
+
+function DownloadStep({ form }: { form: UseFormReturnType<FormType> }) {
+  const libraryQuery = trpc.library.query.useQuery();
+
+  const libraryPath = libraryQuery.data?.path;
+
+  const intervalSelectData = availableIntervals.map((k) => ({ label: k, value: k }));
+
+  if (libraryQuery.isLoading) {
+    return <LoadingOverlay visible />;
+  }
+
+  const sanitizeMangaName = form.values.mangaTitle
+    .replaceAll(/[\\/<>:;"'|?!*{}#%&^+,~\s]/g, '_')
+    .replaceAll(/__+/g, '_')
+    .replaceAll(/^[_\-.]+|[_\-.]+$/g, '_');
+
+  const downloadPath = `${libraryPath}/${sanitizeMangaName}`;
+
+  return (
+    <Box>
+      <Stack>
+        <Select
+          data-autofocus
+          size="sm"
+          data={intervalSelectData}
+          label="Download Interval"
+          placeholder="Select an interval"
+          {...form.getInputProps('interval')}
+        />
+        <TextInput
+          label="Location"
+          size="sm"
+          disabled
+          icon={<IconFolderPlus size={18} stroke={1.5} />}
+          value={downloadPath}
+        />
+      </Stack>
     </Box>
   );
 }
@@ -296,12 +341,13 @@ function Form({ onClose }: { onClose: () => void }) {
   const mutation = trpc.manga.add.useMutation();
 
   const form = useForm({
-    validateInputOnBlur: ['source', 'query'],
+    validateInputOnBlur: ['source', 'query', 'interval'],
     initialValues: {
       source: '',
       query: '',
       mangaOrder: -1,
       mangaTitle: '',
+      interval: '',
     },
     validate: zodResolver(schema),
   });
@@ -320,8 +366,14 @@ function Form({ onClose }: { onClose: () => void }) {
         return;
       }
     }
+    if (active === 2) {
+      form.validateField('interval');
+      if (!form.isValid('interval')) {
+        return;
+      }
+    }
     form.clearErrors();
-    setActive((current) => (current < 2 ? current + 1 : current));
+    setActive((current) => (current < 3 ? current + 1 : current));
   };
 
   const prevStep = () => {
@@ -339,6 +391,9 @@ function Form({ onClose }: { onClose: () => void }) {
       form.setFieldValue('mangaOrder', -1);
       form.setFieldValue('mangaTitle', '');
     }
+    if (active === 3) {
+      form.setFieldValue('interval', '');
+    }
     setActive((current) => (current > 0 ? current - 1 : current));
   };
   return (
@@ -346,12 +401,13 @@ function Form({ onClose }: { onClose: () => void }) {
       className={classes.form}
       onSubmit={form.onSubmit(async (values) => {
         setVisible((v) => !v);
-        const { mangaOrder, mangaTitle, query, source } = values;
+        const { mangaOrder, mangaTitle, query, source, interval } = values;
         try {
           await mutation.mutateAsync({
             keyword: query,
             order: mangaOrder,
             title: mangaTitle,
+            interval,
             source,
           });
         } catch (err) {
@@ -415,6 +471,14 @@ function Form({ onClose }: { onClose: () => void }) {
         >
           <SearchStep form={form} />
         </Stepper.Step>
+        <Stepper.Step
+          label="Download"
+          description={form.values.interval || 'Select an interval'}
+          allowStepSelect={active > 2}
+          color={active > 2 ? 'teal' : 'blue'}
+        >
+          <DownloadStep form={form} />
+        </Stepper.Step>
 
         <Stepper.Completed>
           <ReviewStep form={form} />
@@ -425,10 +489,10 @@ function Form({ onClose }: { onClose: () => void }) {
         <Button variant="default" onClick={prevStep}>
           {active === 0 ? 'Cancel' : 'Back'}
         </Button>
-        <Button hidden={active !== 2} type="submit">
+        <Button hidden={active !== 3} type="submit">
           Add
         </Button>
-        <Button hidden={active === 2} onClick={nextStep}>
+        <Button hidden={active === 3} onClick={nextStep}>
           Next step
         </Button>
       </Group>

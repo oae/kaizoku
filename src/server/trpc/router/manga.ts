@@ -54,11 +54,12 @@ export const mangaRouter = t.router({
         keyword: z.string().trim().min(1),
         source: z.string().trim().min(1),
         title: z.string().trim().min(1),
+        interval: z.string().trim().min(1),
         order: z.number().gte(0),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { keyword, source, order, title } = input;
+      const { keyword, source, order, title, interval } = input;
       const detail = await getMangaDetail(source, keyword, order.toString());
       const library = await ctx.prisma.library.findFirst();
       if (!detail || !library) {
@@ -80,7 +81,7 @@ export const mangaRouter = t.router({
           source,
           title: detail.Name,
           libraryId: library?.id,
-          interval: 'hourly',
+          interval,
         },
       });
     }),
