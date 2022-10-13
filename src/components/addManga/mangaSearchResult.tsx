@@ -1,6 +1,6 @@
 import { createStyles, Image, SimpleGrid, Text, UnstyledButton } from '@mantine/core';
 import { useUncontrolled } from '@mantine/hooks';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const useStyles = createStyles((theme, { checked, disabled }: { checked: boolean; disabled: boolean }) => ({
   button: {
@@ -110,6 +110,10 @@ export function MangaSearchResult({
   onSelect: (selected: IMangaSearchResult | undefined) => void;
 }) {
   const [selected, setSelected] = useState<IMangaSearchResult>();
+
+  useEffect(() => {
+    setSelected(undefined);
+  }, [items]);
 
   return (
     <SimpleGrid

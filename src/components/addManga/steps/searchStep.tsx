@@ -19,6 +19,8 @@ export function SearchStep({ form }: { form: UseFormReturnType<FormType> }) {
     if (!form.isValid('query')) {
       return;
     }
+    form.setFieldValue('mangaOrder', -1);
+    form.setFieldValue('mangaTitle', '');
     setLoading(true);
     const result = await ctx.manga.search.fetch({
       keyword: form.values.query,
