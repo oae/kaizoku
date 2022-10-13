@@ -1,8 +1,8 @@
 import { Grid, LoadingOverlay } from '@mantine/core';
+import { AddManga } from '../components/addManga';
 
 import { EmptyPrompt } from '../components/emptyPrompt';
 import { MangaCard } from '../components/mangaCard';
-import { NewMangaCard } from '../components/newMangaCard';
 import { trpc } from '../utils/trpc';
 
 export default function IndexPage() {
@@ -37,7 +37,7 @@ export default function IndexPage() {
   return (
     <Grid justify="flex-start">
       <Grid.Col span="content">
-        <NewMangaCard
+        <AddManga
           onAdd={() => {
             mangaQuery.refetch();
           }}
