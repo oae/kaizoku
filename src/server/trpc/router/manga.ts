@@ -1,3 +1,4 @@
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { getAvailableSources, getMangaDetail, search } from '../../../utils/mangal';
 import { t } from '../trpc';
@@ -71,7 +72,10 @@ export const mangaRouter = t.router({
         },
       });
       if (result) {
-        return result;
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: `${title} already exists in the library.`,
+        });
       }
 
       return ctx.prisma.manga.create({

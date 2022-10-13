@@ -91,6 +91,7 @@ export function AddMangaForm({ onClose }: { onClose: () => void }) {
       form.setFieldValue('query', '');
       form.setFieldValue('mangaOrder', -1);
       form.setFieldValue('mangaTitle', '');
+      form.setFieldValue('interval', '');
     }
     if (active === 3) {
       form.setFieldValue('interval', '');
@@ -117,7 +118,7 @@ export function AddMangaForm({ onClose }: { onClose: () => void }) {
         title: 'Manga',
         message: (
           <Text>
-            Failed to create add manga. <Code color="red">{`${err}`}</Code>
+            <Code color="red">{`${err}`}</Code>
           </Text>
         ),
       });
