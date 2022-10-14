@@ -2,7 +2,7 @@ import { TRPCError } from '@trpc/server';
 import path from 'path';
 import { z } from 'zod';
 import { sanitizer } from '../../../utils/sanitize';
-import { schedule } from '../../queue/checkChapters';
+import { removeJob, schedule } from '../../queue/checkChapters';
 import { getAvailableSources, getMangaDetail, removeManga, search } from '../../utils/mangal';
 import { t } from '../trpc';
 
@@ -68,7 +68,7 @@ export const mangaRouter = t.router({
       });
       const mangaPath = path.resolve(removed.Library.path, sanitizer(removed.title));
       await removeManga(mangaPath);
-      // TODO: remove jobs also
+      await removeJob(removed.title);
     }),
   add: t.procedure
     .input(

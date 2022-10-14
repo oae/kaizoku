@@ -44,7 +44,7 @@ const checkChapters = async (manga: MangaWithLibrary) => {
       opts: {
         jobId: `${sanitizer(manga.title)}_${chapterIndex - 1}_download`,
       },
-      name: `${sanitizer(manga.title)}_${chapterIndex - 1}_download`,
+      name: `${sanitizer(manga.title)}_chapter#${chapterIndex - 1}_download`,
       data: {
         chapterIndex: chapterIndex - 1,
         source: manga.source,
@@ -78,19 +78,39 @@ export const checkChaptersWorker = new Worker(
   },
 );
 
+export const getJobIdFromTitle = (title: string) => `check_${sanitizer(title)}_chapters`;
+
+export const removeJob = async (title: string) => {
+  const jobId = getJobIdFromTitle(title);
+  const jobs = await checkChaptersQueue.getJobs('delayed');
+  await Promise.all(
+    jobs
+      .filter((job) => job.opts.repeat?.jobId === jobId)
+      .map(async (job) => {
+        if (job.id) {
+          return checkChaptersQueue.remove(job.id);
+        }
+        return null;
+      }),
+  );
+};
+
 export const schedule = async (manga: MangaWithLibrary) => {
   if (manga.interval === 'never') {
     return;
   }
 
+  await removeJob(manga.title);
+  const jobId = getJobIdFromTitle(manga.title);
+
   await checkChaptersQueue.add(
-    `check_${manga.title}_chapters`,
+    jobId,
     {
       manga,
     },
     {
-      jobId: `check_${manga.libraryId}_${manga.id}_chapters`,
-      repeatJobKey: `check_${manga.libraryId}_${manga.id}_chapters`,
+      jobId,
+      repeatJobKey: jobId,
       repeat: {
         pattern: cronMap[manga.interval as keyof typeof cronMap],
       },
