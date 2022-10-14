@@ -106,7 +106,7 @@ export function KaizokuHeader({ links }: HeaderSearchProps) {
 
 export const KaizokuLinks = [
   {
-    link: '/admin/queues/queue/downloadQue?status=completed',
+    link: '/admin/queues/queue/downloadQueue?status=completed',
     label: 'Downloads',
   },
   {

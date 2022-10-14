@@ -1,6 +1,7 @@
 import { Code, Grid, LoadingOverlay, Text } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconX } from '@tabler/icons';
+import { useRouter } from 'next/router';
 import { AddManga } from '../components/addManga';
 
 import { EmptyPrompt } from '../components/emptyPrompt';
@@ -9,7 +10,8 @@ import { trpc } from '../utils/trpc';
 
 export default function IndexPage() {
   const libraryQuery = trpc.library.query.useQuery();
-  const mangaDelete = trpc.manga.remove.useMutation();
+  const mangaRemove = trpc.manga.remove.useMutation();
+  const router = useRouter();
 
   const libraryId = libraryQuery.data?.id;
 
@@ -37,9 +39,9 @@ export default function IndexPage() {
     );
   }
 
-  const handleDelete = async (id: number, title: string) => {
+  const handleRemove = async (id: number, title: string) => {
     try {
-      await mangaDelete.mutateAsync({
+      await mangaRemove.mutateAsync({
         id,
       });
       showNotification({
@@ -83,10 +85,11 @@ export default function IndexPage() {
           return (
             <Grid.Col span="content" key={manga.id}>
               <MangaCard
-                category={manga.interval}
+                interval={manga.interval}
                 title={manga.title}
-                image={manga.cover}
-                onRemove={() => handleDelete(manga.id, manga.title)}
+                cover={manga.cover}
+                onRemove={() => handleRemove(manga.id, manga.title)}
+                onClick={() => router.push(`/manga/${manga.id}`)}
               />
             </Grid.Col>
           );

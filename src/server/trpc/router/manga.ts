@@ -34,6 +34,16 @@ export const mangaRouter = t.router({
       const { title, source } = input;
       return getMangaDetail(source, title);
     }),
+  get: t.procedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { id } = input;
+      return ctx.prisma.manga.findFirst({ where: { id } });
+    }),
   search: t.procedure
     .input(
       z.object({

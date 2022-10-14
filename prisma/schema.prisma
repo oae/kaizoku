@@ -18,11 +18,21 @@ model Library {
 }
 
 model Manga {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   title     String
   cover     String
   interval  String
   source    String
-  Library   Library @relation(fields: [libraryId], references: [id])
+  Library   Library   @relation(fields: [libraryId], references: [id])
   libraryId Int
+  Chapter   Chapter[]
+}
+
+model Chapter {
+  id       Int    @id @default(autoincrement())
+  index    Int
+  fileName String
+  size     BigInt
+  manga    Manga  @relation(fields: [mangaId], references: [id])
+  mangaId  Int
 }

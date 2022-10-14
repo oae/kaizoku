@@ -1,12 +1,13 @@
-import { ActionIcon, Badge, Button, Code, createStyles, Paper, Text, Title } from '@mantine/core';
+import { ActionIcon, Badge, Code, createStyles, Paper, Text, Title } from '@mantine/core';
 import { openConfirmModal } from '@mantine/modals';
-import { IconExternalLink, IconX } from '@tabler/icons';
+import { IconX } from '@tabler/icons';
 
 const useStyles = createStyles((theme, _params, getRef) => ({
   card: {
     position: 'relative',
     height: 350,
     width: 210,
+    cursor: 'pointer',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -36,75 +37,80 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     fontWeight: 900,
     color: theme.white,
     lineHeight: 1.2,
+    wordBreak: 'break-word',
     marginTop: theme.spacing.xs,
   },
 
-  category: {
+  interval: {
     textTransform: 'uppercase',
   },
 }));
 
 interface ArticleCardImageProps {
-  image: string;
+  cover: string;
   title: string;
-  category?: string;
+  interval: string;
   onRemove: () => void;
+  onClick: () => void;
 }
 
 const createRemoveModal = (title: string, onRemove: () => void) => {
-  const openDeleteModal = () =>
+  const openRemoveModal = () =>
     openConfirmModal({
-      title: `Delete ${title}?`,
+      title: `Remove ${title}?`,
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete
+          Are you sure you want to remove
           <Code className="text-base font-bold" color="red">
             {title}
           </Code>
           ? This action is destructive and all downloaded files will be removed
         </Text>
       ),
-      labels: { confirm: 'Delete', cancel: 'Cancel' },
+      labels: { confirm: 'Remove', cancel: 'Cancel' },
       confirmProps: { color: 'red' },
       onConfirm: onRemove,
     });
 
-  return openDeleteModal;
+  return openRemoveModal;
 };
 
-export function MangaCard({ image, title, category, onRemove }: ArticleCardImageProps) {
+export function MangaCard({ cover, title, interval, onRemove, onClick }: ArticleCardImageProps) {
   const { classes } = useStyles();
   const removeModal = createRemoveModal(title, onRemove);
 
   return (
     <Paper
+      onClick={onClick}
       shadow="lg"
       p="md"
       radius="md"
-      sx={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)), url(${image})` }}
+      sx={{
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2)), url(${cover})`,
+      }}
       className={classes.card}
     >
-      <ActionIcon color="red" variant="filled" radius="xl" className={classes.removeButton} onClick={removeModal}>
+      <ActionIcon
+        color="red"
+        variant="filled"
+        radius="xl"
+        className={classes.removeButton}
+        onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+          e.stopPropagation();
+          removeModal();
+        }}
+      >
         <IconX size={16} />
       </ActionIcon>
       <div>
-        {category && (
-          <Badge color="teal" variant="filled" className={classes.category} size="md">
-            {category}
-          </Badge>
-        )}
+        <Badge color="teal" variant="filled" className={classes.interval} size="md">
+          {interval}
+        </Badge>
         <Title order={3} className={classes.title}>
           {title}
         </Title>
       </div>
-      <Button leftIcon={<IconExternalLink size={16} />} variant="filled" color="indigo" size="xs">
-        Read
-      </Button>
     </Paper>
   );
 }
-
-MangaCard.defaultProps = {
-  category: '',
-};
