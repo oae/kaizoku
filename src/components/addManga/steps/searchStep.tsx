@@ -19,7 +19,6 @@ export function SearchStep({ form }: { form: UseFormReturnType<FormType> }) {
     if (!form.isValid('query')) {
       return;
     }
-    form.setFieldValue('mangaOrder', -1);
     form.setFieldValue('mangaTitle', '');
     setLoading(true);
     const result = await ctx.manga.search.fetch({
@@ -59,10 +58,8 @@ export function SearchStep({ form }: { form: UseFormReturnType<FormType> }) {
         items={searchResult}
         onSelect={(selected) => {
           if (selected) {
-            form.setFieldValue('mangaOrder', selected.order);
             form.setFieldValue('mangaTitle', selected.title);
           } else {
-            form.setFieldValue('mangaOrder', -1);
             form.setFieldValue('mangaTitle', '');
           }
         }}

@@ -13,13 +13,12 @@ const useStyles = createStyles((_theme) => ({
 export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
   const query = trpc.manga.detail.useQuery(
     {
-      keyword: form.values.query,
       source: form.values.source,
-      order: form.values.mangaOrder,
+      title: form.values.mangaTitle,
     },
     {
       staleTime: Infinity,
-      enabled: !!form.values.query && !!form.values.source && !!form.values.mangaTitle && form.values.mangaOrder > -1,
+      enabled: !!form.values.source && !!form.values.mangaTitle,
     },
   );
 

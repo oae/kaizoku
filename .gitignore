@@ -380,3 +380,5 @@ $RECYCLE.BIN/
 # .pnp.*
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,windows,macos,node,visualstudiocode,intellij+all,nextjs,yarn
+
+mangas/

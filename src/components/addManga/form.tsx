@@ -27,7 +27,6 @@ const useStyles = createStyles((theme) => ({
 const schema = z.object({
   source: z.string().min(1, { message: 'You must select a source' }),
   query: z.string().min(1, { message: 'Cannot be empty' }),
-  mangaOrder: z.number().gte(0, { message: 'Please select a manga' }),
   mangaTitle: z.string().min(1, { message: 'Please select a manga' }),
   interval: z.string().min(1, { message: 'Please select an interval' }),
 });
@@ -46,7 +45,6 @@ export function AddMangaForm({ onClose }: { onClose: () => void }) {
     initialValues: {
       source: '',
       query: '',
-      mangaOrder: -1,
       mangaTitle: '',
       interval: '',
     },
@@ -62,8 +60,7 @@ export function AddMangaForm({ onClose }: { onClose: () => void }) {
     }
     if (active === 1) {
       form.validateField('mangaTitle');
-      form.validateField('mangaOrder');
-      if (!form.isValid('mangaOrder') || !form.isValid('mangaTitle')) {
+      if (!form.isValid('mangaTitle')) {
         return;
       }
     }
@@ -89,7 +86,6 @@ export function AddMangaForm({ onClose }: { onClose: () => void }) {
     }
     if (active === 2) {
       form.setFieldValue('query', '');
-      form.setFieldValue('mangaOrder', -1);
       form.setFieldValue('mangaTitle', '');
       form.setFieldValue('interval', '');
     }
@@ -101,11 +97,9 @@ export function AddMangaForm({ onClose }: { onClose: () => void }) {
 
   const onSubmit = form.onSubmit(async (values) => {
     setVisible((v) => !v);
-    const { mangaOrder, mangaTitle, query, source, interval } = values;
+    const { mangaTitle, source, interval } = values;
     try {
       await mutation.mutateAsync({
-        keyword: query,
-        order: mangaOrder,
         title: mangaTitle,
         interval,
         source,

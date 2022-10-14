@@ -11,7 +11,6 @@ CREATE TABLE "Manga" (
     "cover" TEXT NOT NULL,
     "interval" TEXT NOT NULL,
     "source" TEXT NOT NULL,
-    "query" TEXT NOT NULL,
-    "libraryId" INTEGER,
-    CONSTRAINT "Manga_libraryId_fkey" FOREIGN KEY ("libraryId") REFERENCES "Library" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    "libraryId" INTEGER NOT NULL,
+    CONSTRAINT "Manga_libraryId_fkey" FOREIGN KEY ("libraryId") REFERENCES "Library" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );

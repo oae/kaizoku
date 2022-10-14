@@ -1,4 +1,6 @@
-import { Grid, LoadingOverlay } from '@mantine/core';
+import { Code, Grid, LoadingOverlay, Text } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
+import { IconCheck, IconX } from '@tabler/icons';
 import { AddManga } from '../components/addManga';
 
 import { EmptyPrompt } from '../components/emptyPrompt';
@@ -7,6 +9,7 @@ import { trpc } from '../utils/trpc';
 
 export default function IndexPage() {
   const libraryQuery = trpc.library.query.useQuery();
+  const mangaDelete = trpc.manga.remove.useMutation();
 
   const libraryId = libraryQuery.data?.id;
 
@@ -34,6 +37,38 @@ export default function IndexPage() {
     );
   }
 
+  const handleDelete = async (id: number, title: string) => {
+    try {
+      await mangaDelete.mutateAsync({
+        id,
+      });
+      showNotification({
+        icon: <IconCheck size={18} />,
+        color: 'teal',
+        autoClose: true,
+        title: 'Manga',
+        message: (
+          <Text>
+            <Code color="blue">{title}</Code> is removed from library
+          </Text>
+        ),
+      });
+    } catch (err) {
+      showNotification({
+        icon: <IconX size={18} />,
+        color: 'red',
+        autoClose: true,
+        title: 'Manga',
+        message: (
+          <Text>
+            <Code color="red">{`${err}`}</Code>
+          </Text>
+        ),
+      });
+    }
+    mangaQuery.refetch();
+  };
+
   return (
     <Grid justify="flex-start">
       <Grid.Col span="content">
@@ -47,7 +82,12 @@ export default function IndexPage() {
         mangaQuery.data.map((manga) => {
           return (
             <Grid.Col span="content" key={manga.id}>
-              <MangaCard category={manga.interval} title={manga.title} image={manga.cover} />
+              <MangaCard
+                category={manga.interval}
+                title={manga.title}
+                image={manga.cover}
+                onRemove={() => handleDelete(manga.id, manga.title)}
+              />
             </Grid.Col>
           );
         })}

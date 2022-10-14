@@ -1,5 +1,6 @@
+import path from 'path';
 import { z } from 'zod';
-import { logger } from '../../../utils/logging';
+import { createLibrary } from '../../utils/mangal';
 import { t } from '../trpc';
 
 export const libraryRouter = t.router({
@@ -13,12 +14,13 @@ export const libraryRouter = t.router({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      logger.info(`input: ${JSON.stringify(input, null, 2)}`);
+      const libraryPath = path.resolve(process.cwd(), path.relative(process.cwd(), input.path));
       const library = await ctx.prisma.library.create({
         data: {
-          path: input.path,
+          path: libraryPath,
         },
       });
+      await createLibrary(libraryPath);
       return library;
     }),
 });

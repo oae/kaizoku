@@ -1,6 +1,7 @@
 import { Box, LoadingOverlay, Select, Stack, TextInput } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 import { IconFolderPlus } from '@tabler/icons';
+import { sanitizer } from '../../../utils/sanitize';
 import { trpc } from '../../../utils/trpc';
 import type { FormType } from '../form';
 
@@ -17,12 +18,7 @@ export function DownloadStep({ form }: { form: UseFormReturnType<FormType> }) {
     return <LoadingOverlay visible />;
   }
 
-  const sanitizeMangaName = form.values.mangaTitle
-    .replaceAll(/[\\/<>:;"'|?!*{}#%&^+,~\s]/g, '_')
-    .replaceAll(/__+/g, '_')
-    .replaceAll(/^[_\-.]+|[_\-.]+$/g, '_');
-
-  const downloadPath = `${libraryPath}/${sanitizeMangaName}`;
+  const downloadPath = `${libraryPath}/${sanitizer(form.values.mangaTitle)}`;
 
   return (
     <Box>

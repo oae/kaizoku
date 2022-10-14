@@ -1,5 +1,6 @@
 import execa from 'execa';
-import { logger } from './logging';
+import fs from 'fs/promises';
+import { logger } from '../../utils/logging';
 
 export interface IOutput {
   Manga: Manga[];
@@ -54,9 +55,9 @@ export const getAvailableSources = async () => {
   return [];
 };
 
-export const search = async (source: string, query: string): Promise<IOutput> => {
+export const search = async (source: string, keyword: string): Promise<IOutput> => {
   try {
-    const { stdout, command } = await execa('mangal', ['inline', '--source', source, '--query', query, '-j']);
+    const { stdout, command } = await execa('mangal', ['inline', '--source', source, '--query', keyword, '-j']);
     logger.info(`Search manga with following command: ${command}`);
     return JSON.parse(stdout);
   } catch (err) {
@@ -68,16 +69,16 @@ export const search = async (source: string, query: string): Promise<IOutput> =>
   };
 };
 
-export const getChapters = async (source: string, query: string, order: string): Promise<number[]> => {
+export const getChapters = async (source: string, title: string): Promise<number[]> => {
   try {
     const { stdout, command } = await execa('mangal', [
       'inline',
       '--source',
       source,
       '--query',
-      query,
+      title,
       '--manga',
-      order,
+      'first',
       '--chapters',
       'all',
       '-j',
@@ -94,16 +95,16 @@ export const getChapters = async (source: string, query: string, order: string):
   return [];
 };
 
-export const getMangaDetail = async (source: string, query: string, order: string) => {
+export const getMangaDetail = async (source: string, title: string) => {
   try {
     const { stdout, command } = await execa('mangal', [
       'inline',
       '--source',
       source,
       '--query',
-      query,
+      title,
       '--manga',
-      order,
+      'first',
       '-j',
     ]);
     logger.info(`Get manga detail with following command: ${command}`);
@@ -118,19 +119,12 @@ export const getMangaDetail = async (source: string, query: string, order: strin
   return undefined;
 };
 
-export const downloadChapter = async (
-  title: string,
-  source: string,
-  query: string,
-  chapterIndex: number,
-  order: string,
-  libraryPath: string,
-) => {
+export const downloadChapter = async (title: string, source: string, chapterIndex: number, libraryPath: string) => {
   try {
     logger.info(`Downloading chapter #${chapterIndex} for ${title} from ${source}`);
     const { stdout, stderr, command } = await execa(
       'mangal',
-      ['inline', '--source', source, '--query', query, '--manga', order, '--chapters', `${chapterIndex}`, '-d'],
+      ['inline', '--source', source, '--query', title, '--manga', 'first', '--chapters', `${chapterIndex}`, '-d'],
       {
         cwd: libraryPath,
       },
@@ -148,4 +142,37 @@ export const downloadChapter = async (
     logger.error(`Failed to download the chapter #${chapterIndex} for ${title}. Err:\n${err}`);
     throw err;
   }
+};
+
+export const findMissingChapters = async (mangaDir: string, source: string, title: string) => {
+  const sources = await getAvailableSources();
+  if (sources.indexOf(source) < 0) {
+    logger.error(`Specified source: ${source} is not installed.`);
+    throw new Error();
+  }
+  await fs.mkdir(mangaDir, { recursive: true });
+  const titleFiles = await fs.readdir(mangaDir);
+
+  const localChapters = titleFiles
+    .filter((chapter) => chapter.endsWith('cbz'))
+    .map((chapter) => {
+      const indexRegexp = /.*?\[(\d+)\].*/;
+      const match = indexRegexp.exec(chapter);
+      if (!match || match.length < 2 || !match[1]) {
+        return 1;
+      }
+      return parseInt(match[1], 10);
+    })
+    .filter((index) => index !== -1);
+
+  const remoteChapters = await getChapters(source, title);
+  return remoteChapters.filter((c) => !localChapters.includes(c));
+};
+
+export const createLibrary = async (libraryPath: string) => {
+  await fs.mkdir(libraryPath, { recursive: true });
+};
+
+export const removeManga = async (mangaDir: string) => {
+  await fs.rm(mangaDir, { recursive: true, force: true });
 };

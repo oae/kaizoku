@@ -98,7 +98,6 @@ ImageCheckbox.defaultProps = {
 type IMangaSearchResult = {
   status: string;
   title: string;
-  order: number;
   cover: string;
 };
 

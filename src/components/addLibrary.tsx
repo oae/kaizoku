@@ -29,8 +29,9 @@ function Form({ onClose }: { onClose: () => void }) {
     <form
       onSubmit={form.onSubmit(async (values) => {
         setVisible((v) => !v);
+        let library = null;
         try {
-          await libraryMutation.mutateAsync({
+          library = await libraryMutation.mutateAsync({
             path: values.library.path,
           });
         } catch (err) {
@@ -61,7 +62,7 @@ function Form({ onClose }: { onClose: () => void }) {
           title: 'Library',
           message: (
             <Text>
-              Library is created at <Code color="blue">{values.library.path}</Code>
+              Library is created at <Code color="blue">{library.path}</Code>
             </Text>
           ),
         });

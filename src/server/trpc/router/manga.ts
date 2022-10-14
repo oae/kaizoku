@@ -1,6 +1,9 @@
 import { TRPCError } from '@trpc/server';
+import path from 'path';
 import { z } from 'zod';
-import { getAvailableSources, getMangaDetail, search } from '../../../utils/mangal';
+import { sanitizer } from '../../../utils/sanitize';
+import { schedule } from '../../queue/checkChapters';
+import { getAvailableSources, getMangaDetail, removeManga, search } from '../../utils/mangal';
 import { t } from '../trpc';
 
 export const mangaRouter = t.router({
@@ -23,14 +26,13 @@ export const mangaRouter = t.router({
   detail: t.procedure
     .input(
       z.object({
-        keyword: z.string().trim().min(1),
         source: z.string().trim().min(1),
-        order: z.number().gte(0),
+        title: z.string().trim().min(1),
       }),
     )
     .query(async ({ input }) => {
-      const { keyword, source, order } = input;
-      return getMangaDetail(source, keyword, order.toString());
+      const { title, source } = input;
+      return getMangaDetail(source, title);
     }),
   search: t.procedure
     .input(
@@ -42,29 +44,49 @@ export const mangaRouter = t.router({
     .query(async ({ input }) => {
       const { keyword, source } = input;
       const result = await search(source, keyword);
-      return result.Manga.map((m, i) => ({
+      return result.Manga.map((m) => ({
         status: m.Metadata.Status,
         title: m.Name,
-        order: i,
         cover: m.Metadata.Cover,
       }));
+    }),
+  remove: t.procedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { id } = input;
+      const removed = await ctx.prisma.manga.delete({
+        include: {
+          Library: true,
+        },
+        where: {
+          id,
+        },
+      });
+      const mangaPath = path.resolve(removed.Library.path, sanitizer(removed.title));
+      await removeManga(mangaPath);
+      // TODO: remove jobs also
     }),
   add: t.procedure
     .input(
       z.object({
-        keyword: z.string().trim().min(1),
         source: z.string().trim().min(1),
         title: z.string().trim().min(1),
         interval: z.string().trim().min(1),
-        order: z.number().gte(0),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { keyword, source, order, title, interval } = input;
-      const detail = await getMangaDetail(source, keyword, order.toString());
+      const { source, title, interval } = input;
+      const detail = await getMangaDetail(source, title);
       const library = await ctx.prisma.library.findFirst();
       if (!detail || !library) {
-        return undefined;
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `Cannot find the ${title}.`,
+        });
       }
       const result = await ctx.prisma.manga.findFirst({
         where: {
@@ -78,15 +100,28 @@ export const mangaRouter = t.router({
         });
       }
 
-      return ctx.prisma.manga.create({
+      if (detail.Name !== title) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `${title} does not match the found manga.`,
+        });
+      }
+
+      const manga = await ctx.prisma.manga.create({
+        include: {
+          Library: true,
+        },
         data: {
           cover: detail.Metadata.Cover,
-          query: keyword,
           source,
           title: detail.Name,
-          libraryId: library?.id,
+          libraryId: library.id,
           interval,
         },
       });
+
+      schedule(manga);
+
+      return manga;
     }),
 });

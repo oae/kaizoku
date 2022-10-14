@@ -23,7 +23,6 @@ model Manga {
   cover     String
   interval  String
   source    String
-  query     String
-  Library   Library? @relation(fields: [libraryId], references: [id])
-  libraryId Int?
+  Library   Library @relation(fields: [libraryId], references: [id])
+  libraryId Int
 }
