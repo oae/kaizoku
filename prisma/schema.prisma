@@ -12,13 +12,15 @@ datasource db {
 }
 
 model Library {
-  id     Int     @id @default(autoincrement())
-  path   String  @unique
-  mangas Manga[]
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  path      String   @unique
+  mangas    Manga[]
 }
 
 model Manga {
   id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
   title     String    @unique
   cover     String
   interval  String
@@ -29,10 +31,11 @@ model Manga {
 }
 
 model Chapter {
-  id       Int    @id @default(autoincrement())
-  index    Int
-  fileName String
-  size     Int
-  manga    Manga  @relation(fields: [mangaId], references: [id], onDelete: Cascade)
-  mangaId  Int
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  index     Int
+  fileName  String
+  size      Int
+  manga     Manga    @relation(fields: [mangaId], references: [id], onDelete: Cascade)
+  mangaId   Int
 }

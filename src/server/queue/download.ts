@@ -4,7 +4,7 @@ import { downloadChapter, getChapterFromLocal } from '../utils/mangal';
 import { sendNotification } from '../utils/notification';
 import type { MangaWithLibrary } from './checkChapters';
 
-interface IDownloadWorkerData {
+export interface IDownloadWorkerData {
   manga: MangaWithLibrary;
   chapterIndex: number;
 }

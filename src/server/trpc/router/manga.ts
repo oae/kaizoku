@@ -3,6 +3,7 @@ import path from 'path';
 import { z } from 'zod';
 import { sanitizer } from '../../../utils/sanitize';
 import { removeJob, schedule } from '../../queue/checkChapters';
+import { downloadQueue } from '../../queue/download';
 import { getAvailableSources, getMangaDetail, removeManga, search } from '../../utils/mangal';
 import { t } from '../trpc';
 
@@ -42,7 +43,17 @@ export const mangaRouter = t.router({
     )
     .query(async ({ input, ctx }) => {
       const { id } = input;
-      return ctx.prisma.manga.findUniqueOrThrow({ include: { chapter: true, library: true }, where: { id } });
+      return ctx.prisma.manga.findUniqueOrThrow({
+        include: {
+          chapter: {
+            orderBy: {
+              index: 'asc',
+            },
+          },
+          library: true,
+        },
+        where: { id },
+      });
     }),
   search: t.procedure
     .input(
@@ -134,4 +145,24 @@ export const mangaRouter = t.router({
 
       return manga;
     }),
+  history: t.procedure.query(async ({ ctx }) => {
+    return ctx.prisma.chapter.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 10,
+      include: {
+        manga: true,
+      },
+    });
+  }),
+  activity: t.procedure.query(async () => {
+    return {
+      active: await downloadQueue.getActiveCount(),
+      queued: await downloadQueue.getWaitingCount(),
+      scheduled: await downloadQueue.getDelayedCount(),
+      failed: await downloadQueue.getFailedCount(),
+      completed: await downloadQueue.getCompletedCount(),
+    };
+  }),
 });
