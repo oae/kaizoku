@@ -1,4 +1,4 @@
-import { Code, Grid, Text } from '@mantine/core';
+import { Code, Grid, LoadingOverlay, Text } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconX } from '@tabler/icons';
 import { useRouter } from 'next/router';
@@ -14,6 +14,10 @@ export default function IndexPage() {
   const router = useRouter();
 
   const mangaQuery = trpc.manga.query.useQuery();
+
+  if (libraryQuery.isLoading) {
+    return <LoadingOverlay visible />;
+  }
 
   if (mangaQuery.isLoading || libraryQuery.isLoading) {
     return (
@@ -90,7 +94,7 @@ export default function IndexPage() {
               <MangaCard
                 badge={manga.source}
                 title={manga.title}
-                cover={manga.cover}
+                cover={manga.metadata.cover}
                 onRemove={() => handleRemove(manga.id, manga.title)}
                 onClick={() => router.push(`/manga/${manga.id}`)}
               />

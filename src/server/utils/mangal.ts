@@ -8,7 +8,7 @@ interface IOutput {
   Manga: Manga[];
 }
 
-interface Manga {
+export interface Manga {
   Name: string;
   URL: string;
   Index: number;
@@ -105,7 +105,7 @@ export const getChaptersFromRemote = async (source: string, title: string): Prom
   return [];
 };
 
-export const getMangaDetail = async (source: string, title: string) => {
+export const getMangaDetail = async (source: string, title: string): Promise<Manga | undefined> => {
   try {
     const { stdout, command } = await execa('mangal', [
       'inline',

@@ -50,7 +50,7 @@ export default function AddMangaSteps({
       <Stepper.Step
         label="Source"
         description={form.values.source || 'Select a source'}
-        allowStepSelect={active > 0}
+        allowStepSelect={false}
         color={active > 0 ? 'teal' : 'blue'}
       >
         <SourceStep form={form} />
@@ -58,7 +58,7 @@ export default function AddMangaSteps({
       <Stepper.Step
         label="Manga"
         description={form.values.mangaTitle || 'Search for manga'}
-        allowStepSelect={active > 1}
+        allowStepSelect={false}
         color={active > 1 ? 'teal' : 'blue'}
       >
         <SearchStep form={form} />
@@ -66,7 +66,7 @@ export default function AddMangaSteps({
       <Stepper.Step
         label="Download"
         description={form.values.interval || 'Select an interval'}
-        allowStepSelect={active > 2}
+        allowStepSelect={false}
         color={active > 2 ? 'teal' : 'blue'}
       >
         <DownloadStep form={form} />

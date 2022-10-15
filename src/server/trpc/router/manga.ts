@@ -4,12 +4,12 @@ import { z } from 'zod';
 import { sanitizer } from '../../../utils/sanitize';
 import { removeJob, schedule } from '../../queue/checkChapters';
 import { downloadQueue } from '../../queue/download';
-import { getAvailableSources, getMangaDetail, removeManga, search } from '../../utils/mangal';
+import { getAvailableSources, getMangaDetail, Manga, removeManga, search } from '../../utils/mangal';
 import { t } from '../trpc';
 
 export const mangaRouter = t.router({
   query: t.procedure.query(async ({ ctx }) => {
-    return ctx.prisma.manga.findMany();
+    return ctx.prisma.manga.findMany({ include: { metadata: true } });
   }),
   sources: t.procedure.query(async () => {
     return getAvailableSources();
@@ -41,6 +41,7 @@ export const mangaRouter = t.router({
             },
           },
           library: true,
+          metadata: true,
         },
         where: { id },
       });
@@ -91,9 +92,9 @@ export const mangaRouter = t.router({
     )
     .mutation(async ({ input, ctx }) => {
       const { source, title, interval } = input;
-      const detail = await getMangaDetail(source, title);
+      const mangaDetail: Manga | undefined = await getMangaDetail(source, title);
       const library = await ctx.prisma.library.findFirst();
-      if (!detail || !library) {
+      if (!mangaDetail || !library) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: `Cannot find the ${title}.`,
@@ -111,7 +112,7 @@ export const mangaRouter = t.router({
         });
       }
 
-      if (detail.Name !== title) {
+      if (mangaDetail.Name !== title) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: `${title} does not match the found manga.`,
@@ -123,11 +124,41 @@ export const mangaRouter = t.router({
           library: true,
         },
         data: {
-          cover: detail.Metadata.Cover,
           source,
-          title: detail.Name,
-          libraryId: library.id,
+          title: mangaDetail.Name,
+          library: {
+            connect: {
+              id: library.id,
+            },
+          },
           interval,
+          metadata: {
+            create: {
+              cover: mangaDetail.Metadata.Cover,
+              authors: mangaDetail.Metadata.Author ? [mangaDetail.Metadata.Author] : [],
+              characters: mangaDetail.Metadata.Characters,
+              genres: mangaDetail.Metadata.Genres,
+              startDate: mangaDetail.Metadata.StartDate
+                ? new Date(
+                    mangaDetail.Metadata.StartDate.Year,
+                    mangaDetail.Metadata.StartDate.Month,
+                    mangaDetail.Metadata.StartDate.Day,
+                  )
+                : undefined,
+              endDate: mangaDetail.Metadata.EndDate
+                ? new Date(
+                    mangaDetail.Metadata.EndDate.Year,
+                    mangaDetail.Metadata.EndDate.Month,
+                    mangaDetail.Metadata.EndDate.Day,
+                  )
+                : undefined,
+              status: mangaDetail.Metadata.Status,
+              summary: mangaDetail.Metadata.Summary,
+              synonyms: mangaDetail.Metadata.Synonyms,
+              tags: mangaDetail.Metadata.Tags,
+              urls: mangaDetail.Metadata.URLs,
+            },
+          },
         },
       });
 
@@ -142,7 +173,11 @@ export const mangaRouter = t.router({
       },
       take: 10,
       include: {
-        manga: true,
+        manga: {
+          include: {
+            metadata: true,
+          },
+        },
       },
     });
   }),

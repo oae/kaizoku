@@ -31,15 +31,15 @@ export function SearchControl() {
       setActions(
         mangaQuery.data.map((m) => ({
           title: m.title,
-          description: m.title,
+          description: `${m.metadata.summary.split(' ').slice(0, 50).join(' ')}...`,
           group: m.source,
           icon: (
             <Image
               withPlaceholder
-              placeholder={<Image src="/cover-not-found.jpg" alt={m.title} width={63} height={96} />}
-              src={m.cover}
-              width={42}
-              height={64}
+              placeholder={<Image src="/cover-not-found.jpg" alt={m.title} width={60} height={100} />}
+              src={m.metadata.cover}
+              width={60}
+              height={100}
             />
           ),
           closeOnTrigger: true,
@@ -54,6 +54,7 @@ export function SearchControl() {
       actions={actions}
       searchIcon={<IconSearch size={18} />}
       highlightQuery
+      limit={5}
       disabled={isDisabled}
       searchPlaceholder="Search..."
       shortcut="ctrl + p"

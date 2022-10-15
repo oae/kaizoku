@@ -7,8 +7,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./kaizoku.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Library {
@@ -19,15 +19,16 @@ model Library {
 }
 
 model Manga {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  title     String    @unique
-  cover     String
-  interval  String
-  source    String
-  library   Library   @relation(fields: [libraryId], references: [id], onDelete: Cascade)
-  libraryId Int
-  chapter   Chapter[]
+  id         Int       @id @default(autoincrement())
+  createdAt  DateTime  @default(now())
+  title      String    @unique
+  interval   String
+  source     String
+  library    Library   @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+  libraryId  Int
+  chapter    Chapter[]
+  metadata   Metadata  @relation(fields: [metadataId], references: [id], onDelete: Cascade)
+  metadataId Int       @unique
 }
 
 model Chapter {
@@ -38,4 +39,21 @@ model Chapter {
   size      Int
   manga     Manga    @relation(fields: [mangaId], references: [id], onDelete: Cascade)
   mangaId   Int
+}
+
+model Metadata {
+  id         Int       @id @default(autoincrement())
+  createdAt  DateTime  @default(now())
+  manga      Manga?
+  genres     String[]  @default([])
+  summary    String    @default("")
+  authors    String[]  @default([])
+  cover      String    @default("/cover-not-found.jpg")
+  tags       String[]  @default([])
+  characters String[]  @default([])
+  status     String    @default("UNKNOWN")
+  startDate  DateTime?
+  endDate    DateTime?
+  synonyms   String[]  @default([])
+  urls       String[]  @default([])
 }

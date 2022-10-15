@@ -32,6 +32,7 @@ export function AddManga({ onAdd }: { onAdd: () => void }) {
       trapFocus: true,
       size: 'xl',
       closeOnClickOutside: false,
+      closeOnEscape: true,
       title: 'Add a new manga',
       centered: true,
       children: (

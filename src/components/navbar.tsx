@@ -140,7 +140,7 @@ function History({ data }: { data: HistoryType }) {
           <Timeline.Item
             key={chapter.id}
             lineVariant="dotted"
-            bullet={<Image mt={20} alt="header" src={chapter.manga.cover} height={40} width={26} />}
+            bullet={<Image mt={20} alt="header" src={chapter.manga.metadata.cover} height={40} width={26} />}
             title={<HistoryItemTitle chapter={chapter} />}
           >
             <HistoryItem chapter={chapter} />
@@ -235,6 +235,11 @@ export function KaizokuNavbar() {
 
   const historyQuery = trpc.manga.history.useQuery();
   const activityQuery = trpc.manga.activity.useQuery();
+  const libraryQuery = trpc.library.query.useQuery();
+
+  if (!libraryQuery.data) {
+    return null;
+  }
 
   return (
     <Navbar width={{ sm: 300 }} p="md" className={classes.navbar} fixed>
