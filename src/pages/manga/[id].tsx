@@ -19,5 +19,9 @@ export default function LibraryPage() {
     return <LoadingOverlay visible overlayBlur={2} />;
   }
 
+  if (mangaQuery.isError) {
+    router.push('/404');
+  }
+
   return <Code>{JSON.stringify(mangaQuery.data, null, 2)}</Code>;
 }

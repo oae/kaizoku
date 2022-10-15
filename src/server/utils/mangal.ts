@@ -1,12 +1,14 @@
 import execa from 'execa';
 import fs from 'fs/promises';
+import path from 'path';
 import { logger } from '../../utils/logging';
+import { sanitizer } from '../../utils/sanitize';
 
-export interface IOutput {
+interface IOutput {
   Manga: Manga[];
 }
 
-export interface Manga {
+interface Manga {
   Name: string;
   URL: string;
   Index: number;
@@ -15,7 +17,7 @@ export interface Manga {
   Metadata: Metadata;
 }
 
-export interface Chapter {
+interface Chapter {
   Name: string;
   URL: string;
   Index: number;
@@ -23,7 +25,7 @@ export interface Chapter {
   Volume: string;
 }
 
-export interface Metadata {
+interface Metadata {
   Genres: string[];
   Summary: string;
   Author: string;
@@ -37,10 +39,16 @@ export interface Metadata {
   URLs: string[];
 }
 
-export interface MangaDate {
+interface MangaDate {
   Year: number;
   Month: number;
   Day: number;
+}
+
+interface ChapterFile {
+  index: number;
+  size: number;
+  fileName: string;
 }
 
 export const getAvailableSources = async () => {
@@ -54,6 +62,8 @@ export const getAvailableSources = async () => {
 
   return [];
 };
+
+export const getMangaPath = (libraryPath: string, title: string) => path.resolve(libraryPath, sanitizer(title));
 
 export const search = async (source: string, keyword: string): Promise<IOutput> => {
   try {
@@ -69,7 +79,7 @@ export const search = async (source: string, keyword: string): Promise<IOutput> 
   };
 };
 
-export const getChapters = async (source: string, title: string): Promise<number[]> => {
+export const getChaptersFromRemote = async (source: string, title: string): Promise<number[]> => {
   try {
     const { stdout, command } = await execa('mangal', [
       'inline',
@@ -86,7 +96,7 @@ export const getChapters = async (source: string, title: string): Promise<number
     logger.info(`Get chapters with following command: ${command}`);
     const result: IOutput = JSON.parse(stdout);
     if (result && result.Manga.length === 1 && result.Manga[0]?.Chapters && result.Manga[0]?.Chapters.length > 0) {
-      return result.Manga[0].Chapters.map((c) => c.Index);
+      return result.Manga[0].Chapters.map((c) => c.Index - 1);
     }
   } catch (err) {
     logger.error(err);
@@ -119,7 +129,12 @@ export const getMangaDetail = async (source: string, title: string) => {
   return undefined;
 };
 
-export const downloadChapter = async (title: string, source: string, chapterIndex: number, libraryPath: string) => {
+export const downloadChapter = async (
+  title: string,
+  source: string,
+  chapterIndex: number,
+  libraryPath: string,
+): Promise<string> => {
   try {
     logger.info(`Downloading chapter #${chapterIndex} for ${title} from ${source}`);
     const { stdout, stderr, command } = await execa(
@@ -138,34 +153,56 @@ export const downloadChapter = async (title: string, source: string, chapterInde
     } else {
       logger.info(`Downloaded chapter #${chapterIndex} for ${title}. Result:\n${stdout}`);
     }
+    return stdout.trim();
   } catch (err) {
     logger.error(`Failed to download the chapter #${chapterIndex} for ${title}. Err:\n${err}`);
     throw err;
   }
 };
 
-export const findMissingChapters = async (mangaDir: string, source: string, title: string) => {
+const getChapterIndexFromFile = (chapterFile: string) => {
+  const indexRegexp = /.*?\[(\d+)\].*/;
+  const match = indexRegexp.exec(path.basename(chapterFile));
+  if (!match || match.length < 2 || !match[1]) {
+    return undefined;
+  }
+  return parseInt(match[1], 10) - 1;
+};
+
+const shouldIncludeFile = (chapterFile: string) => {
+  return path.extname(chapterFile) === '.cbz' && getChapterIndexFromFile(chapterFile) !== undefined;
+};
+
+export const getChapterFromLocal = async (chapterFile: string) => {
+  const stat = await fs.stat(chapterFile);
+  return {
+    index: getChapterIndexFromFile(chapterFile)!,
+    size: stat.size,
+    fileName: path.basename(chapterFile),
+  };
+};
+
+export const getChaptersFromLocal = async (mangaDir: string): Promise<ChapterFile[]> => {
+  await fs.mkdir(mangaDir, { recursive: true });
+  const chapters = await fs.readdir(mangaDir);
+
+  return Promise.all(
+    chapters.filter(shouldIncludeFile).map((chapter) => getChapterFromLocal(path.resolve(mangaDir, chapter))),
+  );
+};
+
+export const findMissingChapterFiles = async (mangaDir: string, source: string, title: string) => {
   const sources = await getAvailableSources();
   if (sources.indexOf(source) < 0) {
     logger.error(`Specified source: ${source} is not installed.`);
     throw new Error();
   }
   await fs.mkdir(mangaDir, { recursive: true });
-  const titleFiles = await fs.readdir(mangaDir);
+  const chapters = await fs.readdir(mangaDir);
 
-  const localChapters = titleFiles
-    .filter((chapter) => chapter.endsWith('cbz'))
-    .map((chapter) => {
-      const indexRegexp = /.*?\[(\d+)\].*/;
-      const match = indexRegexp.exec(chapter);
-      if (!match || match.length < 2 || !match[1]) {
-        return 1;
-      }
-      return parseInt(match[1], 10);
-    })
-    .filter((index) => index !== -1);
+  const localChapters = chapters.filter(shouldIncludeFile).map(getChapterIndexFromFile);
 
-  const remoteChapters = await getChapters(source, title);
+  const remoteChapters = await getChaptersFromRemote(source, title);
   return remoteChapters.filter((c) => !localChapters.includes(c));
 };
 

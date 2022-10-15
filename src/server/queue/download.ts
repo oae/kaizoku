@@ -1,27 +1,43 @@
+import { PrismaClient } from '@prisma/client';
 import { Job, Queue, Worker } from 'bullmq';
-import { downloadChapter } from '../utils/mangal';
+import { downloadChapter, getChapterFromLocal } from '../utils/mangal';
 import { sendNotification } from '../utils/notification';
+import type { MangaWithLibrary } from './checkChapters';
 
 interface IDownloadWorkerData {
+  manga: MangaWithLibrary;
   chapterIndex: number;
-  source: string;
-  query: string;
-  title: string;
-  libraryPath: string;
 }
+
+const prisma = new PrismaClient();
 
 export const downloadWorker = new Worker(
   'downloadQueue',
   async (job: Job) => {
-    const { chapterIndex, libraryPath, title, source }: IDownloadWorkerData = job.data;
+    const { chapterIndex, manga }: IDownloadWorkerData = job.data;
     try {
-      downloadChapter(title, source, chapterIndex, libraryPath);
+      const filePath = await downloadChapter(manga.title, manga.source, chapterIndex, manga.library.path);
+      const chapter = await getChapterFromLocal(filePath);
+
+      await prisma.chapter.deleteMany({
+        where: {
+          mangaId: manga.id,
+          index: chapterIndex,
+        },
+      });
+
+      await prisma.chapter.create({
+        data: {
+          ...chapter,
+          mangaId: manga.id,
+        },
+      });
+      await sendNotification(`Downloaded a new chapter #${chapterIndex + 1} for ${manga.title} from ${manga.source}`);
+      await job.updateProgress(100);
     } catch (err) {
       await job.log(`${err}`);
       throw err;
     }
-    await sendNotification(`Downloaded a new chapter #${chapterIndex + 1} for ${title} from ${source}`);
-    await job.updateProgress(100);
   },
   {
     concurrency: 5,

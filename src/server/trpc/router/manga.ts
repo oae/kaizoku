@@ -42,7 +42,7 @@ export const mangaRouter = t.router({
     )
     .query(async ({ input, ctx }) => {
       const { id } = input;
-      return ctx.prisma.manga.findFirst({ where: { id } });
+      return ctx.prisma.manga.findUniqueOrThrow({ include: { chapter: true, library: true }, where: { id } });
     }),
   search: t.procedure
     .input(
@@ -70,13 +70,13 @@ export const mangaRouter = t.router({
       const { id } = input;
       const removed = await ctx.prisma.manga.delete({
         include: {
-          Library: true,
+          library: true,
         },
         where: {
           id,
         },
       });
-      const mangaPath = path.resolve(removed.Library.path, sanitizer(removed.title));
+      const mangaPath = path.resolve(removed.library.path, sanitizer(removed.title));
       await removeManga(mangaPath);
       await removeJob(removed.title);
     }),
@@ -119,7 +119,7 @@ export const mangaRouter = t.router({
 
       const manga = await ctx.prisma.manga.create({
         include: {
-          Library: true,
+          library: true,
         },
         data: {
           cover: detail.Metadata.Cover,

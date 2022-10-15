@@ -1,9 +1,9 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { Job, Queue, Worker } from 'bullmq';
 import path from 'path';
 import { logger } from '../../utils/logging';
 import { sanitizer } from '../../utils/sanitize';
-import { findMissingChapters } from '../utils/mangal';
+import { findMissingChapterFiles, getChaptersFromLocal } from '../utils/mangal';
 import { downloadQueue } from './download';
 
 const cronMap = {
@@ -13,26 +13,65 @@ const cronMap = {
   weekly: '0 * * * 7',
 };
 
+const prisma = new PrismaClient();
+
 const mangaWithLibrary = Prisma.validator<Prisma.MangaArgs>()({
-  include: { Library: true },
+  include: { library: true },
 });
 
 export type MangaWithLibrary = Prisma.MangaGetPayload<typeof mangaWithLibrary>;
 
 const checkChapters = async (manga: MangaWithLibrary) => {
   logger.info(`Checking for new chapters: ${manga.title}`);
-  const mangaDir = path.resolve(manga.Library.path, sanitizer(manga.title));
-  const missingChapters = await findMissingChapters(mangaDir, manga.source, manga.title);
+  const mangaDir = path.resolve(manga.library.path, sanitizer(manga.title));
+  const missingChapterFiles = await findMissingChapterFiles(mangaDir, manga.source, manga.title);
 
-  if (missingChapters.length === 0) {
-    logger.info(`There are no missing chapters for ${manga.title}`);
-  } else {
-    logger.info(`There are ${missingChapters.length} new chapters for ${manga.title}`);
+  if (missingChapterFiles.length === 0) {
+    logger.info(`There are no missing chapter files for ${manga.title}`);
+
+    const localChapters = await getChaptersFromLocal(mangaDir);
+
+    await prisma.chapter.deleteMany({
+      where: {
+        mangaId: manga.id,
+        index: {
+          notIn: localChapters.map((chapter) => chapter.index),
+        },
+        fileName: {
+          notIn: localChapters.map((chapter) => chapter.fileName),
+        },
+      },
+    });
+
+    const dbChapters = await prisma.chapter.findMany({
+      where: {
+        mangaId: manga.id,
+      },
+    });
+
+    const missingDbChapters = localChapters.filter(
+      (localChapter) => dbChapters.findIndex((dbChapter) => dbChapter.index === localChapter.index) < 0,
+    );
+
+    await Promise.all(
+      missingDbChapters.map(async (chapter) => {
+        return prisma.chapter.create({
+          data: {
+            ...chapter,
+            mangaId: manga.id,
+          },
+        });
+      }),
+    );
+
+    return;
   }
 
+  logger.info(`There are ${missingChapterFiles.length} new chapters for ${manga.title}`);
+
   await Promise.all(
-    missingChapters.map(async (chapterIndex) => {
-      const job = await downloadQueue.getJob(`${sanitizer(manga.title)}_${chapterIndex - 1}_download`);
+    missingChapterFiles.map(async (chapterIndex) => {
+      const job = await downloadQueue.getJob(`${sanitizer(manga.title)}_${chapterIndex}_download`);
       if (job) {
         await job.remove();
       }
@@ -40,16 +79,14 @@ const checkChapters = async (manga: MangaWithLibrary) => {
   );
 
   await downloadQueue.addBulk(
-    missingChapters.map((chapterIndex) => ({
+    missingChapterFiles.map((chapterIndex) => ({
       opts: {
-        jobId: `${sanitizer(manga.title)}_${chapterIndex - 1}_download`,
+        jobId: `${sanitizer(manga.title)}_${chapterIndex}_download`,
       },
-      name: `${sanitizer(manga.title)}_chapter#${chapterIndex - 1}_download`,
+      name: `${sanitizer(manga.title)}_chapter#${chapterIndex}_download`,
       data: {
-        chapterIndex: chapterIndex - 1,
-        source: manga.source,
-        title: manga.title,
-        libraryPath: manga.Library.path,
+        manga,
+        chapterIndex,
       },
     })),
   );
