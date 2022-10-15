@@ -8,19 +8,9 @@ import { getAvailableSources, getMangaDetail, removeManga, search } from '../../
 import { t } from '../trpc';
 
 export const mangaRouter = t.router({
-  query: t.procedure
-    .input(
-      z.object({
-        library: z.number(),
-      }),
-    )
-    .query(async ({ input, ctx }) => {
-      return ctx.prisma.manga.findMany({
-        where: {
-          libraryId: input.library,
-        },
-      });
-    }),
+  query: t.procedure.query(async ({ ctx }) => {
+    return ctx.prisma.manga.findMany();
+  }),
   sources: t.procedure.query(async () => {
     return getAvailableSources();
   }),

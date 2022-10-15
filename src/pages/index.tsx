@@ -13,17 +13,7 @@ export default function IndexPage() {
   const mangaRemove = trpc.manga.remove.useMutation();
   const router = useRouter();
 
-  const libraryId = libraryQuery.data?.id;
-
-  const mangaQuery = trpc.manga.query.useQuery(
-    {
-      library: libraryId!,
-    },
-    {
-      staleTime: Infinity,
-      enabled: libraryId !== undefined,
-    },
-  );
+  const mangaQuery = trpc.manga.query.useQuery();
 
   if (mangaQuery.isLoading || libraryQuery.isLoading) {
     return (
