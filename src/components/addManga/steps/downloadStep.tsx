@@ -5,7 +5,7 @@ import { sanitizer } from '../../../utils/sanitize';
 import { trpc } from '../../../utils/trpc';
 import type { FormType } from '../form';
 
-const availableIntervals = ['daily', 'hourly', 'weekly', 'minutely'];
+const availableIntervals = ['daily', 'hourly', 'weekly'];
 
 export function DownloadStep({ form }: { form: UseFormReturnType<FormType> }) {
   const libraryQuery = trpc.library.query.useQuery();
