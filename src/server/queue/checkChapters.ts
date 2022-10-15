@@ -30,24 +30,25 @@ const checkChapters = async (manga: MangaWithLibrary) => {
     logger.info(`There are no missing chapter files for ${manga.title}`);
 
     const localChapters = await getChaptersFromLocal(mangaDir);
-
-    await prisma.chapter.deleteMany({
-      where: {
-        mangaId: manga.id,
-        index: {
-          notIn: localChapters.map((chapter) => chapter.index),
-        },
-        fileName: {
-          notIn: localChapters.map((chapter) => chapter.fileName),
-        },
-      },
-    });
-
     const dbChapters = await prisma.chapter.findMany({
       where: {
         mangaId: manga.id,
       },
     });
+
+    const dbOnlyChapters = dbChapters.filter(
+      (dbChapter) => localChapters.findIndex((localChapter) => localChapter.index === dbChapter.index) < 0,
+    );
+
+    await Promise.all(
+      dbOnlyChapters.map(async (chapter) => {
+        await prisma.chapter.delete({
+          where: {
+            id: chapter.id,
+          },
+        });
+      }),
+    );
 
     const missingDbChapters = localChapters.filter(
       (localChapter) => dbChapters.findIndex((dbChapter) => dbChapter.index === localChapter.index) < 0,

@@ -85,7 +85,7 @@ export default function IndexPage() {
           return (
             <Grid.Col span="content" key={manga.id}>
               <MangaCard
-                interval={manga.interval}
+                badge={manga.source}
                 title={manga.title}
                 cover={manga.cover}
                 onRemove={() => handleRemove(manga.id, manga.title)}

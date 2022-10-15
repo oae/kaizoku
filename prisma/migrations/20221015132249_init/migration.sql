@@ -12,7 +12,7 @@ CREATE TABLE "Manga" (
     "interval" TEXT NOT NULL,
     "source" TEXT NOT NULL,
     "libraryId" INTEGER NOT NULL,
-    CONSTRAINT "Manga_libraryId_fkey" FOREIGN KEY ("libraryId") REFERENCES "Library" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Manga_libraryId_fkey" FOREIGN KEY ("libraryId") REFERENCES "Library" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -22,7 +22,7 @@ CREATE TABLE "Chapter" (
     "fileName" TEXT NOT NULL,
     "size" INTEGER NOT NULL,
     "mangaId" INTEGER NOT NULL,
-    CONSTRAINT "Chapter_mangaId_fkey" FOREIGN KEY ("mangaId") REFERENCES "Manga" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Chapter_mangaId_fkey" FOREIGN KEY ("mangaId") REFERENCES "Manga" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateIndex

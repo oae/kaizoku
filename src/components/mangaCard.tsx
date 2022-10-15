@@ -41,15 +41,15 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     marginTop: theme.spacing.xs,
   },
 
-  interval: {
-    textTransform: 'uppercase',
+  badge: {
+    cursor: 'pointer',
   },
 }));
 
 interface ArticleCardImageProps {
   cover: string;
   title: string;
-  interval: string;
+  badge: string;
   onRemove: () => void;
   onClick: () => void;
 }
@@ -76,7 +76,7 @@ const createRemoveModal = (title: string, onRemove: () => void) => {
   return openRemoveModal;
 };
 
-export function MangaCard({ cover, title, interval, onRemove, onClick }: ArticleCardImageProps) {
+export function MangaCard({ cover, title, badge, onRemove, onClick }: ArticleCardImageProps) {
   const { classes } = useStyles();
   const removeModal = createRemoveModal(title, onRemove);
 
@@ -104,8 +104,8 @@ export function MangaCard({ cover, title, interval, onRemove, onClick }: Article
         <IconX size={16} />
       </ActionIcon>
       <div>
-        <Badge color="teal" variant="filled" className={classes.interval} size="md">
-          {interval}
+        <Badge color="teal" variant="filled" className={classes.badge} size="xs">
+          {badge}
         </Badge>
         <Title order={3} className={classes.title}>
           {title}

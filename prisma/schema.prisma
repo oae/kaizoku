@@ -23,7 +23,7 @@ model Manga {
   cover     String
   interval  String
   source    String
-  library   Library   @relation(fields: [libraryId], references: [id])
+  library   Library   @relation(fields: [libraryId], references: [id], onDelete: Cascade)
   libraryId Int
   chapter   Chapter[]
 }
@@ -33,6 +33,6 @@ model Chapter {
   index    Int
   fileName String
   size     Int
-  manga    Manga  @relation(fields: [mangaId], references: [id])
+  manga    Manga  @relation(fields: [mangaId], references: [id], onDelete: Cascade)
   mangaId  Int
 }
