@@ -1,4 +1,4 @@
-import { ActionIcon, LoadingOverlay, TextInput } from '@mantine/core';
+import { ActionIcon, LoadingOverlay, Text, TextInput } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 import { getHotkeyHandler } from '@mantine/hooks';
 import { IconArrowRight, IconSearch } from '@tabler/icons';
@@ -13,6 +13,7 @@ export function SearchStep({ form }: { form: UseFormReturnType<FormType> }) {
 
   const [loading, setLoading] = useState(false);
   const [searchResult, setSearchResult] = useState<SearchResult>([]);
+  const [isEmptyResult, setIsEmptyResult] = useState(false);
 
   const handleSearch = async () => {
     form.validateField('query');
@@ -26,6 +27,8 @@ export function SearchStep({ form }: { form: UseFormReturnType<FormType> }) {
       source: form.values.source,
     });
     setLoading(false);
+
+    setIsEmptyResult(result.length === 0);
 
     if (result) {
       setSearchResult(result);
@@ -54,16 +57,20 @@ export function SearchStep({ form }: { form: UseFormReturnType<FormType> }) {
         {...form.getInputProps('query')}
       />
       <TextInput hidden {...form.getInputProps('mangaTitle')} />
-      <MangaSearchResult
-        items={searchResult}
-        onSelect={(selected) => {
-          if (selected) {
-            form.setFieldValue('mangaTitle', selected.title);
-          } else {
-            form.setFieldValue('mangaTitle', '');
-          }
-        }}
-      />
+      {isEmptyResult ? (
+        <Text color="red">No result found...</Text>
+      ) : (
+        <MangaSearchResult
+          items={searchResult}
+          onSelect={(selected) => {
+            if (selected) {
+              form.setFieldValue('mangaTitle', selected.title);
+            } else {
+              form.setFieldValue('mangaTitle', '');
+            }
+          }}
+        />
+      )}
     </>
   );
 }

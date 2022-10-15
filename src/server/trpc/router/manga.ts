@@ -69,7 +69,7 @@ export const mangaRouter = t.router({
         status: m.Metadata.Status,
         title: m.Name,
         cover: m.Metadata.Cover,
-      }));
+      })).filter((m) => !!m.title);
     }),
   remove: t.procedure
     .input(
