@@ -120,7 +120,6 @@ const collections = [
   { chapter: 133, label: 'Hunter x Hunter' },
   { chapter: 51, label: 'Noblesse' },
   { chapter: 24, label: 'Berserk' },
-  { chapter: 23, label: 'Berserk' },
 ];
 
 export function KaizokuNavbar() {
@@ -173,6 +172,7 @@ export function KaizokuNavbar() {
   ));
 
   if (libraryQuery.isLoading) {
+    // TODO: change with skeleton
     return <LoadingOverlay visible overlayBlur={2} />;
   }
 

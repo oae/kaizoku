@@ -1,8 +1,12 @@
-import { ActionIcon, Badge, Code, createStyles, Paper, Text, Title } from '@mantine/core';
+import { ActionIcon, Badge, Code, createStyles, Paper, Skeleton, Text, Title } from '@mantine/core';
 import { openConfirmModal } from '@mantine/modals';
 import { IconX } from '@tabler/icons';
 
 const useStyles = createStyles((theme, _params, getRef) => ({
+  skeletonCard: {
+    height: 350,
+    width: 210,
+  },
   card: {
     position: 'relative',
     height: 350,
@@ -75,6 +79,12 @@ const createRemoveModal = (title: string, onRemove: () => void) => {
 
   return openRemoveModal;
 };
+
+export function SkeletonMangaCard() {
+  const { classes } = useStyles();
+
+  return <Skeleton radius="md" className={classes.skeletonCard} />;
+}
 
 export function MangaCard({ cover, title, badge, onRemove, onClick }: ArticleCardImageProps) {
   const { classes } = useStyles();

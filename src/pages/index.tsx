@@ -1,11 +1,11 @@
-import { Code, Grid, LoadingOverlay, Text } from '@mantine/core';
+import { Code, Grid, Text } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconX } from '@tabler/icons';
 import { useRouter } from 'next/router';
 import { AddManga } from '../components/addManga';
 
 import { EmptyPrompt } from '../components/emptyPrompt';
-import { MangaCard } from '../components/mangaCard';
+import { MangaCard, SkeletonMangaCard } from '../components/mangaCard';
 import { trpc } from '../utils/trpc';
 
 export default function IndexPage() {
@@ -25,8 +25,21 @@ export default function IndexPage() {
     },
   );
 
-  if (libraryQuery.isLoading) {
-    return <LoadingOverlay visible overlayBlur={2} />;
+  if (mangaQuery.isLoading || libraryQuery.isLoading) {
+    return (
+      <Grid justify="flex-start">
+        {Array(10)
+          .fill(0)
+          .map((_, i) => {
+            return (
+              // eslint-disable-next-line react/no-array-index-key
+              <Grid.Col span="content" key={i}>
+                <SkeletonMangaCard />
+              </Grid.Col>
+            );
+          })}
+      </Grid>
+    );
   }
 
   if (!libraryQuery.data) {

@@ -16,6 +16,7 @@ export default function LibraryPage() {
   );
 
   if (mangaQuery.isLoading) {
+    // TODO: change with skeleton
     return <LoadingOverlay visible overlayBlur={2} />;
   }
 
