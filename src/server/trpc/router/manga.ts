@@ -78,6 +78,11 @@ export const mangaRouter = t.router({
           id,
         },
       });
+      await ctx.prisma.metadata.delete({
+        where: {
+          id: removed.metadataId,
+        },
+      });
       const mangaPath = path.resolve(removed.library.path, sanitizer(removed.title));
       await removeManga(mangaPath);
       await removeJob(removed.title);

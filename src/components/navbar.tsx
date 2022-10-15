@@ -11,6 +11,7 @@ import {
   Skeleton,
   Text,
   Timeline,
+  Tooltip,
 } from '@mantine/core';
 import {
   IconActivity,
@@ -119,9 +120,11 @@ function HistoryItem({ chapter }: { chapter: HistoryItemType }) {
         </Text>
       </Text>
       <SimpleGrid cols={2} mt={4}>
-        <Badge variant="light" size="xs" color="cyan" leftSection={<IconClock size={12} />}>
-          {time}
-        </Badge>
+        <Tooltip label={time}>
+          <Badge variant="light" size="xs" color="cyan" leftSection={<IconClock size={12} />}>
+            {time}
+          </Badge>
+        </Tooltip>
         <Badge variant="light" size="xs" color="violet" leftSection={<IconFileReport size={12} />}>
           {prettyBytes(chapter.size)}
         </Badge>
