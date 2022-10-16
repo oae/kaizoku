@@ -39,6 +39,9 @@ const useStyles = createStyles((theme) => ({
     paddingTop: 0,
     boxShadow: theme.shadows.md,
     fontSize: theme.fontSizes.xs,
+    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+      display: 'none',
+    },
   },
   history: {
     textDecoration: 'none',
