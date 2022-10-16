@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { Job, Queue, Worker } from 'bullmq';
+import { prisma } from '../db/client';
 import { downloadChapter, getChapterFromLocal } from '../utils/mangal';
 import { sendNotification } from '../utils/notification';
 import type { MangaWithLibrary } from './checkChapters';
@@ -8,8 +8,6 @@ export interface IDownloadWorkerData {
   manga: MangaWithLibrary;
   chapterIndex: number;
 }
-
-const prisma = new PrismaClient();
 
 export const downloadWorker = new Worker(
   'downloadQueue',

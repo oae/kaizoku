@@ -1,8 +1,9 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { Job, Queue, Worker } from 'bullmq';
 import path from 'path';
 import { logger } from '../../utils/logging';
 import { sanitizer } from '../../utils/sanitize';
+import { prisma } from '../db/client';
 import { findMissingChapterFiles, getChaptersFromLocal } from '../utils/mangal';
 import { downloadQueue } from './download';
 
@@ -12,8 +13,6 @@ const cronMap = {
   minutely: '* * * * *',
   weekly: '0 * * * 7',
 };
-
-const prisma = new PrismaClient();
 
 const mangaWithLibrary = Prisma.validator<Prisma.MangaArgs>()({
   include: { library: true },
