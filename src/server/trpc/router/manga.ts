@@ -35,9 +35,9 @@ export const mangaRouter = t.router({
       const { id } = input;
       return ctx.prisma.manga.findUniqueOrThrow({
         include: {
-          chapter: {
+          chapters: {
             orderBy: {
-              index: 'asc',
+              index: 'desc',
             },
           },
           library: true,
@@ -176,7 +176,7 @@ export const mangaRouter = t.router({
       orderBy: {
         createdAt: 'desc',
       },
-      take: 10,
+      take: 50,
       include: {
         manga: {
           include: {

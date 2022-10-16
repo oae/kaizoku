@@ -3891,6 +3891,11 @@ make-error@^1.1.1:
   resolved "https://registry.yarnpkg.com/make-error/-/make-error-1.3.6.tgz#2eb2e37ea9b67c4891f684a1394799af484cf7a2"
   integrity sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==
 
+mantine-datatable@^1.7.9:
+  version "1.7.9"
+  resolved "https://registry.yarnpkg.com/mantine-datatable/-/mantine-datatable-1.7.9.tgz#4e97fbfc67c2f8777ac2745199210bdd5c775cff"
+  integrity sha512-D4lkckNBPtTZl9cy9ONGZ1D/qFcOLvyfqcXI/6VM17o3VLyNQDEBzsikv1NVgTZKrtqDKLGonkLJAMuxVuekKA==
+
 map-obj@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"

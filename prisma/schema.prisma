@@ -26,7 +26,7 @@ model Manga {
   source     String
   library    Library   @relation(fields: [libraryId], references: [id], onDelete: Cascade)
   libraryId  Int
-  chapter    Chapter[]
+  chapters   Chapter[]
   metadata   Metadata  @relation(fields: [metadataId], references: [id])
   metadataId Int       @unique
 }

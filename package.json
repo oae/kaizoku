@@ -58,6 +58,7 @@
     "execa": "5.1.1",
     "express": "^4.18.1",
     "json-diff": "^0.9.0",
+    "mantine-datatable": "^1.7.9",
     "meow": "^9.0.0",
     "moment": "^2.29.4",
     "next": "12.3.1",

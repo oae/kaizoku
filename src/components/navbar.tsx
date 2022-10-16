@@ -7,6 +7,7 @@ import {
   Image,
   MantineColor,
   Navbar,
+  ScrollArea,
   SimpleGrid,
   Skeleton,
   Text,
@@ -37,7 +38,6 @@ const useStyles = createStyles((theme) => ({
   navbar: {
     paddingTop: 0,
     boxShadow: theme.shadows.md,
-    overflowY: 'auto',
     fontSize: theme.fontSizes.xs,
   },
   history: {
@@ -261,20 +261,20 @@ export function KaizokuNavbar() {
         {activityQuery.data && <Activity data={activityQuery.data} />}
       </Navbar.Section>
 
-      <Navbar.Section>
-        <Divider
-          mb="md"
-          labelPosition="left"
-          mt="md"
-          variant="solid"
-          label={
-            <Text color="dimmed" size="md" weight={500}>
-              Latest Downloads
-            </Text>
-          }
-        />
+      <Divider
+        mb="md"
+        labelPosition="left"
+        mt="md"
+        variant="solid"
+        label={
+          <Text color="dimmed" size="md" weight={500}>
+            Latest Downloads
+          </Text>
+        }
+      />
+      <Navbar.Section grow component={ScrollArea}>
         {historyQuery.isLoading && <NavBarSkeleton />}
-        {historyQuery.data && <History data={historyQuery.data} />}
+        <Box mx={8}>{historyQuery.data && <History data={historyQuery.data} />}</Box>
       </Navbar.Section>
     </Navbar>
   );
