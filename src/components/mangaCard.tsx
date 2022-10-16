@@ -1,6 +1,7 @@
 import { ActionIcon, Badge, Code, createStyles, Paper, Skeleton, Text, Title } from '@mantine/core';
 import { openConfirmModal } from '@mantine/modals';
 import { IconX } from '@tabler/icons';
+import { useMemo } from 'react';
 
 const useStyles = createStyles((theme, _params, getRef) => ({
   skeletonCard: {
@@ -58,24 +59,27 @@ interface ArticleCardImageProps {
   onClick: () => void;
 }
 
-const createRemoveModal = (title: string, onRemove: () => void) => {
-  const openRemoveModal = () =>
-    openConfirmModal({
-      title: `Remove ${title}?`,
-      centered: true,
-      children: (
-        <Text size="sm">
-          Are you sure you want to remove
-          <Code className="text-base font-bold" color="red">
-            {title}
-          </Code>
-          ? This action is destructive and all downloaded files will be removed
-        </Text>
-      ),
-      labels: { confirm: 'Remove', cancel: 'Cancel' },
-      confirmProps: { color: 'red' },
-      onConfirm: onRemove,
-    });
+const useRemoveModal = (title: string, onRemove: () => void) => {
+  const openRemoveModal = useMemo(
+    () => () =>
+      openConfirmModal({
+        title: `Remove ${title}?`,
+        centered: true,
+        children: (
+          <Text size="sm">
+            Are you sure you want to remove
+            <Code className="text-base font-bold" color="red">
+              {title}
+            </Code>
+            ? This action is destructive and all downloaded files will be removed
+          </Text>
+        ),
+        labels: { confirm: 'Remove', cancel: 'Cancel' },
+        confirmProps: { color: 'red' },
+        onConfirm: onRemove,
+      }),
+    [onRemove, title],
+  );
 
   return openRemoveModal;
 };
@@ -88,7 +92,7 @@ export function SkeletonMangaCard() {
 
 export function MangaCard({ cover, title, badge, onRemove, onClick }: ArticleCardImageProps) {
   const { classes } = useStyles();
-  const removeModal = createRemoveModal(title, onRemove);
+  const removeModal = useRemoveModal(title, onRemove);
 
   return (
     <Paper

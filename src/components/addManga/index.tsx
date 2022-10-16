@@ -1,6 +1,7 @@
 import { createStyles, Paper, Tooltip } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { IconPlus } from '@tabler/icons';
+import { useMemo } from 'react';
 import { AddMangaForm } from './form';
 
 const useStyles = createStyles((theme) => ({
@@ -22,33 +23,41 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function AddManga({ onAdd }: { onAdd: () => void }) {
-  const { classes } = useStyles();
+export const useAddMangaModal = () => {
   const modals = useModals();
 
-  const openCreateModal = () => {
-    const id = modals.openModal({
-      overflow: 'inside',
-      trapFocus: true,
-      size: 'xl',
-      closeOnClickOutside: false,
-      closeOnEscape: true,
-      title: 'Add a new manga',
-      centered: true,
-      children: (
-        <AddMangaForm
-          onClose={() => {
-            modals.closeModal(id);
-            onAdd();
-          }}
-        />
-      ),
-    });
-  };
+  return useMemo(
+    () => (onAdd: () => void) => {
+      const id = modals.openModal({
+        overflow: 'inside',
+        trapFocus: true,
+        size: 'xl',
+        closeOnClickOutside: false,
+        closeOnEscape: true,
+        title: 'Add a new manga',
+        centered: true,
+        children: (
+          <AddMangaForm
+            onClose={() => {
+              modals.closeModal(id);
+              onAdd();
+            }}
+          />
+        ),
+      });
+    },
+    [modals],
+  );
+};
+
+export function AddManga({ onAdd }: { onAdd: () => void }) {
+  const { classes } = useStyles();
+
+  const addMangaModal = useAddMangaModal();
 
   return (
     <Tooltip label="Add a new manga" position="bottom">
-      <Paper shadow="lg" p="md" radius="md" className={classes.card} onClick={openCreateModal}>
+      <Paper shadow="lg" p="md" radius="md" className={classes.card} onClick={() => addMangaModal(onAdd)}>
         <IconPlus color="darkblue" opacity={0.5} size={96} />
       </Paper>
     </Tooltip>

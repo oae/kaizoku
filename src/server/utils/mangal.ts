@@ -178,6 +178,7 @@ export const getChapterFromLocal = async (chapterFile: string) => {
   return {
     index: getChapterIndexFromFile(chapterFile)!,
     size: stat.size,
+    createdAt: stat.birthtime,
     fileName: path.basename(chapterFile),
   };
 };

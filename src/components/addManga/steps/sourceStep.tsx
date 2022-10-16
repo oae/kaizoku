@@ -20,6 +20,7 @@ export function SourceStep({ form }: { form: UseFormReturnType<FormType> }) {
   return (
     <Box>
       <Select
+        data-autofocus
         data={selectData || []}
         label="Available sources"
         placeholder="Select a source"

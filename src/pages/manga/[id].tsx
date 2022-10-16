@@ -1,4 +1,4 @@
-import { Grid, LoadingOverlay } from '@mantine/core';
+import { Box, LoadingOverlay } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { ChaptersTable } from '../../components/chaptersTable';
 import { MangaDetail } from '../../components/mangaDetail';
@@ -28,13 +28,13 @@ export default function LibraryPage() {
   }
 
   return (
-    <Grid gutter={5}>
-      <Grid.Col span={12}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 88px)' }}>
+      <Box sx={{ flexBasis: 'fit-content' }}>
         <MangaDetail manga={mangaQuery.data} />
-      </Grid.Col>
-      <Grid.Col span={12}>
+      </Box>
+      <Box sx={{ marginTop: 20, overflow: 'hidden', flex: 1 }}>
         <ChaptersTable manga={mangaQuery.data} />
-      </Grid.Col>
-    </Grid>
+      </Box>
+    </Box>
   );
 }

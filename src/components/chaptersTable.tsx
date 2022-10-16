@@ -1,12 +1,11 @@
-import { Box } from '@mantine/core';
 import { Prisma } from '@prisma/client';
 import { DataTable } from 'mantine-datatable';
 
 import dayjs from 'dayjs';
 
+import { showNotification } from '@mantine/notifications';
 import prettyBytes from 'pretty-bytes';
 import { useEffect, useState } from 'react';
-import { showNotification } from '@mantine/notifications';
 import { sanitizer } from '../utils/sanitize';
 
 const mangaWithMetadataAndChaptersLibrary = Prisma.validator<Prisma.MangaArgs>()({
@@ -28,36 +27,34 @@ export function ChaptersTable({ manga }: { manga: MangaWithMetadataAndChaptersLi
   }, [manga.chapters, page]);
 
   return (
-    <Box sx={{ height: 700, marginTop: 30 }}>
-      <DataTable
-        withBorder
-        withColumnBorders
-        striped
-        highlightOnHover
-        records={records}
-        recordsPerPage={PAGE_SIZE}
-        page={page}
-        totalRecords={manga.chapters.length}
-        onPageChange={(p) => setPage(p)}
-        columns={[
-          { accessor: 'Download Date', render: ({ createdAt }) => dayjs(createdAt).fromNow() },
-          { accessor: 'Chapter', render: ({ index }) => `No #${index + 1}` },
+    <DataTable
+      withBorder
+      withColumnBorders
+      striped
+      highlightOnHover
+      records={records}
+      recordsPerPage={PAGE_SIZE}
+      page={page}
+      totalRecords={manga.chapters.length}
+      onPageChange={(p) => setPage(p)}
+      columns={[
+        { accessor: 'Download Date', render: ({ createdAt }) => dayjs(createdAt).fromNow() },
+        { accessor: 'Chapter', render: ({ index }) => `No #${index + 1}` },
+        {
+          accessor: 'File',
+          render: ({ fileName }) => `${manga.library.path}/${sanitizer(manga.title)}/${fileName}`,
+        },
+        { accessor: 'Size', render: ({ size }) => prettyBytes(size) },
+      ]}
+      rowContextMenu={{
+        items: () => [
           {
-            accessor: 'File',
-            render: ({ fileName }) => `${manga.library.path}/${sanitizer(manga.title)}/${fileName}`,
+            key: 'download',
+            title: 'Download Again',
+            onClick: () => showNotification({ message: `Chapter queued for the download` }),
           },
-          { accessor: 'Size', render: ({ size }) => prettyBytes(size) },
-        ]}
-        rowContextMenu={{
-          items: () => [
-            {
-              key: 'download',
-              title: 'Download Again',
-              onClick: () => showNotification({ message: `Chapter queued for the download` }),
-            },
-          ],
-        }}
-      />
-    </Box>
+        ],
+      }}
+    />
   );
 }
