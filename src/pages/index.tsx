@@ -1,4 +1,4 @@
-import { Code, Grid, LoadingOverlay, Text } from '@mantine/core';
+import { Code, Grid, LoadingOverlay, ScrollArea, Text } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconX } from '@tabler/icons';
 import { useRouter } from 'next/router';
@@ -79,28 +79,30 @@ export default function IndexPage() {
   };
 
   return (
-    <Grid justify="flex-start">
-      <Grid.Col span="content">
-        <AddManga
-          onAdd={() => {
-            mangaQuery.refetch();
-          }}
-        />
-      </Grid.Col>
-      {mangaQuery.data &&
-        mangaQuery.data.map((manga) => {
-          return (
-            <Grid.Col span="content" key={manga.id}>
-              <MangaCard
-                badge={manga.source}
-                title={manga.title}
-                cover={manga.metadata.cover}
-                onRemove={() => handleRemove(manga.id, manga.title)}
-                onClick={() => router.push(`/manga/${manga.id}`)}
-              />
-            </Grid.Col>
-          );
-        })}
-    </Grid>
+    <ScrollArea sx={{ height: 'calc(100vh - 88px)' }}>
+      <Grid m={12} justify="flex-start">
+        <Grid.Col span="content">
+          <AddManga
+            onAdd={() => {
+              mangaQuery.refetch();
+            }}
+          />
+        </Grid.Col>
+        {mangaQuery.data &&
+          mangaQuery.data.map((manga) => {
+            return (
+              <Grid.Col span="content" key={manga.id}>
+                <MangaCard
+                  badge={manga.source}
+                  title={manga.title}
+                  cover={manga.metadata.cover}
+                  onRemove={() => handleRemove(manga.id, manga.title)}
+                  onClick={() => router.push(`/manga/${manga.id}`)}
+                />
+              </Grid.Col>
+            );
+          })}
+      </Grid>
+    </ScrollArea>
   );
 }

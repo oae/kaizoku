@@ -36,8 +36,9 @@ export function SearchControl() {
         group: m.source,
         icon: (
           <Image
+            radius="sm"
             withPlaceholder
-            placeholder={<Image src="/cover-not-found.jpg" alt={m.title} width={60} height={100} />}
+            placeholder={<Image radius="sm" src="/cover-not-found.jpg" alt={m.title} width={60} height={100} />}
             src={m.metadata.cover}
             width={60}
             height={100}
@@ -52,7 +53,7 @@ export function SearchControl() {
           title: 'Add Manga',
           group: ' ',
           description: 'You can add new manga from several sources',
-          icon: <Image withPlaceholder src="/new-manga.png" width={60} height={100} />,
+          icon: <Image radius="sm" src="/new-manga.png" width={60} height={100} />,
           closeOnTrigger: true,
           onTrigger: () => addMangaModal(() => mangaQuery.refetch()),
         },

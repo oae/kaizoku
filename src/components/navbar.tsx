@@ -31,6 +31,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { ReactNode, useEffect, useState } from 'react';
 import { AppRouter } from '../server/trpc/router';
 import { trpc } from '../utils/trpc';
+import { MadeWith } from './madeWith';
 
 dayjs.extend(relativeTime);
 
@@ -248,7 +249,7 @@ export function KaizokuNavbar() {
   }
 
   return (
-    <Navbar width={{ sm: 300 }} p="md" className={classes.navbar} fixed>
+    <Navbar width={{ sm: 300 }} p="md" pb={0} className={classes.navbar} fixed>
       <Navbar.Section>
         <Divider
           mb="md"
@@ -278,6 +279,10 @@ export function KaizokuNavbar() {
       <Navbar.Section grow component={ScrollArea}>
         {historyQuery.isLoading && <NavBarSkeleton />}
         <Box mx={8}>{historyQuery.data && <History data={historyQuery.data} />}</Box>
+      </Navbar.Section>
+      <Divider mt="sm" variant="dotted" />
+      <Navbar.Section sx={{ display: 'flex', justifyContent: 'center' }}>
+        <MadeWith minimized={false} />
       </Navbar.Section>
     </Navbar>
   );

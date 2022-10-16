@@ -6,7 +6,6 @@ import dayjs from 'dayjs';
 import { showNotification } from '@mantine/notifications';
 import prettyBytes from 'pretty-bytes';
 import { useEffect, useState } from 'react';
-import { sanitizer } from '../utils/sanitize';
 
 const mangaWithMetadataAndChaptersLibrary = Prisma.validator<Prisma.MangaArgs>()({
   include: { metadata: true, chapters: true, library: true },
@@ -38,13 +37,14 @@ export function ChaptersTable({ manga }: { manga: MangaWithMetadataAndChaptersLi
       totalRecords={manga.chapters.length}
       onPageChange={(p) => setPage(p)}
       columns={[
-        { accessor: 'Download Date', render: ({ createdAt }) => dayjs(createdAt).fromNow() },
-        { accessor: 'Chapter', render: ({ index }) => `No #${index + 1}` },
+        { accessor: 'index', title: '#', render: ({ index }) => `${index + 1}` },
+        { accessor: 'createdAt', title: 'Download Date', render: ({ createdAt }) => dayjs(createdAt).fromNow() },
         {
-          accessor: 'File',
-          render: ({ fileName }) => `${manga.library.path}/${sanitizer(manga.title)}/${fileName}`,
+          accessor: 'fileName',
+          title: 'Chapter Name',
+          render: ({ fileName }) => `${fileName}`,
         },
-        { accessor: 'Size', render: ({ size }) => prettyBytes(size) },
+        { accessor: 'size', title: 'File Size', render: ({ size }) => prettyBytes(size) },
       ]}
       rowContextMenu={{
         items: () => [

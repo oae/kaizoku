@@ -1,6 +1,8 @@
 import { ActionIcon, Badge, Code, createStyles, Paper, Skeleton, Text, Title } from '@mantine/core';
 import { openConfirmModal } from '@mantine/modals';
 import { IconX } from '@tabler/icons';
+import stc from 'string-to-color';
+import { contrastColor } from 'contrast-color';
 import { useMemo } from 'react';
 
 const useStyles = createStyles((theme, _params, getRef) => ({
@@ -118,7 +120,11 @@ export function MangaCard({ cover, title, badge, onRemove, onClick }: ArticleCar
         <IconX size={16} />
       </ActionIcon>
       <div>
-        <Badge color="teal" variant="filled" className={classes.badge} size="xs">
+        <Badge
+          sx={{ backgroundColor: stc(badge), color: contrastColor({ bgColor: stc(badge) }) }}
+          className={classes.badge}
+          size="xs"
+        >
           {badge}
         </Badge>
         <Title order={3} className={classes.title}>
