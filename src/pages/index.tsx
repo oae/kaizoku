@@ -97,7 +97,10 @@ export default function IndexPage() {
                   title={manga.title}
                   cover={manga.metadata.cover}
                   onRemove={() => handleRemove(manga.id, manga.title)}
-                  onClick={() => router.push(`/manga/${manga.id}`)}
+                  onClick={() => {
+                    mangaQuery.refetch();
+                    router.push(`/manga/${manga.id}`);
+                  }}
                 />
               </Grid.Col>
             );

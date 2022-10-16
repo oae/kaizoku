@@ -33,6 +33,11 @@ export function ChaptersTable({ manga }: { manga: MangaWithMetadataAndChaptersLi
       highlightOnHover
       records={records}
       recordsPerPage={PAGE_SIZE}
+      sx={(themes) => ({
+        '*': {
+          fontSize: `${themes.fontSizes.xs}px !important`,
+        },
+      })}
       page={page}
       totalRecords={manga.chapters.length}
       onPageChange={(p) => setPage(p)}

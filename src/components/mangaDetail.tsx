@@ -1,8 +1,21 @@
-import { Badge, createStyles, Divider, Grid, Group, Image, Text, Title, Tooltip } from '@mantine/core';
+import { Badge, createStyles, Divider, Grid, Group, Image, Spoiler, Text, Title } from '@mantine/core';
+import { NextLink } from '@mantine/next';
 import { Prisma } from '@prisma/client';
+import { IconExternalLink } from '@tabler/icons';
 
-const useStyles = createStyles((_theme) => ({
-  root: {},
+const useStyles = createStyles((theme) => ({
+  root: {
+    wordBreak: 'break-word',
+  },
+  outsideLink: {
+    textDecoration: 'none',
+    fontWeight: 600,
+    color: theme.colors.blue[7],
+    '&:hover': {
+      color: theme.colors.indigo[7],
+    },
+    fontSize: 24,
+  },
   placeHolder: {
     alignItems: 'start !important',
     justifyContent: 'flex-start !important',
@@ -19,83 +32,97 @@ export function MangaDetail({ manga }: { manga: MangaWithMetadataAndChapters }) 
   const { classes } = useStyles();
 
   return (
-    <Grid className={classes.root}>
-      <Grid.Col span="auto" style={{ maxWidth: 300 }}>
-        <Image
-          classNames={{
-            placeholder: classes.placeHolder,
-          }}
-          sx={(theme) => ({
-            width: 210,
-            boxShadow: theme.shadows.xl,
-          })}
-          withPlaceholder
-          placeholder={
-            <Image
-              sx={(theme) => ({
-                width: 210,
-                boxShadow: theme.shadows.xl,
-              })}
-              src="/cover-not-found.jpg"
-              alt={manga.title}
-            />
-          }
-          src={manga.metadata.cover}
-        />
-      </Grid.Col>
-      <Grid.Col span="auto">
-        <Divider mb="xs" labelPosition="left" label={<Title order={3}>{manga.title}</Title>} />
-        <Group spacing="xs">
-          {manga.metadata.synonyms.map((synonym) => (
-            <Tooltip label={synonym} key={synonym}>
-              <div style={{ maxWidth: 100 }}>
-                <Badge color="blue" variant="filled" size="sm" fullWidth>
-                  {synonym}
-                </Badge>
-              </div>
-            </Tooltip>
-          ))}
-        </Group>
-        <Divider variant="dashed" my="xs" label="Status" />
-        <Badge color="cyan" variant="filled" size="sm">
-          {manga.metadata.status}
-        </Badge>
-
-        <Divider variant="dashed" my="xs" label="Chapters" />
-        <Text>
-          There are &nbsp;
-          <Badge color="teal" variant="outline" size="lg">
-            {manga.chapters.length}
+    <Spoiler
+      maxHeight={460}
+      styles={{
+        control: {
+          width: '100%',
+          textDecoration: 'none !important',
+          fontWeight: 'bolder',
+        },
+      }}
+      showLabel={<Divider labelPosition="center" size="sm" variant="solid" label="Show More" />}
+      hideLabel={<Divider labelPosition="center" size="sm" variant="solid" label="Hide" />}
+    >
+      <Grid className={classes.root}>
+        <Grid.Col span="auto" style={{ maxWidth: 300 }}>
+          <Image
+            classNames={{
+              placeholder: classes.placeHolder,
+            }}
+            sx={(theme) => ({
+              width: 210,
+              boxShadow: theme.shadows.xl,
+            })}
+            withPlaceholder
+            placeholder={
+              <Image
+                sx={(theme) => ({
+                  width: 210,
+                  boxShadow: theme.shadows.xl,
+                })}
+                src="/cover-not-found.jpg"
+                alt={manga.title}
+              />
+            }
+            src={manga.metadata.cover}
+          />
+        </Grid.Col>
+        <Grid.Col span="auto">
+          <Divider
+            mb="xs"
+            labelPosition="left"
+            label={
+              manga.metadata.urls.find((url) => url.includes('anilist')) ? (
+                <NextLink
+                  target="_blank"
+                  className={classes.outsideLink}
+                  href={manga.metadata.urls.find((url) => url.includes('anilist')) || '#'}
+                >
+                  <Text mr={5} inline component="span">
+                    {manga.title}
+                  </Text>
+                  <IconExternalLink size={18} />
+                </NextLink>
+              ) : (
+                <Title sx={{ fontSize: 24 }} order={3}>
+                  {manga.title}
+                </Title>
+              )
+            }
+          />
+          <Group spacing={0}>
+            {manga.metadata.synonyms.map((synonym) => (
+              <Badge key={synonym} color="gray" variant="filled" size="xs" m={2}>
+                {synonym}
+              </Badge>
+            ))}
+          </Group>
+          <Divider sx={{ fontWeight: 'bolder' }} variant="dashed" my="xs" label="Status" />
+          <Badge color="cyan" variant="filled" size="sm">
+            {manga.metadata.status}
           </Badge>
-          &nbsp; chapters
-        </Text>
-        <Divider variant="dashed" my="xs" label="Summary" />
-        <Text size="sm">{manga.metadata.summary || 'No summary...'}</Text>
-        <Divider variant="dashed" my="xs" label="Genres" />
-        <Group spacing="xs">
-          {manga.metadata.genres.map((genre) => (
-            <Tooltip label={genre} key={genre}>
-              <div style={{ maxWidth: 100 }}>
-                <Badge color="indigo" variant="light" size="xs" fullWidth>
-                  {genre}
-                </Badge>
-              </div>
-            </Tooltip>
-          ))}
-        </Group>
-        <Divider variant="dashed" my="xs" label="Tags" />
-        <Group spacing="xs">
-          {manga.metadata.tags.map((tag) => (
-            <Tooltip label={tag} key={tag}>
-              <div style={{ maxWidth: 100 }}>
-                <Badge color="violet" variant="light" size="xs" fullWidth>
-                  {tag}
-                </Badge>
-              </div>
-            </Tooltip>
-          ))}
-        </Group>
-      </Grid.Col>
-    </Grid>
+
+          <Divider sx={{ fontWeight: 'bolder' }} variant="dashed" my="xs" label="Summary" />
+          <Text size="xs">{manga.metadata.summary || 'No summary...'}</Text>
+          <Divider sx={{ fontWeight: 'bolder' }} variant="dashed" my="xs" label="Genres" />
+          <Group spacing={0}>
+            {manga.metadata.genres.map((genre) => (
+              <Badge key={genre} color="indigo" variant="light" size="xs" m={2}>
+                {genre}
+              </Badge>
+            ))}
+          </Group>
+          <Divider sx={{ fontWeight: 'bolder' }} variant="dashed" my="xs" label="Tags" />
+          <Group spacing={0}>
+            {manga.metadata.tags.map((tag) => (
+              <Badge key={tag} color="violet" variant="light" size="xs" m={2}>
+                {tag}
+              </Badge>
+            ))}
+          </Group>
+        </Grid.Col>
+      </Grid>
+    </Spoiler>
   );
 }

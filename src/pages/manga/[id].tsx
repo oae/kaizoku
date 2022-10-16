@@ -4,7 +4,7 @@ import { ChaptersTable } from '../../components/chaptersTable';
 import { MangaDetail } from '../../components/mangaDetail';
 import { trpc } from '../../utils/trpc';
 
-export default function LibraryPage() {
+export default function MangaPage() {
   const router = useRouter();
   const { id } = router.query;
   const mangaQuery = trpc.manga.get.useQuery(
