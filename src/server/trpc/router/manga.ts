@@ -66,10 +66,11 @@ export const mangaRouter = t.router({
     .input(
       z.object({
         id: z.number(),
+        shouldRemoveFiles: z.boolean(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { id } = input;
+      const { id, shouldRemoveFiles } = input;
       const removed = await ctx.prisma.manga.delete({
         include: {
           library: true,
@@ -83,8 +84,10 @@ export const mangaRouter = t.router({
           id: removed.metadataId,
         },
       });
-      const mangaPath = path.resolve(removed.library.path, sanitizer(removed.title));
-      await removeManga(mangaPath);
+      if (shouldRemoveFiles === true) {
+        const mangaPath = path.resolve(removed.library.path, sanitizer(removed.title));
+        await removeManga(mangaPath);
+      }
       await removeJob(removed.title);
     }),
   add: t.procedure

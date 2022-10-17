@@ -46,10 +46,11 @@ export default function IndexPage() {
     );
   }
 
-  const handleRemove = async (id: number, title: string) => {
+  const handleRemove = async (id: number, title: string, shouldRemoveFiles: boolean) => {
     try {
       await mangaRemove.mutateAsync({
         id,
+        shouldRemoveFiles,
       });
       showNotification({
         icon: <IconCheck size={18} />,
@@ -96,11 +97,8 @@ export default function IndexPage() {
                   badge={manga.source}
                   title={manga.title}
                   cover={manga.metadata.cover}
-                  onRemove={() => handleRemove(manga.id, manga.title)}
-                  onClick={() => {
-                    mangaQuery.refetch();
-                    router.push(`/manga/${manga.id}`);
-                  }}
+                  onRemove={(shouldRemoveFiles: boolean) => handleRemove(manga.id, manga.title, shouldRemoveFiles)}
+                  onClick={() => router.push(`/manga/${manga.id}`)}
                 />
               </Grid.Col>
             );

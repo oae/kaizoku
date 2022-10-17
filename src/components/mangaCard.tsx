@@ -1,9 +1,22 @@
-import { ActionIcon, Badge, Code, createStyles, Paper, Skeleton, Text, Title } from '@mantine/core';
-import { openConfirmModal } from '@mantine/modals';
+import {
+  ActionIcon,
+  Alert,
+  Badge,
+  Box,
+  Button,
+  Checkbox,
+  Code,
+  createStyles,
+  Paper,
+  Skeleton,
+  Text,
+  Title,
+} from '@mantine/core';
+import { useModals } from '@mantine/modals';
 import { IconX } from '@tabler/icons';
-import stc from 'string-to-color';
 import { contrastColor } from 'contrast-color';
-import { useMemo } from 'react';
+import { useState } from 'react';
+import stc from 'string-to-color';
 
 const useStyles = createStyles((theme, _params, getRef) => ({
   skeletonCard: {
@@ -57,31 +70,78 @@ interface ArticleCardImageProps {
   cover: string;
   title: string;
   badge: string;
-  onRemove: () => void;
+  onRemove: (shouldRemoveFiles: boolean) => void;
   onClick: () => void;
 }
 
-const useRemoveModal = (title: string, onRemove: () => void) => {
-  const openRemoveModal = useMemo(
-    () => () =>
-      openConfirmModal({
-        title: `Remove ${title}?`,
-        centered: true,
-        children: (
-          <Text size="sm">
-            Are you sure you want to remove
-            <Code className="text-base font-bold" color="red">
-              {title}
-            </Code>
-            ? This action is destructive and all downloaded files will be removed
-          </Text>
-        ),
-        labels: { confirm: 'Remove', cancel: 'Cancel' },
-        confirmProps: { color: 'red' },
-        onConfirm: onRemove,
-      }),
-    [onRemove, title],
+function RemoveModalContent({
+  title,
+  onRemove,
+  onClose,
+}: {
+  title: string;
+  onRemove: (shouldRemoveFiles: boolean) => void;
+  onClose: () => void;
+}) {
+  const [shouldRemoveFiles, setShouldRemoveFiles] = useState(false);
+  return (
+    <>
+      <Text mb={4} size="sm">
+        Are you sure you want to remove
+        <Code className="text-base font-bold" color="red">
+          {title}
+        </Code>
+        ?
+      </Text>
+      <Alert
+        icon={
+          <Checkbox
+            checked={shouldRemoveFiles}
+            color="red"
+            onChange={(event) => setShouldRemoveFiles(event.currentTarget.checked)}
+          />
+        }
+        title="Remove files?"
+        color="red"
+      >
+        This action is destructive and all downloaded files will be removed
+      </Alert>
+      <Box
+        sx={(theme) => ({
+          display: 'flex',
+          gap: theme.spacing.xs,
+          justifyContent: 'end',
+          marginTop: theme.spacing.md,
+        })}
+      >
+        <Button variant="default" color="dark" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button
+          variant="filled"
+          color="red"
+          onClick={() => {
+            onRemove(shouldRemoveFiles);
+            onClose();
+          }}
+        >
+          Remove
+        </Button>
+      </Box>
+    </>
   );
+}
+
+const useRemoveModal = (title: string, onRemove: (shouldRemoveFiles: boolean) => void) => {
+  const modals = useModals();
+
+  const openRemoveModal = () => {
+    const id = modals.openModal({
+      title: `Remove ${title}?`,
+      centered: true,
+      children: <RemoveModalContent title={title} onRemove={onRemove} onClose={() => modals.closeModal(id)} />,
+    });
+  };
 
   return openRemoveModal;
 };
