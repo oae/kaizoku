@@ -20,7 +20,16 @@ export const libraryRouter = t.router({
           path: libraryPath,
         },
       });
-      await createLibrary(libraryPath);
+      try {
+        await createLibrary(libraryPath);
+      } catch (err) {
+        await ctx.prisma.library.delete({
+          where: {
+            id: library.id,
+          },
+        });
+        throw err;
+      }
       return library;
     }),
 });

@@ -5,10 +5,23 @@ volumes:
 
 
 services:
+  app:
+    container_name: kaizoku
+    build: .
+    environment:
+      DATABASE_URL: postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@db:${DATABASE_PORT}/${DATABASE_SCHEMA}
+      REDIS_HOST: redis
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${APP_PORT}:3000"
   redis:
     image: redis:7-alpine
     ports:
-      - 6379:6379
+      - "${REDIS_PORT}:6379"
   db:
     image: postgres:alpine
     restart: unless-stopped

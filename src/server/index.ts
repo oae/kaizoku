@@ -11,7 +11,7 @@ import { notificationQueue } from './queue/notify';
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
-const port = process.env.PORT || 3000;
+const port = process.env.APP_PORT || 3000;
 
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/bull/queues');

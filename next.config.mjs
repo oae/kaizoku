@@ -1,6 +1,4 @@
 import withBundleAnalyzer from '@next/bundle-analyzer';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { env } from './src/env/server.mjs';
 
 const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',

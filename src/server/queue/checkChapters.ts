@@ -94,8 +94,8 @@ const checkChapters = async (manga: MangaWithLibraryAndMetadata) => {
 
 export const checkChaptersQueue = new Queue('checkChaptersQueue', {
   connection: {
-    host: 'localhost',
-    port: 6379,
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT || '6379', 10),
   },
 });
 
@@ -109,8 +109,8 @@ export const checkChaptersWorker = new Worker(
   {
     concurrency: 5,
     connection: {
-      host: 'localhost',
-      port: 6379,
+      host: process.env.REDIS_HOST,
+      port: parseInt(process.env.REDIS_PORT || '6379', 10),
     },
   },
 );
