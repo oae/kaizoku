@@ -1,6 +1,8 @@
 import { Badge, createStyles, Divider, Grid, Group, Image, Spoiler, Text, Title } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { Prisma } from '@prisma/client';
+import { contrastColor } from 'contrast-color';
+import stc from 'string-to-color';
 import { IconExternalLink } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
@@ -97,6 +99,34 @@ export function MangaDetail({ manga }: { manga: MangaWithMetadataAndChapters }) 
                 {synonym}
               </Badge>
             ))}
+          </Group>
+          <Divider sx={{ fontWeight: 'bolder' }} variant="dashed" my="xs" label="Download" />
+          <Group
+            spacing={5}
+            sx={(theme) => ({
+              fontSize: theme.fontSizes.xs,
+            })}
+          >
+            Checking{' '}
+            <Badge
+              component="span"
+              color="cyan"
+              variant="filled"
+              size="xs"
+              sx={{ backgroundColor: stc(manga.interval), color: contrastColor({ bgColor: stc(manga.interval) }) }}
+            >
+              {manga.interval}
+            </Badge>{' '}
+            from{' '}
+            <Badge
+              component="span"
+              color="cyan"
+              variant="filled"
+              size="xs"
+              sx={{ backgroundColor: stc(manga.source), color: contrastColor({ bgColor: stc(manga.source) }) }}
+            >
+              {manga.source}
+            </Badge>
           </Group>
           <Divider sx={{ fontWeight: 'bolder' }} variant="dashed" my="xs" label="Status" />
           <Badge color="cyan" variant="filled" size="sm">
