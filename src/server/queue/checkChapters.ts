@@ -14,13 +14,13 @@ const cronMap = {
   weekly: '0 * * * 7',
 };
 
-const mangaWithLibrary = Prisma.validator<Prisma.MangaArgs>()({
-  include: { library: true },
+const mangaWithLibraryAndMetadata = Prisma.validator<Prisma.MangaArgs>()({
+  include: { library: true, metadata: true },
 });
 
-export type MangaWithLibrary = Prisma.MangaGetPayload<typeof mangaWithLibrary>;
+export type MangaWithLibraryAndMetadata = Prisma.MangaGetPayload<typeof mangaWithLibraryAndMetadata>;
 
-const checkChapters = async (manga: MangaWithLibrary) => {
+const checkChapters = async (manga: MangaWithLibraryAndMetadata) => {
   logger.info(`Checking for new chapters: ${manga.title}`);
   const mangaDir = path.resolve(manga.library.path, sanitizer(manga.title));
   const missingChapterFiles = await findMissingChapterFiles(mangaDir, manga.source, manga.title);
@@ -102,7 +102,7 @@ export const checkChaptersQueue = new Queue('checkChaptersQueue', {
 export const checkChaptersWorker = new Worker(
   'checkChaptersQueue',
   async (job: Job) => {
-    const { manga }: { manga: MangaWithLibrary } = job.data;
+    const { manga }: { manga: MangaWithLibraryAndMetadata } = job.data;
     await checkChapters(manga);
     await job.updateProgress(100);
   },
@@ -132,7 +132,7 @@ export const removeJob = async (title: string) => {
   );
 };
 
-export const schedule = async (manga: MangaWithLibrary) => {
+export const schedule = async (manga: MangaWithLibraryAndMetadata) => {
   if (manga.interval === 'never') {
     return;
   }

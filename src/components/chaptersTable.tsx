@@ -3,7 +3,6 @@ import { DataTable } from 'mantine-datatable';
 
 import dayjs from 'dayjs';
 
-import { showNotification } from '@mantine/notifications';
 import prettyBytes from 'pretty-bytes';
 import { useEffect, useState } from 'react';
 
@@ -51,15 +50,6 @@ export function ChaptersTable({ manga }: { manga: MangaWithMetadataAndChaptersLi
         },
         { accessor: 'size', title: 'File Size', render: ({ size }) => prettyBytes(size) },
       ]}
-      rowContextMenu={{
-        items: () => [
-          {
-            key: 'download',
-            title: 'Download Again',
-            onClick: () => showNotification({ message: `Chapter queued for the download` }),
-          },
-        ],
-      }}
     />
   );
 }

@@ -2,14 +2,14 @@ import { TRPCError } from '@trpc/server';
 import path from 'path';
 import { z } from 'zod';
 import { sanitizer } from '../../../utils/sanitize';
-import { removeJob, schedule } from '../../queue/checkChapters';
+import { checkChaptersQueue, removeJob, schedule } from '../../queue/checkChapters';
 import { downloadQueue } from '../../queue/download';
 import { getAvailableSources, getMangaDetail, Manga, removeManga, search } from '../../utils/mangal';
 import { t } from '../trpc';
 
 export const mangaRouter = t.router({
   query: t.procedure.query(async ({ ctx }) => {
-    return ctx.prisma.manga.findMany({ include: { metadata: true } });
+    return ctx.prisma.manga.findMany({ include: { metadata: true }, orderBy: { title: 'asc' } });
   }),
   sources: t.procedure.query(async () => {
     return getAvailableSources();
@@ -130,6 +130,7 @@ export const mangaRouter = t.router({
       const manga = await ctx.prisma.manga.create({
         include: {
           library: true,
+          metadata: true,
         },
         data: {
           source,
@@ -193,7 +194,7 @@ export const mangaRouter = t.router({
     return {
       active: await downloadQueue.getActiveCount(),
       queued: await downloadQueue.getWaitingCount(),
-      scheduled: await downloadQueue.getDelayedCount(),
+      scheduled: await checkChaptersQueue.getDelayedCount(),
       failed: await downloadQueue.getFailedCount(),
       completed: await downloadQueue.getCompletedCount(),
     };

@@ -203,35 +203,35 @@ function Activity({ data }: { data: ActivityType }) {
         name="Active"
         color="teal"
         count={data.active}
-        href="/admin/queues/queue/downloadQueue?status=active"
+        href="/bull/queues/queue/downloadQueue?status=active"
       />
       <ActivityItem
         icon={<IconClock size={20} strokeWidth={1.5} />}
         name="Queued"
         color="cyan"
         count={data.queued}
-        href="/admin/queues/queue/downloadQueue?status=waiting"
+        href="/bull/queues/queue/downloadQueue?status=waiting"
       />
       <ActivityItem
         icon={<IconCalendarStats size={20} strokeWidth={1.5} />}
         name="Scheduled"
         color="yellow"
         count={data.scheduled}
-        href="/admin/queues/queue/downloadQueue?status=delayed"
+        href="/bull/queues/queue/checkChaptersQueue?status=delayed"
       />
       <ActivityItem
         icon={<IconAlertTriangle size={20} strokeWidth={1.5} />}
         name="Failed"
         color="red"
         count={data.failed}
-        href="/admin/queues/queue/downloadQueue?status=failed"
+        href="/bull/queues/queue/downloadQueue?status=failed"
       />
       <ActivityItem
         icon={<IconCircleCheck size={20} strokeWidth={1.5} />}
         name="Completed"
         color="dark"
         count={data.completed}
-        href="/admin/queues/queue/downloadQueue?status=completed"
+        href="/bull/queues/queue/downloadQueue?status=completed"
       />
     </>
   );

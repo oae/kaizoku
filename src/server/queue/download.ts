@@ -1,11 +1,17 @@
+import { Prisma } from '@prisma/client';
 import { Job, Queue, Worker } from 'bullmq';
+import { sanitizer } from '../../utils/sanitize';
 import { prisma } from '../db/client';
 import { downloadChapter, getChapterFromLocal } from '../utils/mangal';
-import { sendNotification } from '../utils/notification';
-import type { MangaWithLibrary } from './checkChapters';
+import { notificationQueue } from './notify';
 
+const mangaWithLibraryAndMetadata = Prisma.validator<Prisma.MangaArgs>()({
+  include: { library: true, metadata: true },
+});
+
+export type MangaWithLibraryAndMetadata = Prisma.MangaGetPayload<typeof mangaWithLibraryAndMetadata>;
 export interface IDownloadWorkerData {
-  manga: MangaWithLibrary;
+  manga: MangaWithLibraryAndMetadata;
   chapterIndex: number;
 }
 
@@ -24,13 +30,19 @@ export const downloadWorker = new Worker(
         },
       });
 
-      await prisma.chapter.create({
+      const chapterInDb = await prisma.chapter.create({
         data: {
           ...chapter,
           mangaId: manga.id,
         },
       });
-      await sendNotification(`Downloaded a new chapter #${chapterIndex + 1} for ${manga.title} from ${manga.source}`);
+      await notificationQueue.add(`notify_${sanitizer(manga.title)}_${chapterInDb.id}`, {
+        chapterIndex,
+        chapterFileName: chapter.fileName,
+        mangaTitle: manga.title,
+        source: manga.source,
+        url: manga.metadata.urls.find((url) => url.includes('anilist')),
+      });
       await job.updateProgress(100);
     } catch (err) {
       await job.log(`${err}`);
