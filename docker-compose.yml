@@ -13,6 +13,8 @@ services:
       REDIS_HOST: redis
     env_file:
       - .env
+    volumes:
+      - /home/alperen/Manga:/data/manga
     depends_on:
       db:
         condition: service_healthy
