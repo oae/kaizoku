@@ -7,23 +7,30 @@ volumes:
 services:
   app:
     container_name: kaizoku
-    build: .
+    build: 
+      context: .
+      dockerfile: docker/Dockerfile
     environment:
-      DATABASE_URL: postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@db:${DATABASE_PORT}/${DATABASE_SCHEMA}
-      REDIS_HOST: redis
+      - DATABASE_URL=postgresql://${DATABASE_USER:-kaizoku}:${DATABASE_PASSWORD:-kaizoku}@db:${DATABASE_PORT:-5432}/${DATABASE_SCHEMA:-kaizoku}
+      - REDIS_HOST=redis
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Istanbul
     env_file:
       - .env
     volumes:
-      - /home/alperen/Manga:/data/manga
+      - ./kaizoku/data:/data
+      - ./kaizoku/config:/config
+      - ./kaizoku/logs:/logs
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "${APP_PORT}:3000"
+      - "${KAIZOKU_PORT:-3000}:3000"
   redis:
     image: redis:7-alpine
     ports:
-      - "${REDIS_PORT}:6379"
+      - "${REDIS_PORT:-6379}:6379"
   db:
     image: postgres:alpine
     restart: unless-stopped
@@ -35,10 +42,10 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_DB: ${DATABASE_SCHEMA}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      - POSTGRES_USER=${DATABASE_USER:-kaizoku}
+      - POSTGRES_DB=${DATABASE_SCHEMA:-kaizoku}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-kaizoku}
     volumes:
       - db:/var/lib/postgresql/data
     ports:
-      - "${DATABASE_PORT}:5432"
+      - "${DATABASE_PORT:-5432}:5432"

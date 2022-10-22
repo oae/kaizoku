@@ -2,9 +2,8 @@ import { Box, Button, Code, LoadingOverlay, Text, TextInput } from '@mantine/cor
 import { useForm } from '@mantine/form';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
-import { IconCheck, IconX } from '@tabler/icons';
+import { IconCheck, IconFolderPlus, IconX } from '@tabler/icons';
 import { useState } from 'react';
-import { MdOutlineCreateNewFolder } from 'react-icons/md';
 import { trpc } from '../utils/trpc';
 
 function Form({ onClose }: { onClose: () => void }) {
@@ -69,7 +68,7 @@ function Form({ onClose }: { onClose: () => void }) {
       })}
     >
       <LoadingOverlay visible={visible} overlayBlur={2} />
-      <TextInput label="Library path" placeholder="./library" {...form.getInputProps('library.path')} />
+      <TextInput label="Library path" placeholder="/data" {...form.getInputProps('library.path')} />
 
       <Box
         sx={(theme) => ({
@@ -116,7 +115,7 @@ export function AddLibrary({ onCreate }: { onCreate: () => void }) {
   };
 
   return (
-    <Button type="submit" onClick={openCreateModal} leftIcon={<MdOutlineCreateNewFolder size={20} />}>
+    <Button type="submit" onClick={openCreateModal} leftIcon={<IconFolderPlus size={20} />}>
       Create a library
     </Button>
   );

@@ -1,6 +1,6 @@
 {
   "name": "kaizoku",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "author": "Alperen Elhan <alperen@elhan.io>",
   "private": true,
   "scripts": {
@@ -12,8 +12,8 @@
     "build:next": "next build",
     "build": "yarn run build:next && yarn run build:server",
     "build:analyze": "ANALYZE=true yarn run build:next && ANALYZE=false yarn run build:server",
-    "start": "next start",
     "lint": "next lint",
+    "start": "next start",
     "postinstall": "prisma generate"
   },
   "commitlint": {
@@ -70,7 +70,6 @@
     "prop-types": "^15.8.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-icons": "^4.6.0",
     "sharp": "^0.31.1",
     "string-to-color": "^2.2.2",
     "superjson": "^1.10.1",

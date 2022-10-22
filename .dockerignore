@@ -9,7 +9,7 @@ README.md
 certs/
 docs/
 notes/
-
+docker/Dockerfile*
 # pass env vars through docker-compose 
 # or mount .env* in dev
 .env*
@@ -30,3 +30,10 @@ tests-e2e/node_modules/
 
 # jest coverage
 coverage/
+
+.git
+.gitignore
+.github
+.gitattributes
+READMETEMPLATE.md
+README.md

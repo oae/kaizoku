@@ -1,34 +1,91 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# <img width="32px" src="./public/kaizoku.png" alt="Kaizoku"></img> Kaizoku
 
-## Getting Started
+Kaizoku is self-hosted manga downloader.
 
-First, run the development server:
+![Home Page](https://i.imgur.com/KT9LrtX.png)
 
-```bash
-npm run dev
-# or
-yarn dev
+|                   Detail Page                   |                   Search                   |
+| :---------------------------------------------: | :----------------------------------------: |
+| ![Detail Page](https://i.imgur.com/uWgZ9KA.png) | ![Search](https://i.imgur.com/XP4coVD.png) |
+
+## Deployment
+
+You can deploy Kaizoku with following docker-compose file
+
+```yaml
+version: '3'
+
+volumes:
+  db:
+  redis:
+
+services:
+  app:
+    container_name: kaizoku
+    image: <tbd>
+    environment:
+      - DATABASE_URL=postgresql://kaizoku:kaizoku@db:5432/kaizoku
+      - KAIZOKU_PORT=3000
+      - REDIS_HOST=redis
+      - REDIS_HOST=6379
+      - TELEGRAM_TOKEN=<token> # Don't set if you don't want telegram notifications.
+      - TELEGRAM_CHAT_ID=<chat_id>
+      - TELEGRAM_SEND_SILENTLY=0
+      - PUID=<host user puid>
+      - PGID=<host user guid>
+      - TZ=Europe/Istanbul
+    volumes:
+      - <path_to_library>:/data
+      - <path_to_config>:/config
+      - <path_to_logs>:/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis:/data
+  db:
+    image: postgres:alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U kaizoku']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_USER=kaizoku
+      - POSTGRES_DB=kaizoku
+      - POSTGRES_PASSWORD=kaizoku
+    volumes:
+      - db:/var/lib/postgresql/data
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Development
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### Requirements
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+- node 18
+- yarn
+- docker
+- [mangal](https://github.com/metafates/mangal)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+### Start the Kaizoku
 
-## Learn More
+```bash
+git clone https://github.com/oae/kaizoku.git
+cd ./kaizoku/
+cp .env.example .env
+yarn install
+docker compose up -d redis db
+yarn run prisma migrate deploy
+yarn dev:server
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the page.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Credits
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Kaizoku uses amazing [mangal](https://github.com/metafates/mangal) by [@metafates](https://github.com/metafates) as it's downloader.

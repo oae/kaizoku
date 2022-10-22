@@ -1,9 +1,9 @@
 import { Badge, createStyles, Divider, Grid, Group, Image, Spoiler, Text, Title } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { Prisma } from '@prisma/client';
+import { IconExternalLink } from '@tabler/icons';
 import { contrastColor } from 'contrast-color';
 import stc from 'string-to-color';
-import { IconExternalLink } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
   root: {

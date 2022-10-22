@@ -7,7 +7,7 @@ export const logger = pino({
     targets: [
       {
         target: 'pino-pretty',
-        level: 'info',
+        level: 'debug',
         options: {
           levelFirst: false,
           destination: 1,
@@ -19,7 +19,10 @@ export const logger = pino({
         target: 'pino/file',
         level: 'debug',
         options: {
-          destination: path.resolve(process.cwd(), 'manup.log'),
+          destination: path.resolve(
+            process.cwd(),
+            path.relative(process.cwd(), path.resolve(process.env.KAIZOKU_LOG_PATH || '', 'manup.log')),
+          ),
         },
       },
     ],

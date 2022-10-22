@@ -1,0 +1,16 @@
+#!/usr/bin/with-contenv bash
+
+cd /app
+
+/usr/bin/yarn run prisma migrate deploy
+
+mkdir -p /config/.config
+
+cp -r /mangal /config/.config
+
+# permissions
+chown -R abc:abc \
+	/app \
+	/config \
+  /logs \
+  /data

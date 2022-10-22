@@ -1,6 +1,6 @@
 import { Box, Text, Tooltip } from '@mantine/core';
+import { IconHeart } from '@tabler/icons';
 import { motion } from 'framer-motion';
-import { AiFillHeart } from 'react-icons/ai';
 
 export function MadeWith({ minimized }: { minimized: boolean }): JSX.Element {
   const hearth = (
@@ -17,7 +17,7 @@ export function MadeWith({ minimized }: { minimized: boolean }): JSX.Element {
         repeatDelay: 0.5,
       }}
     >
-      <AiFillHeart color="red" size={20} />
+      <IconHeart fill="red" color="red" size={20} />
     </motion.div>
   );
 
