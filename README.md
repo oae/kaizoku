@@ -22,12 +22,12 @@ volumes:
 services:
   app:
     container_name: kaizoku
-    image: <tbd>
+    image: ghcr.io/oae/kaizoku:latest
     environment:
       - DATABASE_URL=postgresql://kaizoku:kaizoku@db:5432/kaizoku
       - KAIZOKU_PORT=3000
       - REDIS_HOST=redis
-      - REDIS_HOST=6379
+      - REDIS_PORT=6379
       - TELEGRAM_TOKEN=<token> # Don't set if you don't want telegram notifications.
       - TELEGRAM_CHAT_ID=<chat_id>
       - TELEGRAM_SEND_SILENTLY=0
