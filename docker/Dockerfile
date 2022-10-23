@@ -33,10 +33,18 @@ FROM base as runner
 
 WORKDIR /tmp
 
-RUN curl -L https://github.com/metafates/mangal/releases/download/v3.12.0/mangal_3.12.0_Linux_x86_64.tar.gz -o mangal_3.12.0_Linux_x86_64.tar.gz && \
-  tar xf mangal_3.12.0_Linux_x86_64.tar.gz && \
-  mv mangal /usr/bin/mangal && \
-  chmod +x /usr/bin/mangal
+RUN if [ $(uname -m) == "x86_64" ] ; then \
+      curl -L "https://github.com/metafates/mangal/releases/download/v3.12.0/mangal_3.12.0_Linux_x86_64.tar.gz" -o mangal.tar.gz ;\
+    elif [ uname -m == "armv6l" ] ; then \
+      curl -L "https://github.com/metafates/mangal/releases/download/v3.12.0/mangal_3.14.0_Linux_armv6.tar.gz" -o mangal.tar.gz ;\
+    elif [ uname -m == "i386" ] ; then \
+      curl -L "https://github.com/metafates/mangal/releases/download/v3.12.0/mangal_3.14.0_Linux_i386.tar.gz" -o mangal.tar.gz ;\
+    elif [ $(uname -m) = "aarch64" ] ; then \
+      curl -L "https://github.com/metafates/mangal/releases/download/v3.12.0/mangal_3.14.0_Linux_arm64.tar.gz" -o mangal.tar.gz ;\
+    fi
+RUN tar xf mangal.tar.gz
+RUN mv mangal /usr/bin/mangal
+RUN chmod +x /usr/bin/mangal
 
 WORKDIR /app
 
