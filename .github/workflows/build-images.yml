@@ -9,12 +9,7 @@ jobs:
         
       # https://github.com/docker/setup-qemu-action#usage
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2.0.0
-
-      # setup Docker build action
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-qemu-action@v2
 
       - name: Set up Docker Build
         id: buildx
