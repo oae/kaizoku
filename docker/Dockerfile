@@ -1,7 +1,7 @@
 FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy as base
 
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-RUN apt install nodejs \
+RUN apt install -y nodejs \
   libglib2.0-0 \
   libnss3 \
   libatk1.0-0 \
