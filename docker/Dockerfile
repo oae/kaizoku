@@ -29,7 +29,7 @@ WORKDIR /app
 COPY prisma ./
 COPY package.json yarn.lock ./
 
-RUN yarn --frozen-lockfile
+RUN yarn --frozen-lockfile --network-timeout 1000000
 
 ##### BUILDER
 
