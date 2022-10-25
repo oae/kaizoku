@@ -1,7 +1,7 @@
 FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy as base
 
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-RUN apt install -y nodejs \
+RUN apt install -y --no-install-recommends nodejs \
   libglib2.0-0 \
   libnss3 \
   libatk1.0-0 \
@@ -18,7 +18,7 @@ RUN apt install -y nodejs \
   libpango-1.0-0 \
   libcairo2 \
   libasound2 && \
-  npm i -g yarn
+  npm i -g pnpm prisma
 
 ##### DEPENDENCIES
 
@@ -27,9 +27,10 @@ FROM base AS deps
 WORKDIR /app
 
 COPY prisma ./
-COPY package.json yarn.lock ./
+COPY package.json pnpm-lock.yaml ./
 
-RUN yarn --frozen-lockfile --network-timeout 1000000
+RUN pnpm i --frozen-lockfile --prod --ignore-scripts && \
+  prisma generate
 
 ##### BUILDER
 
@@ -42,7 +43,7 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
-RUN yarn build
+RUN pnpm build
 
 ##### RUNNER
 
@@ -50,15 +51,16 @@ FROM base as runner
 
 WORKDIR /tmp
 
-RUN if [ "$(uname -m)" = "x86_64" ] ; then \
-      curl -L "https://github.com/metafates/mangal/releases/download/v3.14.0/mangal_3.14.0_Linux_x86_64.tar.gz" -o mangal.tar.gz ;\
-    elif [ "$(uname -m)" = "armv6l" ] ; then \
-      curl -L "https://github.com/metafates/mangal/releases/download/v3.14.0/mangal_3.14.0_Linux_armv6.tar.gz" -o mangal.tar.gz ;\
-    elif [ "$(uname -m)" = "i386" ] ; then \
-      curl -L "https://github.com/metafates/mangal/releases/download/v3.14.0/mangal_3.14.0_Linux_i386.tar.gz" -o mangal.tar.gz ;\
-    elif [ "$(uname -m)" = "aarch64" ] ; then \
-      curl -L "https://github.com/metafates/mangal/releases/download/v3.14.0/mangal_3.14.0_Linux_arm64.tar.gz" -o mangal.tar.gz ;\
-    fi
+RUN \
+  if [ "$(uname -m)" = "x86_64" ] ; then \
+  curl -L "https://github.com/metafates/mangal/releases/download/v3.14.0/mangal_3.14.0_Linux_x86_64.tar.gz" -o mangal.tar.gz ;\
+  elif [ "$(uname -m)" = "armv6l" ] ; then \
+  curl -L "https://github.com/metafates/mangal/releases/download/v3.14.0/mangal_3.14.0_Linux_armv6.tar.gz" -o mangal.tar.gz ;\
+  elif [ "$(uname -m)" = "i386" ] ; then \
+  curl -L "https://github.com/metafates/mangal/releases/download/v3.14.0/mangal_3.14.0_Linux_i386.tar.gz" -o mangal.tar.gz ;\
+  elif [ "$(uname -m)" = "aarch64" ] ; then \
+  curl -L "https://github.com/metafates/mangal/releases/download/v3.14.0/mangal_3.14.0_Linux_arm64.tar.gz" -o mangal.tar.gz ;\
+  fi
 RUN tar xf mangal.tar.gz
 RUN mv mangal /usr/bin/mangal
 RUN chmod +x /usr/bin/mangal

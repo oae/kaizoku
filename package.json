@@ -7,25 +7,21 @@
     "dev:server": "NODE_ENV=development ts-node --project tsconfig.server.json src/server/index.ts",
     "build:server": "tsc --project tsconfig.server.json",
     "start:server": "NODE_ENV=production node dist/server/index.js",
-    "prod": "prisma migrate deploy && yarn run start:server",
+    "prod": "prisma migrate deploy && pnpm start:server",
     "dev": "next dev",
     "build:next": "next build",
-    "build": "yarn run build:next && yarn run build:server",
-    "build:analyze": "ANALYZE=true yarn run build:next && ANALYZE=false yarn run build:server",
+    "build": "pnpm build:next && pnpm build:server",
+    "build:analyze": "ANALYZE=true pnpm build:next && ANALYZE=false pnpm build:server",
     "lint": "next lint",
     "start": "next start",
+    "prepare": "husky install",
+    "preinstall": "npx only-allow pnpm",
     "postinstall": "prisma generate"
   },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs}": [
@@ -98,7 +94,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "husky": "^4.3.8",
+    "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "postcss": "^8.4.18",
     "prettier": "^2.7.1",
