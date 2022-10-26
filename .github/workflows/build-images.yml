@@ -39,8 +39,11 @@ jobs:
       - name: Lint
         run: pnpm lint
 
-  build-x86_64:
+  build:
     needs: lint
+    strategy:
+      matrix:
+        platform: [linux/amd64, linux/arm64]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -48,6 +51,7 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
+        if: ${{ matrix.platform == 'linux/arm64' }}
 
       - name: Set up Docker Build
         uses: docker/setup-buildx-action@v2
@@ -56,53 +60,17 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-x86_64-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-${{ matrix.platform }}-buildx-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-x86_64-buildx-
+            ${{ runner.os }}-${{ matrix.platform }}-buildx-
 
       - name: Build
         uses: docker/build-push-action@v3
         with:
           context: .
           file: docker/Dockerfile
-          push: false
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-      
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-  build-arm64:
-    needs: lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Set up Docker Build
-        uses: docker/setup-buildx-action@v2
-      
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-arm64-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-arm64-buildx-
-
-
-      - name: Build
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: docker/Dockerfile
-          push: false
-          platforms: linux/arm64
+          push: true
+          platforms: ${{ matrix.platform }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
       
