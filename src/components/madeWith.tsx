@@ -38,7 +38,7 @@ export function MadeWith({ minimized }: { minimized: boolean }): JSX.Element {
       in{' '}
       <b style={{ marginLeft: '4px', color: '#051D49' }}>
         <Tooltip withArrow label={<Text weight="lighter">a.k.a. Turkey</Text>} inline position="top-start">
-          <Text component="span">Isekais</Text>
+          <Text component="span">Isekai</Text>
         </Tooltip>
       </b>
     </Box>
