@@ -29,8 +29,7 @@ WORKDIR /app
 COPY prisma ./
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm i --frozen-lockfile --prod --ignore-scripts && \
-  prisma generate
+RUN pnpm i --frozen-lockfile
 
 ##### BUILDER
 
