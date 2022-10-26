@@ -1,4 +1,10 @@
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - "**"
+      - "!main"
+  pull_request:
+
 name: build-image
 jobs:
   lint:
@@ -35,7 +41,7 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-        
+
       - name: Lint
         run: pnpm lint
 
@@ -73,7 +79,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-      
+
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache
