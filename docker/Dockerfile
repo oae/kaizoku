@@ -1,3 +1,5 @@
+# syntax = docker/dockerfile:experimental
+
 FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy as base
 
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
@@ -29,7 +31,18 @@ WORKDIR /app
 COPY prisma ./
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm i --frozen-lockfile
+RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
+  # ↑ By caching the content-addressable store we stop
+  # downloading the same dependencies again and again.
+  # Unfortunately, doing this causes Docker to place 
+  # the pnpm content-addressable store on a different
+  # virtual drive, which prohibits pnpm from 
+  # symlinking its content to its virtual store,
+  # and that causes pnpm to fall back on copying the
+  # files, and… that's totally fine! Except pnpm emits 
+  # many warnings that its not using symlinks, so 
+  # we also must use `grep` to filter out those warnings.
+  pnpm install --frozen-lockfile
 
 ##### BUILDER
 
