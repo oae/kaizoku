@@ -68,7 +68,7 @@ services:
 ### Requirements
 
 - node 18
-- yarn
+- pnpm
 - docker
 - [mangal](https://github.com/metafates/mangal)
 
@@ -78,10 +78,10 @@ services:
 git clone https://github.com/oae/kaizoku.git
 cd ./kaizoku/
 cp .env.example .env
-yarn install
+pnpm i
 docker compose up -d redis db
-yarn run prisma migrate deploy
-yarn dev:server
+pnpm prisma migrate deploy
+pnpm dev:server
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the page.

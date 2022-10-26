@@ -2,7 +2,7 @@
 
 cd /app
 
-/usr/bin/yarn run prisma migrate deploy
+prisma migrate deploy
 
 mkdir -p /config/.config
 

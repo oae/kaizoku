@@ -11,10 +11,16 @@ jobs:
         uses: google-github-actions/release-please-action@v3
         id: release
         with:
+          release-type: node
           command: manifest
 
       - name: Checkout
         uses: actions/checkout@v3
+        if: ${{ steps.release.outputs.release_created }}
+        
+      # https://github.com/docker/setup-qemu-action#usage
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Set up Docker Build
@@ -43,6 +49,9 @@ jobs:
           context: .
           file: docker/Dockerfile
           push: true
+          # Possible architectures
+          #platforms: linux/amd64,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x,linux/386,linux/mips64le,linux/mips64,linux/arm/v7,linux/arm/v6
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/kaizoku:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/kaizoku:v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
