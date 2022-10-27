@@ -15,8 +15,8 @@
     "lint": "next lint",
     "start": "next start",
     "prepare": "husky install",
-    "postinstall": "prisma generate",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "prisma generate"
   },
   "commitlint": {
     "extends": [
