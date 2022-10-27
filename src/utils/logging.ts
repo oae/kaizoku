@@ -21,7 +21,7 @@ export const logger = pino({
         options: {
           destination: path.resolve(
             process.cwd(),
-            path.relative(process.cwd(), path.resolve(process.env.KAIZOKU_LOG_PATH || '', 'manup.log')),
+            path.relative(process.cwd(), path.resolve(process.env.KAIZOKU_LOG_PATH || '', 'kaizoku.log')),
           ),
         },
       },
