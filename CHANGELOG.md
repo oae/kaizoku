@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.0](https://github.com/oae/kaizoku/compare/kaizoku-v1.0.0...kaizoku-v1.1.0) (2022-10-27)
+
+
+### Features
+
+* add ability to bind manga metadata to another anilist id ([a3a9252](https://github.com/oae/kaizoku/commit/a3a9252bc8a613e570ea3df312b49a7e923cb9df))
+* add support for custom interval. closes [#12](https://github.com/oae/kaizoku/issues/12) ([a7323d8](https://github.com/oae/kaizoku/commit/a7323d8c4c45312a551c8e82472e4bcd982bca08))
+* implement update popup for metadata and interval ([e82d934](https://github.com/oae/kaizoku/commit/e82d93452a7745603d5d9cdb2a93fc949d3ab79f))
+* reschedule checkChapter jobs on startup. closes [#14](https://github.com/oae/kaizoku/issues/14) ([ab14475](https://github.com/oae/kaizoku/commit/ab1447533bb888189778d47033323c3c1da1df73))
+
+
+### Bug Fixes
+
+* check for out-of-sync chapters ([caf6720](https://github.com/oae/kaizoku/commit/caf6720dacda4de28d8da2a5bf61442f55384245))
+* don't store completed notification jobs ([373fc3b](https://github.com/oae/kaizoku/commit/373fc3b8bd46b86fbc8f21cf362772b9d629b9b9))
+* filter out empty lines when getting the sources ([b150575](https://github.com/oae/kaizoku/commit/b150575b7f1d869bd214ee4be707b1dec892c046))
+
 ## 1.0.0 (2022-10-22)
 
 
