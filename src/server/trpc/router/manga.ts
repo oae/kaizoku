@@ -4,7 +4,14 @@ import { z } from 'zod';
 import { isCronValid, sanitizer } from '../../../utils';
 import { checkChaptersQueue, removeJob, schedule } from '../../queue/checkChapters';
 import { downloadQueue } from '../../queue/download';
-import { getAvailableSources, getMangaDetail, Manga, removeManga, search } from '../../utils/mangal';
+import {
+  bindTitleToAnilistId,
+  getAvailableSources,
+  getMangaDetail,
+  Manga,
+  removeManga,
+  search,
+} from '../../utils/mangal';
 import { t } from '../trpc';
 
 export const mangaRouter = t.router({
@@ -14,6 +21,17 @@ export const mangaRouter = t.router({
   sources: t.procedure.query(async () => {
     return getAvailableSources();
   }),
+  bind: t.procedure
+    .input(
+      z.object({
+        title: z.string().trim().min(1),
+        anilistId: z.string().trim().min(1),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { title, anilistId } = input;
+      await bindTitleToAnilistId(title, anilistId);
+    }),
   detail: t.procedure
     .input(
       z.object({

@@ -1,5 +1,22 @@
-import { Badge, createStyles, Divider, Grid, Group, Image, LoadingOverlay, Text, Title, Tooltip } from '@mantine/core';
+import {
+  ActionIcon,
+  Badge,
+  createStyles,
+  Divider,
+  Grid,
+  Group,
+  Image,
+  LoadingOverlay,
+  Popover,
+  Text,
+  TextInput,
+  Title,
+  Tooltip,
+} from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
+import { getHotkeyHandler } from '@mantine/hooks';
+import { IconCheck, IconEdit, IconGitMerge } from '@tabler/icons';
+import { useState } from 'react';
 import { trpc } from '../../../utils/trpc';
 import type { FormType } from '../form';
 
@@ -11,6 +28,9 @@ const useStyles = createStyles((_theme) => ({
 }));
 
 export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
+  const [anilistId, setAnilistId] = useState<string>();
+  const [opened, setOpened] = useState(false);
+  const bindMutation = trpc.manga.bind.useMutation();
   const query = trpc.manga.detail.useQuery(
     {
       source: form.values.source,
@@ -26,9 +46,23 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
 
   const manga = query.data;
 
+  const handleBind = async () => {
+    setOpened(false);
+    if (!anilistId || !manga?.Name) {
+      return;
+    }
+    await bindMutation.mutateAsync({
+      anilistId,
+      title: manga.Name,
+    });
+
+    query.refetch();
+    setAnilistId('');
+  };
+
   return (
     <>
-      <LoadingOverlay visible={query.isLoading} />
+      <LoadingOverlay visible={query.isLoading || bindMutation.isLoading} />
 
       {manga && (
         <Grid>
@@ -55,7 +89,67 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
             />
           </Grid.Col>
           <Grid.Col span={8}>
-            <Divider mb="xs" labelPosition="center" label={<Title order={3}>{manga.Name}</Title>} />
+            <Divider
+              mb="xs"
+              labelPosition="center"
+              label={
+                <>
+                  <Title order={3}>{manga.Name}</Title>
+                  <Popover
+                    width={300}
+                    trapFocus
+                    position="bottom"
+                    withArrow
+                    shadow="md"
+                    opened={opened}
+                    onChange={setOpened}
+                  >
+                    <Popover.Target>
+                      <Tooltip inline label="Fix the wrong match">
+                        <ActionIcon
+                          ml={4}
+                          color="blue"
+                          variant="transparent"
+                          size="lg"
+                          radius="xl"
+                          onClick={() => setOpened((o) => !o)}
+                        >
+                          <IconEdit size={18} />
+                        </ActionIcon>
+                      </Tooltip>
+                    </Popover.Target>
+                    <Popover.Dropdown
+                      sx={(theme) => ({
+                        background: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
+                      })}
+                    >
+                      <TextInput
+                        data-autofocus
+                        mb="xl"
+                        size="md"
+                        radius="xl"
+                        value={anilistId}
+                        onChange={(event) => setAnilistId(event.currentTarget.value)}
+                        onKeyDown={getHotkeyHandler([['Enter', handleBind]])}
+                        icon={<IconGitMerge size={18} stroke={1.5} />}
+                        rightSection={
+                          <ActionIcon size={32} radius="xl" color="blue" variant="filled" onClick={handleBind}>
+                            <IconCheck size={18} stroke={1.5} />
+                          </ActionIcon>
+                        }
+                        rightSectionWidth={42}
+                        label={
+                          <Text size="sm" mb="xs">
+                            Please enter a new AniList id for {manga.Name}
+                          </Text>
+                        }
+                        placeholder="AniList Id"
+                      />
+                    </Popover.Dropdown>
+                  </Popover>
+                </>
+              }
+            />
             {manga.Metadata.Synonyms && (
               <Group spacing="xs">
                 {manga.Metadata.Synonyms.map((synonym) => (

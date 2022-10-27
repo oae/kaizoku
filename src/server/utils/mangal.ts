@@ -63,6 +63,15 @@ export const getAvailableSources = async () => {
   return [];
 };
 
+export const bindTitleToAnilistId = async (title: string, anilistId: string) => {
+  try {
+    const { command } = await execa('mangal', ['inline', 'anilist', 'set', '--name', title, '--id', anilistId]);
+    logger.info(`Bind manga to anilist id with following command: ${command}`);
+  } catch (err) {
+    logger.error(`Failed to bind manga to anilist id. err: ${err}`);
+  }
+};
+
 export const getMangaPath = (libraryPath: string, title: string) => path.resolve(libraryPath, sanitizer(title));
 
 export const search = async (source: string, keyword: string): Promise<IOutput> => {
@@ -71,7 +80,7 @@ export const search = async (source: string, keyword: string): Promise<IOutput> 
     logger.info(`Search manga with following command: ${command}`);
     return JSON.parse(stdout);
   } catch (err) {
-    logger.error(`Failed to get available sources: err: ${err}`);
+    logger.error(`Failed to search manga. err: ${err}`);
   }
 
   return {
