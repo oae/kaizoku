@@ -4,7 +4,49 @@ on:
       - main
 name: release-please
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - uses: pnpm/action-setup@v2.2.4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: latest
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
   release-please:
+    outputs:
+      release_tag: ${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
+      release_created: ${{ steps.release.outputs.release_created }}
+    needs: check
     runs-on: ubuntu-latest
     steps:
       - name: Release
@@ -14,19 +56,24 @@ jobs:
           release-type: node
           command: manifest
 
+  build-and-push:
+    needs: release-please
+    strategy:
+      matrix:
+        platform: [linux/amd64, linux/arm64]
+    runs-on: ubuntu-latest
+    steps:
       - name: Checkout
         uses: actions/checkout@v3
-        if: ${{ steps.release.outputs.release_created }}
-        
-      # https://github.com/docker/setup-qemu-action#usage
+        if: ${{ needs.release-please.outputs.release_created }}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ matrix.platform == 'linux/arm64' && needs.release-please.outputs.release_created }}
 
       - name: Set up Docker Build
-        id: buildx
         uses: docker/setup-buildx-action@v2
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ needs.release-please.outputs.release_created }}
 
       - name: Login to Github Packages
         uses: docker/login-action@v2
@@ -34,27 +81,42 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ needs.release-please.outputs.release_created }}
 
       - name: Login to Docker hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ needs.release-please.outputs.release_created }}
 
-      - name: Build and push
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-${{ matrix.platform }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.platform }}-buildx-
+        if: ${{ needs.release-please.outputs.release_created }}
+
+      - name: Build
         uses: docker/build-push-action@v3
         with:
           context: .
           file: docker/Dockerfile
-          push: true
-          # Possible architectures
-          #platforms: linux/amd64,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x,linux/386,linux/mips64le,linux/mips64,linux/arm/v7,linux/arm/v6
-          platforms: linux/amd64,linux/arm64
+          push: ${{ needs.release-please.outputs.release_created }}
+          platforms: ${{ matrix.platform }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/kaizoku:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/kaizoku:v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/kaizoku:v${{ needs.release-please.outputs.release_tag }}
             ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
-        if: ${{ steps.release.outputs.release_created }}
+            ghcr.io/${{ github.repository }}:v${{ needs.release-please.outputs.release_tag }}
+        if: ${{ needs.release-please.outputs.release_created }}
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+        if: ${{ needs.release-please.outputs.release_created }}

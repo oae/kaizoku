@@ -1,3 +1,5 @@
+# syntax = docker/dockerfile:experimental
+
 FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy as base
 
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
@@ -29,8 +31,8 @@ WORKDIR /app
 COPY prisma ./
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm i --frozen-lockfile --prod --ignore-scripts && \
-  prisma generate
+RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
+  pnpm install --frozen-lockfile
 
 ##### BUILDER
 

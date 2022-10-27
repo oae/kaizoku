@@ -3,7 +3,7 @@
 **/.gitkeep
 **/.DS_Store
 .dockerignore
-Dockerfile*
+docker/Dockerfile*
 docker-compose*.yml
 README.md
 certs/
@@ -22,6 +22,7 @@ dist/
 prisma/pg-data/data-*
 
 # named volumes
+.husky/
 .next/
 node_modules/
 
