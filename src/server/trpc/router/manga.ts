@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import path from 'path';
 import { z } from 'zod';
-import { sanitizer } from '../../../utils/sanitize';
+import { isCronValid, sanitizer } from '../../../utils';
 import { checkChaptersQueue, removeJob, schedule } from '../../queue/checkChapters';
 import { downloadQueue } from '../../queue/download';
 import { getAvailableSources, getMangaDetail, Manga, removeManga, search } from '../../utils/mangal';
@@ -95,7 +95,13 @@ export const mangaRouter = t.router({
       z.object({
         source: z.string().trim().min(1),
         title: z.string().trim().min(1),
-        interval: z.string().trim().min(1),
+        interval: z
+          .string()
+          .trim()
+          .min(1)
+          .refine((value) => isCronValid(value), {
+            message: 'Invalid interval',
+          }),
       }),
     )
     .mutation(async ({ input, ctx }) => {

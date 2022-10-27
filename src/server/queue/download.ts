@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { Job, Queue, Worker } from 'bullmq';
-import { sanitizer } from '../../utils/sanitize';
+import { sanitizer } from '../../utils';
 import { prisma } from '../db/client';
 import { downloadChapter, getChapterFromLocal } from '../utils/mangal';
 import { notificationQueue } from './notify';

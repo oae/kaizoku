@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 import { IconExternalLink } from '@tabler/icons';
 import { contrastColor } from 'contrast-color';
 import stc from 'string-to-color';
+import { getCronLabel } from '../utils';
 
 const useStyles = createStyles((theme) => ({
   root: {
@@ -108,14 +109,8 @@ export function MangaDetail({ manga }: { manga: MangaWithMetadataAndChapters }) 
             })}
           >
             Checking{' '}
-            <Badge
-              component="span"
-              color="cyan"
-              variant="filled"
-              size="xs"
-              sx={{ backgroundColor: stc(manga.interval), color: contrastColor({ bgColor: stc(manga.interval) }) }}
-            >
-              {manga.interval}
+            <Badge component="span" color="blue" variant="filled" size="xs">
+              {getCronLabel(manga.interval)}
             </Badge>{' '}
             from{' '}
             <Badge

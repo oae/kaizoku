@@ -2,17 +2,10 @@ import { Prisma } from '@prisma/client';
 import { Job, Queue, Worker } from 'bullmq';
 import path from 'path';
 import { logger } from '../../utils/logging';
-import { sanitizer } from '../../utils/sanitize';
+import { sanitizer } from '../../utils';
 import { prisma } from '../db/client';
 import { findMissingChapterFiles, getChaptersFromLocal } from '../utils/mangal';
 import { downloadQueue } from './download';
-
-const cronMap = {
-  daily: '0 0 * * *',
-  hourly: '0 * * * *',
-  minutely: '* * * * *',
-  weekly: '0 * * * 7',
-};
 
 const mangaWithLibraryAndMetadata = Prisma.validator<Prisma.MangaArgs>()({
   include: { library: true, metadata: true },
@@ -149,7 +142,7 @@ export const schedule = async (manga: MangaWithLibraryAndMetadata) => {
       jobId,
       repeatJobKey: jobId,
       repeat: {
-        pattern: cronMap[manga.interval as keyof typeof cronMap],
+        pattern: manga.interval,
       },
     },
   );

@@ -50,6 +50,8 @@
     "@trpc/server": "^10.0.0-proxy-beta.23",
     "bullmq": "^2.3.2",
     "contrast-color": "^1.0.1",
+    "cron-parser": "^4.6.0",
+    "cronstrue": "^2.14.0",
     "dayjs": "^1.11.5",
     "execa": "5.1.1",
     "express": "^4.18.2",

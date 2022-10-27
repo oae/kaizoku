@@ -1,18 +1,21 @@
 import { Box, LoadingOverlay, Select, Stack, TextInput } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 import { IconFolderPlus } from '@tabler/icons';
-import { sanitizer } from '../../../utils/sanitize';
+import { useState } from 'react';
+import { getCronLabel, isCronValid, sanitizer } from '../../../utils';
 import { trpc } from '../../../utils/trpc';
 import type { FormType } from '../form';
 
-const availableIntervals = ['daily', 'hourly', 'weekly'];
-
 export function DownloadStep({ form }: { form: UseFormReturnType<FormType> }) {
+  const [data, setData] = useState(
+    ['0 0 * * *', '0 * * * *', '0 0 * * 7', 'never'].map((value) => ({
+      label: getCronLabel(value),
+      value,
+    })),
+  );
   const libraryQuery = trpc.library.query.useQuery();
 
   const libraryPath = libraryQuery.data?.path;
-
-  const intervalSelectData = availableIntervals.map((k) => ({ label: k, value: k }));
 
   if (libraryQuery.isLoading) {
     return <LoadingOverlay visible />;
@@ -25,10 +28,29 @@ export function DownloadStep({ form }: { form: UseFormReturnType<FormType> }) {
       <Stack>
         <Select
           data-autofocus
+          searchable
+          clearable
+          creatable
           size="sm"
-          data={intervalSelectData}
+          data={data}
           label="Download Interval"
-          placeholder="Select an interval"
+          placeholder="Select or create an interval"
+          getCreateLabel={(query) => {
+            if (isCronValid(query)) {
+              return `+ Download ${getCronLabel(query)}`;
+            }
+
+            return `+ Create ${query}`;
+          }}
+          onCreate={(query) => {
+            if (!isCronValid(query)) {
+              form.setFieldError('interval', 'Invalid interval');
+              return null;
+            }
+            const item = { value: query, label: getCronLabel(query) };
+            setData((current) => [...current.filter((i) => i.value !== query), item]);
+            return item;
+          }}
           {...form.getInputProps('interval')}
         />
         <TextInput

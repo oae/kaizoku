@@ -2,7 +2,7 @@ import execa from 'execa';
 import fs from 'fs/promises';
 import path from 'path';
 import { logger } from '../../utils/logging';
-import { sanitizer } from '../../utils/sanitize';
+import { sanitizer } from '../../utils';
 
 interface IOutput {
   Manga: Manga[];

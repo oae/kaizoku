@@ -4,6 +4,7 @@ import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconX } from '@tabler/icons';
 import { useState } from 'react';
 import { z } from 'zod';
+import { isCronValid } from '../../utils';
 import { trpc } from '../../utils/trpc';
 import AddMangaSteps from './steps';
 
@@ -28,7 +29,14 @@ const schema = z.object({
   source: z.string().min(1, { message: 'You must select a source' }),
   query: z.string().min(1, { message: 'Cannot be empty' }),
   mangaTitle: z.string().min(1, { message: 'Please select a manga' }),
-  interval: z.string().min(1, { message: 'Please select an interval' }),
+  interval: z
+    .string({
+      invalid_type_error: 'Invalid interval',
+    })
+    .min(1, { message: 'Please select an interval' })
+    .refine((value) => isCronValid(value), {
+      message: 'Invalid interval',
+    }),
 });
 
 export type FormType = z.TypeOf<typeof schema>;
@@ -96,6 +104,9 @@ export function AddMangaForm({ onClose }: { onClose: () => void }) {
   };
 
   const onSubmit = form.onSubmit(async (values) => {
+    if (active !== 3) {
+      return;
+    }
     setVisible((v) => !v);
     const { mangaTitle, source, interval } = values;
     try {

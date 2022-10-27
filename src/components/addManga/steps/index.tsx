@@ -1,6 +1,7 @@
 import { createStyles, Stepper } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 import { Dispatch, SetStateAction } from 'react';
+import { getCronLabel } from '../../../utils';
 import type { FormType } from '../form';
 import { DownloadStep } from './downloadStep';
 import { ReviewStep } from './reviewStep';
@@ -65,7 +66,7 @@ export default function AddMangaSteps({
       </Stepper.Step>
       <Stepper.Step
         label="Download"
-        description={form.values.interval || 'Select an interval'}
+        description={form.values.interval ? getCronLabel(form.values.interval) : 'Select an interval'}
         allowStepSelect={false}
         color={active > 2 ? 'teal' : 'blue'}
       >

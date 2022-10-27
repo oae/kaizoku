@@ -34,6 +34,8 @@ specifiers:
   autoprefixer: ^10.4.12
   bullmq: ^2.3.2
   contrast-color: ^1.0.1
+  cron-parser: ^4.6.0
+  cronstrue: ^2.14.0
   dayjs: ^1.11.5
   eslint: 8.25.0
   eslint-config-airbnb: ^19.0.4
@@ -93,6 +95,8 @@ dependencies:
   '@trpc/server': 10.0.0-rc.0
   bullmq: 2.4.0
   contrast-color: 1.0.1
+  cron-parser: 4.6.0
+  cronstrue: 2.14.0
   dayjs: 1.11.6
   execa: 5.1.1
   express: 4.18.2
@@ -2262,6 +2266,10 @@ packages:
     engines: {node: '>=12.0.0'}
     dependencies:
       luxon: 3.0.4
+    dev: false
+
+  /cronstrue/2.14.0:
+    resolution: {integrity: sha512-rUTXOwOYrw7o4iV+Wg7fUXjMXDuqAMnhU007LrvaGbfVx73aiZz2e5SYjsAt6Q7ML2/z7Gq3qTncy3GKO9MLSQ==}
     dev: false
 
   /cross-spawn/7.0.3:
