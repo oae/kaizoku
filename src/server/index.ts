@@ -4,7 +4,7 @@ import { ExpressAdapter } from '@bull-board/express';
 import express, { Request, Response } from 'express';
 import next from 'next';
 import { logger } from '../utils/logging';
-import { checkChaptersQueue } from './queue/checkChapters';
+import { checkChaptersQueue, scheduleAll } from './queue/checkChapters';
 import { downloadQueue } from './queue/download';
 import { notificationQueue } from './queue/notify';
 
@@ -24,6 +24,7 @@ createBullBoard({
 (async () => {
   try {
     await app.prepare();
+    await scheduleAll();
     const server = express();
     server.use('/bull/queues', serverAdapter.getRouter()).all('*', (req: Request, res: Response) => {
       return handle(req, res);

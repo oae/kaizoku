@@ -177,7 +177,7 @@ export const mangaRouter = t.router({
         },
       });
 
-      schedule(manga);
+      schedule(manga, true);
 
       return manga;
     }),

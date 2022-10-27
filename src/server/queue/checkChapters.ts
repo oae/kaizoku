@@ -119,12 +119,16 @@ export const removeJob = async (title: string) => {
   );
 };
 
-export const schedule = async (manga: MangaWithLibraryAndMetadata) => {
+export const schedule = async (manga: MangaWithLibraryAndMetadata, runImmediately: boolean) => {
+  await removeJob(manga.title);
+
+  if (runImmediately === true) {
+    await checkChapters(manga);
+  }
+
   if (manga.interval === 'never') {
     return;
   }
-
-  await removeJob(manga.title);
   const jobId = getJobIdFromTitle(manga.title);
 
   await checkChaptersQueue.add(
@@ -140,6 +144,13 @@ export const schedule = async (manga: MangaWithLibraryAndMetadata) => {
       },
     },
   );
+};
 
-  await checkChapters(manga);
+export const scheduleAll = async () => {
+  const mangaList = await prisma.manga.findMany({ include: { library: true, metadata: true } });
+  await Promise.all(
+    mangaList.map(async (manga) => {
+      await schedule(manga, false);
+    }),
+  );
 };
