@@ -4,7 +4,7 @@ on:
       - main
 name: release-please
 jobs:
-  lint:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -41,12 +41,15 @@ jobs:
         
       - name: Lint
         run: pnpm lint
+      
+      - name: Build
+        run: pnpm build
 
   release-please:
     outputs:
       release_tag: ${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
       release_created: ${{ steps.release.outputs.release_created }}
-    needs: lint
+    needs: check
     runs-on: ubuntu-latest
     steps:
       - name: Release
