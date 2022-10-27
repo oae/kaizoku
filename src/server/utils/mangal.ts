@@ -55,9 +55,12 @@ export const getAvailableSources = async () => {
   try {
     const { stdout, command } = await execa('mangal', ['sources', '-r']);
     logger.info(`Get available sources with following command: ${command}`);
-    return stdout.split('\n').map((s) => s.trim());
+    return stdout
+      .split('\n')
+      .map((s) => s.trim())
+      .filter((s) => !!s);
   } catch (err) {
-    logger.error(`Failed to get available sources: err: ${err}`);
+    logger.error(`Failed to get available sources. err: ${err}`);
   }
 
   return [];
