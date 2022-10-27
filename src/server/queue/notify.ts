@@ -44,6 +44,7 @@ export const notificationQueue = new Queue('notificationQueue', {
     port: parseInt(process.env.REDIS_PORT || '6379', 10),
   },
   defaultJobOptions: {
+    removeOnComplete: true,
     attempts: 20,
     backoff: {
       type: 'fixed',
