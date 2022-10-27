@@ -13,10 +13,12 @@ import {
   Title,
 } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { IconX } from '@tabler/icons';
+import { Prisma } from '@prisma/client';
+import { IconEdit, IconX } from '@tabler/icons';
 import { contrastColor } from 'contrast-color';
 import { useState } from 'react';
 import stc from 'string-to-color';
+import { useUpdateModal } from './updateManga';
 
 const useStyles = createStyles((theme, _params, getRef) => ({
   skeletonCard: {
@@ -44,6 +46,9 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     [`&:hover .${getRef('removeButton')}`]: {
       display: 'flex',
     },
+    [`&:hover .${getRef('editButton')}`]: {
+      display: 'flex',
+    },
   },
   removeButton: {
     ref: getRef('removeButton'),
@@ -51,6 +56,16 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     right: -5,
     top: -5,
     display: 'none',
+  },
+  editButton: {
+    ref: getRef('editButton'),
+    position: 'absolute',
+    right: 10,
+    bottom: 10,
+    display: 'none',
+    '&:hover': {
+      backgroundColor: theme.white,
+    },
   },
   title: {
     fontFamily: `${theme.fontFamily}`,
@@ -66,11 +81,16 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   },
 }));
 
-interface ArticleCardImageProps {
-  cover: string;
-  title: string;
-  badge: string;
+const mangaWithLibraryAndMetadata = Prisma.validator<Prisma.MangaArgs>()({
+  include: { library: true, metadata: true },
+});
+
+type MangaWithLibraryAndMetadata = Prisma.MangaGetPayload<typeof mangaWithLibraryAndMetadata>;
+
+interface MangaCardProps {
+  manga: MangaWithLibraryAndMetadata;
   onRemove: (shouldRemoveFiles: boolean) => void;
+  onUpdate: () => void;
   onClick: () => void;
 }
 
@@ -152,9 +172,10 @@ export function SkeletonMangaCard() {
   return <Skeleton radius="md" className={classes.skeletonCard} />;
 }
 
-export function MangaCard({ cover, title, badge, onRemove, onClick }: ArticleCardImageProps) {
+export function MangaCard({ manga, onRemove, onUpdate, onClick }: MangaCardProps) {
   const { classes } = useStyles();
-  const removeModal = useRemoveModal(title, onRemove);
+  const removeModal = useRemoveModal(manga.title, onRemove);
+  const updateModal = useUpdateModal(manga, onUpdate);
 
   return (
     <Paper
@@ -163,7 +184,7 @@ export function MangaCard({ cover, title, badge, onRemove, onClick }: ArticleCar
       p="md"
       radius="md"
       sx={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2)), url(${cover})`,
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2)), url(${manga.metadata.cover})`,
       }}
       className={classes.card}
     >
@@ -179,16 +200,29 @@ export function MangaCard({ cover, title, badge, onRemove, onClick }: ArticleCar
       >
         <IconX size={16} />
       </ActionIcon>
+      <ActionIcon
+        color="blue"
+        variant="light"
+        size="lg"
+        radius="xl"
+        className={classes.editButton}
+        onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+          e.stopPropagation();
+          updateModal();
+        }}
+      >
+        <IconEdit size={18} />
+      </ActionIcon>
       <div>
         <Badge
-          sx={{ backgroundColor: stc(badge), color: contrastColor({ bgColor: stc(badge) }) }}
+          sx={{ backgroundColor: stc(manga.source), color: contrastColor({ bgColor: stc(manga.source) }) }}
           className={classes.badge}
           size="xs"
         >
-          {badge}
+          {manga.source}
         </Badge>
         <Title order={3} className={classes.title}>
-          {title}
+          {manga.title}
         </Title>
       </div>
     </Paper>

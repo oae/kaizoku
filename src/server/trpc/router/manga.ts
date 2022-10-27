@@ -16,7 +16,7 @@ import { t } from '../trpc';
 
 export const mangaRouter = t.router({
   query: t.procedure.query(async ({ ctx }) => {
-    return ctx.prisma.manga.findMany({ include: { metadata: true }, orderBy: { title: 'asc' } });
+    return ctx.prisma.manga.findMany({ include: { metadata: true, library: true }, orderBy: { title: 'asc' } });
   }),
   sources: t.procedure.query(async () => {
     return getAvailableSources();
@@ -198,6 +198,82 @@ export const mangaRouter = t.router({
       schedule(manga, true);
 
       return manga;
+    }),
+  update: t.procedure
+    .input(
+      z.object({
+        id: z.number(),
+        interval: z
+          .string()
+          .trim()
+          .min(1)
+          .refine((value) => isCronValid(value), {
+            message: 'Invalid interval',
+          }),
+        anilistId: z.string().nullish(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { id, interval, anilistId } = input;
+      const mangaInDb = await ctx.prisma.manga.findUniqueOrThrow({
+        where: { id },
+      });
+
+      if (anilistId) {
+        await bindTitleToAnilistId(mangaInDb.title, anilistId);
+      }
+
+      const mangaDetail: Manga | undefined = await getMangaDetail(mangaInDb.source, mangaInDb.title);
+      if (!mangaDetail) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `Cannot find the metadata for ${mangaInDb.title}.`,
+        });
+      }
+
+      await ctx.prisma.metadata.update({
+        where: {
+          id: mangaInDb.metadataId,
+        },
+        data: {
+          cover: mangaDetail.Metadata.Cover,
+          authors: mangaDetail.Metadata.Author ? [mangaDetail.Metadata.Author] : [],
+          characters: mangaDetail.Metadata.Characters,
+          genres: mangaDetail.Metadata.Genres,
+          startDate: mangaDetail.Metadata.StartDate
+            ? new Date(
+                mangaDetail.Metadata.StartDate.Year,
+                mangaDetail.Metadata.StartDate.Month,
+                mangaDetail.Metadata.StartDate.Day,
+              )
+            : undefined,
+          endDate: mangaDetail.Metadata.EndDate
+            ? new Date(
+                mangaDetail.Metadata.EndDate.Year,
+                mangaDetail.Metadata.EndDate.Month,
+                mangaDetail.Metadata.EndDate.Day,
+              )
+            : undefined,
+          status: mangaDetail.Metadata.Status,
+          summary: mangaDetail.Metadata.Summary,
+          synonyms: mangaDetail.Metadata.Synonyms,
+          tags: mangaDetail.Metadata.Tags,
+          urls: mangaDetail.Metadata.URLs,
+        },
+      });
+
+      if (interval !== mangaInDb.interval) {
+        const updatedManga = await ctx.prisma.manga.update({
+          include: { library: true, metadata: true },
+          where: { id },
+          data: {
+            interval,
+          },
+        });
+        await schedule(updatedManga, false);
+      }
+
+      return ctx.prisma.manga.findUniqueOrThrow({ include: { metadata: true, library: true }, where: { id } });
     }),
   history: t.procedure.query(async ({ ctx }) => {
     return ctx.prisma.chapter.findMany({

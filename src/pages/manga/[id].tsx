@@ -12,7 +12,6 @@ export default function MangaPage() {
       id: parseInt(id as string, 10),
     },
     {
-      staleTime: Infinity,
       enabled: id !== undefined,
     },
   );

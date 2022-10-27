@@ -83,20 +83,15 @@ export default function IndexPage() {
     <ScrollArea sx={{ height: 'calc(100vh - 88px)' }}>
       <Grid m={12} justify="flex-start">
         <Grid.Col span="content">
-          <AddManga
-            onAdd={() => {
-              mangaQuery.refetch();
-            }}
-          />
+          <AddManga onAdd={() => mangaQuery.refetch()} />
         </Grid.Col>
         {mangaQuery.data &&
           mangaQuery.data.map((manga) => {
             return (
               <Grid.Col span="content" key={manga.id}>
                 <MangaCard
-                  badge={manga.source}
-                  title={manga.title}
-                  cover={manga.metadata.cover}
+                  manga={manga}
+                  onUpdate={() => mangaQuery.refetch()}
                   onRemove={(shouldRemoveFiles: boolean) => handleRemove(manga.id, manga.title, shouldRemoveFiles)}
                   onClick={() => router.push(`/manga/${manga.id}`)}
                 />
