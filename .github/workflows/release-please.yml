@@ -38,10 +38,7 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-        
-      - name: Lint
-        run: pnpm lint
-      
+
       - name: Build
         run: pnpm build
 
@@ -58,7 +55,7 @@ jobs:
         with:
           release-type: node
           command: manifest
-    
+
   build-and-push:
     needs: release-please
     strategy:
@@ -117,7 +114,7 @@ jobs:
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:v${{ needs.release-please.outputs.release_tag }}
         if: ${{ needs.release-please.outputs.release_created }}
-      
+
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache
