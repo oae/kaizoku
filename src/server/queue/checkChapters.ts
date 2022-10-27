@@ -18,45 +18,39 @@ const checkChapters = async (manga: MangaWithLibraryAndMetadata) => {
   const mangaDir = path.resolve(manga.library.path, sanitizer(manga.title));
   const missingChapterFiles = await findMissingChapterFiles(mangaDir, manga.source, manga.title);
 
+  const localChapters = await getChaptersFromLocal(mangaDir);
+  const dbChapters = await prisma.chapter.findMany({
+    where: {
+      mangaId: manga.id,
+    },
+  });
+
+  const dbOnlyChapters = dbChapters.filter(
+    (dbChapter) => localChapters.findIndex((localChapter) => localChapter.index === dbChapter.index) < 0,
+  );
+
+  const missingDbChapters = localChapters.filter(
+    (localChapter) => dbChapters.findIndex((dbChapter) => dbChapter.index === localChapter.index) < 0,
+  );
+
+  await prisma.$transaction([
+    ...dbOnlyChapters.map((chapter) =>
+      prisma.chapter.delete({
+        where: {
+          id: chapter.id,
+        },
+      }),
+    ),
+    prisma.chapter.createMany({
+      data: missingDbChapters.map((chapter) => ({
+        ...chapter,
+        mangaId: manga.id,
+      })),
+    }),
+  ]);
+
   if (missingChapterFiles.length === 0) {
     logger.info(`There are no missing chapter files for ${manga.title}`);
-
-    const localChapters = await getChaptersFromLocal(mangaDir);
-    const dbChapters = await prisma.chapter.findMany({
-      where: {
-        mangaId: manga.id,
-      },
-    });
-
-    const dbOnlyChapters = dbChapters.filter(
-      (dbChapter) => localChapters.findIndex((localChapter) => localChapter.index === dbChapter.index) < 0,
-    );
-
-    await Promise.all(
-      dbOnlyChapters.map(async (chapter) => {
-        await prisma.chapter.delete({
-          where: {
-            id: chapter.id,
-          },
-        });
-      }),
-    );
-
-    const missingDbChapters = localChapters.filter(
-      (localChapter) => dbChapters.findIndex((dbChapter) => dbChapter.index === localChapter.index) < 0,
-    );
-
-    await Promise.all(
-      missingDbChapters.map(async (chapter) => {
-        return prisma.chapter.create({
-          data: {
-            ...chapter,
-            mangaId: manga.id,
-          },
-        });
-      }),
-    );
-
     return;
   }
 
