@@ -44,7 +44,9 @@ jobs:
 
   release-please:
     outputs:
-      release_tag: ${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
+      release_major: ${{ steps.release.outputs.major }}
+      release_minor: ${{ steps.release.outputs.minor }}
+      release_patch: ${{ steps.release.outputs.patch }}
       release_created: ${{ steps.release.outputs.release_created }}
     needs: check
     runs-on: ubuntu-latest
@@ -58,9 +60,6 @@ jobs:
 
   build-and-push:
     needs: release-please
-    strategy:
-      matrix:
-        platform: [linux/amd64, linux/arm64]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -69,7 +68,7 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-        if: ${{ matrix.platform == 'linux/arm64' && needs.release-please.outputs.release_created }}
+        if: ${{ needs.release-please.outputs.release_created }}
 
       - name: Set up Docker Build
         uses: docker/setup-buildx-action@v2
@@ -94,9 +93,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-${{ matrix.platform }}-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.platform }}-buildx-
+            ${{ runner.os }}-buildx-
         if: ${{ needs.release-please.outputs.release_created }}
 
       - name: Build
@@ -105,14 +104,18 @@ jobs:
           context: .
           file: docker/Dockerfile
           push: ${{ needs.release-please.outputs.release_created }}
-          platforms: ${{ matrix.platform }}
+          platforms: linux/amd64,linux/arm64
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/kaizoku:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/kaizoku:v${{ needs.release-please.outputs.release_tag }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/kaizoku:v${{ needs.release-please.outputs.release_major }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/kaizoku:v${{ needs.release-please.outputs.release_major }}.${{ needs.release-please.outputs.release_minor }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/kaizoku:v${{ needs.release-please.outputs.release_major }}.${{ needs.release-please.outputs.release_minor }}.${{ needs.release-please.outputs.release_patch }}
             ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:v${{ needs.release-please.outputs.release_tag }}
+            ghcr.io/${{ github.repository }}:v${{ needs.release-please.outputs.release_major }}
+            ghcr.io/${{ github.repository }}:v${{ needs.release-please.outputs.release_major }}.${{ needs.release-please.outputs.release_minor }}
+            ghcr.io/${{ github.repository }}:v${{ needs.release-please.outputs.release_major }}.${{ needs.release-please.outputs.release_minor }}.${{ needs.release-please.outputs.release_patch }}
         if: ${{ needs.release-please.outputs.release_created }}
 
       - name: Move cache
