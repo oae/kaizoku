@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/oae/kaizoku/compare/kaizoku-v1.1.0...kaizoku-v1.1.1) (2022-10-28)
+
+
+### Bug Fixes
+
+* prevent incorrect image generation ([31075fd](https://github.com/oae/kaizoku/commit/31075fd7aceb3d9dfe603541a52dd165d30e82c7))
+
 ## [1.1.0](https://github.com/oae/kaizoku/compare/kaizoku-v1.0.0...kaizoku-v1.1.0) (2022-10-27)
 
 
