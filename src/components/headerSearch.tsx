@@ -26,6 +26,7 @@ export function SearchControl() {
 
   const router = useRouter();
   const mangaQuery = trpc.manga.query.useQuery();
+  const libraryQuery = trpc.library.query.useQuery();
   const { classes, cx } = useStyles();
 
   useEffect(() => {
@@ -69,6 +70,7 @@ export function SearchControl() {
       searchIcon={<IconSearch size={18} />}
       highlightQuery
       limit={5}
+      disabled={libraryQuery.isLoading || !libraryQuery.data}
       searchPlaceholder="Search..."
       shortcut="ctrl + p"
       nothingFoundMessage="Nothing found..."
