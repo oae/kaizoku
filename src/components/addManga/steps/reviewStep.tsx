@@ -48,12 +48,12 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
 
   const handleBind = async () => {
     setOpened(false);
-    if (!anilistId || !manga?.Name) {
+    if (!anilistId || !manga?.name) {
       return;
     }
     await bindMutation.mutateAsync({
       anilistId,
-      title: manga.Name,
+      title: manga.name,
     });
 
     query.refetch();
@@ -82,10 +82,10 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
                     boxShadow: theme.shadows.xl,
                   })}
                   src="/cover-not-found.jpg"
-                  alt={manga.Name}
+                  alt={manga.name}
                 />
               }
-              src={manga.Metadata.Cover}
+              src={manga.metadata.cover.extraLarge || manga.metadata.cover.large || manga.metadata.cover.medium}
             />
           </Grid.Col>
           <Grid.Col span={8}>
@@ -94,7 +94,7 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
               labelPosition="center"
               label={
                 <>
-                  <Title order={3}>{manga.Name}</Title>
+                  <Title order={3}>{manga.name}</Title>
                   <Popover
                     width={300}
                     trapFocus
@@ -140,7 +140,7 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
                         rightSectionWidth={42}
                         label={
                           <Text size="sm" mb="xs">
-                            Please enter a new AniList id for {manga.Name}
+                            Please enter a new AniList id for {manga.name}
                           </Text>
                         }
                         placeholder="AniList Id"
@@ -150,9 +150,9 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
                 </>
               }
             />
-            {manga.Metadata.Synonyms && (
+            {manga.metadata.synonyms && (
               <Group spacing="xs">
-                {manga.Metadata.Synonyms.map((synonym) => (
+                {manga.metadata.synonyms.map((synonym) => (
                   <Tooltip label={synonym} key={synonym}>
                     <div style={{ maxWidth: 100 }}>
                       <Badge color="blue" variant="filled" size="sm" fullWidth>
@@ -164,9 +164,9 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
               </Group>
             )}
             <Divider variant="dashed" my="xs" label="Status" />
-            {manga.Metadata.Status ? (
+            {manga.metadata.status ? (
               <Badge color="cyan" variant="filled" size="sm">
-                {manga.Metadata.Status}
+                {manga.metadata.status}
               </Badge>
             ) : (
               <Text size="sm">No status...</Text>
@@ -175,16 +175,16 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
             <Text>
               There are &nbsp;
               <Badge color="teal" variant="outline" size="lg">
-                {manga.Chapters?.length || 0}
+                {manga.chapters?.length || 0}
               </Badge>
               &nbsp; chapters
             </Text>
             <Divider variant="dashed" my="xs" label="Summary" />
-            <Text size="sm">{manga.Metadata.Summary || 'No summary...'}</Text>
+            <Text size="sm">{manga.metadata.summary || 'No summary...'}</Text>
             <Divider variant="dashed" my="xs" label="Genres" />
-            {manga.Metadata.Genres ? (
+            {manga.metadata.genres ? (
               <Group spacing="xs">
-                {manga.Metadata.Genres.map((genre) => (
+                {manga.metadata.genres.map((genre) => (
                   <Tooltip label={genre} key={genre}>
                     <div style={{ maxWidth: 100 }}>
                       <Badge color="indigo" variant="light" size="xs" fullWidth>
@@ -198,9 +198,9 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
               <Text size="sm">No genres...</Text>
             )}
             <Divider variant="dashed" my="xs" label="Tags" />
-            {manga.Metadata.Tags ? (
+            {manga.metadata.tags ? (
               <Group spacing="xs">
-                {manga.Metadata.Tags.map((tag) => (
+                {manga.metadata.tags.map((tag) => (
                   <Tooltip label={tag} key={tag}>
                     <div style={{ maxWidth: 100 }}>
                       <Badge color="violet" variant="light" size="xs" fullWidth>

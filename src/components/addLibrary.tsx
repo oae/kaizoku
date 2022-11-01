@@ -68,7 +68,7 @@ function Form({ onClose }: { onClose: () => void }) {
       })}
     >
       <LoadingOverlay visible={visible} overlayBlur={2} />
-      <TextInput data-autoFocus label="Library path" placeholder="/data" {...form.getInputProps('library.path')} />
+      <TextInput data-autofocus label="Library path" placeholder="/data" {...form.getInputProps('library.path')} />
 
       <Box
         sx={(theme) => ({

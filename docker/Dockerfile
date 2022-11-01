@@ -55,13 +55,13 @@ WORKDIR /tmp
 
 RUN \
   if [ "$(uname -m)" = "x86_64" ] ; then \
-  curl -L "https://github.com/metafates/mangal/releases/download/v3.14.2/mangal_3.14.2_Linux_x86_64.tar.gz" -o mangal.tar.gz ;\
+  curl -L "https://github.com/metafates/mangal/releases/download/v4.0.0/mangal_4.0.0_Linux_x86_64.tar.gz" -o mangal.tar.gz ;\
   elif [ "$(uname -m)" = "armv6l" ] ; then \
-  curl -L "https://github.com/metafates/mangal/releases/download/v3.14.2/mangal_3.14.2_Linux_armv6.tar.gz" -o mangal.tar.gz ;\
+  curl -L "https://github.com/metafates/mangal/releases/download/v4.0.0/mangal_4.0.0_Linux_armv6.tar.gz" -o mangal.tar.gz ;\
   elif [ "$(uname -m)" = "i386" ] ; then \
-  curl -L "https://github.com/metafates/mangal/releases/download/v3.14.2/mangal_3.14.2_Linux_i386.tar.gz" -o mangal.tar.gz ;\
+  curl -L "https://github.com/metafates/mangal/releases/download/v4.0.0/mangal_4.0.0_Linux_i386.tar.gz" -o mangal.tar.gz ;\
   elif [ "$(uname -m)" = "aarch64" ] ; then \
-  curl -L "https://github.com/metafates/mangal/releases/download/v3.14.2/mangal_3.14.2_Linux_arm64.tar.gz" -o mangal.tar.gz ;\
+  curl -L "https://github.com/metafates/mangal/releases/download/v4.0.0/mangal_4.0.0_Linux_arm64.tar.gz" -o mangal.tar.gz ;\
   fi
 RUN tar xf mangal.tar.gz
 RUN mv mangal /usr/bin/mangal
@@ -74,6 +74,8 @@ ENV NEXT_TELEMETRY_DISABLED 1
 ENV HOME="/config"
 ENV KAIZOKU_LOG_PATH="/logs"
 ENV MANGAL_METADATA_COMIC_INFO_XML=true
+ENV MANGAL_METADATA_COMIC_INFO_XML_ADD_DATE=true
+ENV MANGAL_METADATA_COMIC_INFO_XML_ALTERNATIVE_DATE=true
 ENV MANGAL_METADATA_FETCH_ANILIST=true
 ENV MANGAL_METADATA_SERIES_JSON=true
 ENV MANGAL_FORMATS_USE=cbz

@@ -5,44 +5,65 @@ import { logger } from '../../utils/logging';
 import { sanitizer } from '../../utils';
 
 interface IOutput {
-  Manga: Manga[];
+  result: Result[];
 }
 
-export interface Manga {
-  Name: string;
-  URL: string;
-  Index: number;
-  ID: string;
-  Chapters: Chapter[];
-  Metadata: Metadata;
+interface Result {
+  source: string;
+  mangal: Mangal;
+}
+
+interface Mangal {
+  name: string;
+  url: string;
+  index: number;
+  id: string;
+  chapters: Chapter[];
+  metadata: Metadata;
 }
 
 interface Chapter {
-  Name: string;
-  URL: string;
-  Index: number;
-  ID: string;
-  Volume: string;
+  name: string;
+  url: string;
+  index: number;
+  id: string;
+  volume: string;
 }
 
 interface Metadata {
-  Genres: string[];
-  Summary: string;
-  Author: string;
-  Cover: string;
-  Tags: string[];
-  Characters: string[];
-  Status: string;
-  StartDate: MangaDate;
-  EndDate: MangaDate;
-  Synonyms: string[];
-  URLs: string[];
+  genres: string[];
+  summary: string;
+  staff: Staff;
+  cover: Cover;
+  bannerImage: string;
+  tags: string[];
+  characters: string[];
+  status: string;
+  startDate: MangaDate;
+  endDate: MangaDate;
+  synonyms: string[];
+  chapters: number;
+  urls: string[];
+}
+
+interface Cover {
+  extraLarge: string;
+  large: string;
+  medium: string;
+  color: string;
 }
 
 interface MangaDate {
-  Year: number;
-  Month: number;
-  Day: number;
+  year: number;
+  month: number;
+  day: number;
+}
+
+interface Staff {
+  story: string[];
+  art: string[];
+  translation: string[];
+  lettering: string[];
 }
 
 interface ChapterFile {
@@ -51,9 +72,11 @@ interface ChapterFile {
   fileName: string;
 }
 
+export const getMangaPath = (libraryPath: string, title: string) => path.resolve(libraryPath, sanitizer(title));
+
 export const getAvailableSources = async () => {
   try {
-    const { stdout, command } = await execa('mangal', ['sources', '-r']);
+    const { stdout, command } = await execa('mangal', ['sources', 'list', '-r']);
     logger.info(`Get available sources with following command: ${command}`);
     return stdout
       .split('\n')
@@ -75,7 +98,20 @@ export const bindTitleToAnilistId = async (title: string, anilistId: string) => 
   }
 };
 
-export const getMangaPath = (libraryPath: string, title: string) => path.resolve(libraryPath, sanitizer(title));
+export const updateExistingMangaMetadata = async (libraryPath: string, title: string) => {
+  try {
+    const { command } = await execa('mangal', [
+      'inline',
+      'anilist',
+      'update',
+      '--path',
+      getMangaPath(libraryPath, title),
+    ]);
+    logger.info(`Updated existing manga metadata: ${command}`);
+  } catch (err) {
+    logger.error(`Failed to update existing manga metadata. err: ${err}`);
+  }
+};
 
 export const search = async (source: string, keyword: string): Promise<IOutput> => {
   try {
@@ -87,7 +123,7 @@ export const search = async (source: string, keyword: string): Promise<IOutput> 
   }
 
   return {
-    Manga: [],
+    result: [],
   };
 };
 
@@ -106,9 +142,14 @@ export const getChaptersFromRemote = async (source: string, title: string): Prom
       '-j',
     ]);
     logger.info(`Get chapters with following command: ${command}`);
-    const result: IOutput = JSON.parse(stdout);
-    if (result && result.Manga.length === 1 && result.Manga[0]?.Chapters && result.Manga[0]?.Chapters.length > 0) {
-      return result.Manga[0].Chapters.map((c) => c.Index - 1);
+    const output: IOutput = JSON.parse(stdout);
+    if (
+      output &&
+      output.result.length === 1 &&
+      output.result[0]?.mangal.chapters &&
+      output.result[0]?.mangal.chapters.length > 0
+    ) {
+      return output.result[0].mangal.chapters.map((c) => c.index - 1);
     }
   } catch (err) {
     logger.error(err);
@@ -117,7 +158,7 @@ export const getChaptersFromRemote = async (source: string, title: string): Prom
   return [];
 };
 
-export const getMangaDetail = async (source: string, title: string): Promise<Manga | undefined> => {
+export const getMangaDetail = async (source: string, title: string): Promise<Mangal | undefined> => {
   try {
     const { stdout, command } = await execa('mangal', [
       'inline',
@@ -127,12 +168,14 @@ export const getMangaDetail = async (source: string, title: string): Promise<Man
       title,
       '--manga',
       'first',
+      '--chapters',
+      'all',
       '-j',
     ]);
     logger.info(`Get manga detail with following command: ${command}`);
-    const result: IOutput = JSON.parse(stdout);
-    if (result && result.Manga.length === 1) {
-      return result.Manga[0];
+    const output: IOutput = JSON.parse(stdout);
+    if (output && output.result.length === 1) {
+      return output.result[0].mangal;
     }
   } catch (err) {
     logger.error(err);

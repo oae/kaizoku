@@ -7,6 +7,7 @@ import { logger } from '../utils/logging';
 import { checkChaptersQueue, scheduleAll } from './queue/checkChapters';
 import { downloadQueue } from './queue/download';
 import { notificationQueue } from './queue/notify';
+import { updateMetadataQueue } from './queue/updateMetadata';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -17,7 +18,12 @@ const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/bull/queues');
 
 createBullBoard({
-  queues: [new BullAdapter(downloadQueue), new BullAdapter(checkChaptersQueue), new BullAdapter(notificationQueue)],
+  queues: [
+    new BullAdapter(downloadQueue),
+    new BullAdapter(checkChaptersQueue),
+    new BullAdapter(notificationQueue),
+    new BullAdapter(updateMetadataQueue),
+  ],
   serverAdapter,
 });
 
