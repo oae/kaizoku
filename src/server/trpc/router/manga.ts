@@ -3,7 +3,7 @@ import path from 'path';
 import { z } from 'zod';
 import { isCronValid, sanitizer } from '../../../utils';
 import { checkChaptersQueue, removeJob, schedule } from '../../queue/checkChapters';
-import { downloadQueue } from '../../queue/download';
+import { downloadQueue, downloadWorker, removeDownloadJobs } from '../../queue/download';
 import {
   bindTitleToAnilistId,
   getAvailableSources,
@@ -89,9 +89,11 @@ export const mangaRouter = t.router({
     )
     .mutation(async ({ input, ctx }) => {
       const { id, shouldRemoveFiles } = input;
+      await downloadWorker.pause(true);
       const removed = await ctx.prisma.manga.delete({
         include: {
           library: true,
+          chapters: true,
         },
         where: {
           id,
@@ -102,11 +104,13 @@ export const mangaRouter = t.router({
           id: removed.metadataId,
         },
       });
+      await removeJob(removed.title);
+      await removeDownloadJobs(removed);
       if (shouldRemoveFiles === true) {
         const mangaPath = path.resolve(removed.library.path, sanitizer(removed.title));
         await removeManga(mangaPath);
       }
-      await removeJob(removed.title);
+      downloadWorker.resume();
     }),
   add: t.procedure
     .input(
