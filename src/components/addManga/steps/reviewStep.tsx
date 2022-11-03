@@ -182,7 +182,7 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
             <Divider variant="dashed" my="xs" label="Summary" />
             <Text size="sm">{manga.metadata.summary || 'No summary...'}</Text>
             <Divider variant="dashed" my="xs" label="Genres" />
-            {manga.metadata.genres ? (
+            {manga.metadata.genres && manga.metadata.genres.length !== 0 ? (
               <Group spacing="xs">
                 {manga.metadata.genres.map((genre) => (
                   <Tooltip label={genre} key={genre}>
@@ -198,7 +198,7 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
               <Text size="sm">No genres...</Text>
             )}
             <Divider variant="dashed" my="xs" label="Tags" />
-            {manga.metadata.tags ? (
+            {manga.metadata.tags && manga.metadata.tags.length !== 0 ? (
               <Group spacing="xs">
                 {manga.metadata.tags.map((tag) => (
                   <Tooltip label={tag} key={tag}>
