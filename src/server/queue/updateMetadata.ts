@@ -1,4 +1,5 @@
 import { Job, Queue, Worker } from 'bullmq';
+import { refreshMetadata } from '../utils/integration';
 
 import { getMangaPath, updateExistingMangaMetadata } from '../utils/mangal';
 
@@ -13,6 +14,7 @@ export const updateMetadataWorker = new Worker(
     const { libraryPath, mangaTitle }: IUpdateMetadataWorkerData = job.data;
     try {
       await updateExistingMangaMetadata(libraryPath, mangaTitle);
+      await refreshMetadata(mangaTitle);
       await job.updateProgress(100);
     } catch (err) {
       await job.log(`${err}`);

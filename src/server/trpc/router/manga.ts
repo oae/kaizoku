@@ -5,6 +5,7 @@ import { isCronValid, sanitizer } from '../../../utils';
 import { checkChaptersQueue, removeJob, schedule } from '../../queue/checkChapters';
 import { downloadQueue, downloadWorker, removeDownloadJobs } from '../../queue/download';
 import { scheduleUpdateMetadata } from '../../queue/updateMetadata';
+import { scanLibrary } from '../../utils/integration';
 import { bindTitleToAnilistId, getAvailableSources, getMangaDetail, removeManga, search } from '../../utils/mangal';
 import { t } from '../trpc';
 
@@ -106,6 +107,7 @@ export const mangaRouter = t.router({
       if (shouldRemoveFiles === true) {
         const mangaPath = path.resolve(removed.library.path, sanitizer(removed.title));
         await removeManga(mangaPath);
+        await scanLibrary();
       }
       downloadWorker.resume();
     }),

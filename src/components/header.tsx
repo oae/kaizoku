@@ -2,6 +2,7 @@ import { Box, Container, createStyles, Group, Header, Title, UnstyledButton } fr
 import Image from 'next/image';
 import Link from 'next/link';
 import { SearchControl } from './headerSearch';
+import { SettingsMenuButton } from './settingsMenu';
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -44,8 +45,9 @@ export function KaizokuHeader() {
             </UnstyledButton>
           </Link>
 
-          <Group spacing={5}>
+          <Group position="center" spacing={5}>
             <SearchControl />
+            <SettingsMenuButton />
           </Group>
         </Box>
       </Container>

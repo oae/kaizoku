@@ -6,6 +6,7 @@ import next from 'next';
 import { logger } from '../utils/logging';
 import { checkChaptersQueue, scheduleAll } from './queue/checkChapters';
 import { downloadQueue } from './queue/download';
+import { integrationQueue } from './queue/integration';
 import { notificationQueue } from './queue/notify';
 import { updateMetadataQueue } from './queue/updateMetadata';
 
@@ -23,6 +24,7 @@ createBullBoard({
     new BullAdapter(checkChaptersQueue),
     new BullAdapter(notificationQueue),
     new BullAdapter(updateMetadataQueue),
+    new BullAdapter(integrationQueue),
   ],
   serverAdapter,
 });

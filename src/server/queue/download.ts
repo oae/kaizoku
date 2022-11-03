@@ -4,6 +4,7 @@ import { sanitizer } from '../../utils';
 import { logger } from '../../utils/logging';
 import { prisma } from '../db/client';
 import { downloadChapter, getChapterFromLocal, getMangaPath, removeManga } from '../utils/mangal';
+import { integrationQueue } from './integration';
 import { notificationQueue } from './notify';
 
 const mangaWithLibraryAndMetadata = Prisma.validator<Prisma.MangaArgs>()({
@@ -61,6 +62,7 @@ export const downloadWorker = new Worker(
         source: manga.source,
         url: manga.metadata.urls.find((url) => url.includes('anilist')),
       });
+      await integrationQueue.add('run_integrations', null);
       await job.updateProgress(100);
     } catch (err) {
       await job.log(`${err}`);
