@@ -88,8 +88,10 @@ function HistoryItemTitle({ chapter }: { chapter: HistoryItemType }) {
   const { classes } = useStyles();
   return (
     <Grid gutter={5}>
-      <Grid.Col span="content" style={{ maxWidth: 180, whiteSpace: 'nowrap', overflow: 'hidden' }}>
-        <Text weight={600}>{chapter.manga.title}</Text>
+      <Grid.Col span="content" style={{ maxWidth: 160, whiteSpace: 'nowrap', overflow: 'hidden' }}>
+        <Tooltip inline label={chapter.manga.title} position="right" withinPortal withArrow>
+          <Text weight={600}>{chapter.manga.title}</Text>
+        </Tooltip>
       </Grid.Col>
       <Grid.Col span="auto">
         <Divider mt="xs" variant="dotted" />
