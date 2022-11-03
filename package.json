@@ -58,6 +58,7 @@
     "express": "^4.18.2",
     "framer-motion": "^7.6.1",
     "mantine-datatable": "^1.7.9",
+    "nanoid": "v3",
     "next": "12.3.1",
     "node-telegram-bot-api": "^0.59.0",
     "pino": "^8.6.1",

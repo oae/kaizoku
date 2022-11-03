@@ -57,3 +57,18 @@ model Metadata {
   synonyms   String[]  @default([])
   urls       String[]  @default([])
 }
+
+model Settings {
+  id                   Int      @id @default(autoincrement())
+  telegramEnabled      Boolean  @default(false)
+  telegramToken        String?
+  telegramChatId       String?
+  telegramSendSilently Boolean  @default(false)
+  appriseEnabled       Boolean  @default(false)
+  appriseHost          String?
+  appriseUrls          String[] @default([])
+  komgaEnabled         Boolean  @default(false)
+  komgaHost            String?
+  komgaUser            String?
+  komgaPassword        String?
+}

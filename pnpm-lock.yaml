@@ -54,6 +54,7 @@ specifiers:
   husky: ^8.0.1
   lint-staged: ^13.0.3
   mantine-datatable: ^1.7.9
+  nanoid: v3
   next: 12.3.1
   node-telegram-bot-api: ^0.59.0
   pino: ^8.6.1
@@ -104,6 +105,7 @@ dependencies:
   express: 4.18.2
   framer-motion: 7.6.1_biqbaboplfbrettd7655fr4n2y
   mantine-datatable: 1.7.11_74ukrfujzqikl2eukc5thaxmea
+  nanoid: 3.3.4
   next: 12.3.1_biqbaboplfbrettd7655fr4n2y
   node-telegram-bot-api: 0.59.0
   pino: 8.7.0
