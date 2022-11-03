@@ -44,14 +44,8 @@ export const updateMetadataQueue = new Queue('updateMetadataQueue', {
 });
 
 export const scheduleUpdateMetadata = async (libraryPath: string, mangaTitle: string) => {
-  await updateMetadataQueue.add(
-    getMangaPath(libraryPath, mangaTitle),
-    {
-      libraryPath,
-      mangaTitle,
-    },
-    {
-      jobId: getMangaPath(libraryPath, mangaTitle),
-    },
-  );
+  await updateMetadataQueue.add(getMangaPath(libraryPath, mangaTitle), {
+    libraryPath,
+    mangaTitle,
+  });
 };
