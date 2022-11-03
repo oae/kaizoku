@@ -1,34 +1,40 @@
-import { createStyles, Image, SimpleGrid, Text, UnstyledButton } from '@mantine/core';
+import { createStyles, Image, ScrollArea, SimpleGrid, Text, UnstyledButton } from '@mantine/core';
 import { useUncontrolled } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 
-const useStyles = createStyles((theme, { checked, disabled }: { checked: boolean; disabled: boolean }) => ({
-  button: {
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%',
-    transition: 'background-color 150ms ease, border-color 150ms ease',
-    border: `1px solid ${
-      checked
-        ? theme.fn.variant({ variant: 'outline', color: theme.primaryColor }).border
-        : theme.colorScheme === 'dark'
-        ? theme.colors.dark[8]
-        : theme.colors.gray[3]
-    }`,
-    borderRadius: theme.radius.sm,
-    padding: theme.spacing.sm,
-    backgroundColor: checked
-      ? theme.fn.variant({ variant: 'light', color: theme.primaryColor }).background
-      : disabled
-      ? theme.colors.gray[3]
-      : theme.white,
-  },
+const useStyles = createStyles((theme, { checked, disabled }: { checked: boolean; disabled: boolean }) => {
+  let backgroundColor = 'light';
+  if (disabled) {
+    backgroundColor = theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[4];
+  }
+  if (checked) {
+    backgroundColor = theme.fn.variant({ variant: 'light', color: theme.primaryColor }).background!;
+  }
+  return {
+    button: {
+      display: 'flex',
+      alignItems: 'center',
+      width: '100%',
+      transition: 'background-color 150ms ease, border-color 150ms ease',
+      border: `1px solid ${
+        checked
+          ? theme.fn.variant({ variant: 'outline', color: theme.primaryColor }).border
+          : theme.colorScheme === 'dark'
+          ? theme.colors.dark[8]
+          : theme.colors.gray[3]
+      }`,
+      borderRadius: theme.radius.sm,
+      padding: theme.spacing.sm,
+      backgroundColor,
+      outline: 'none !important',
+    },
 
-  body: {
-    flex: 1,
-    marginLeft: theme.spacing.md,
-  },
-}));
+    body: {
+      flex: 1,
+      marginLeft: theme.spacing.md,
+    },
+  };
+});
 
 interface ImageCheckboxProps {
   checked?: boolean;
@@ -115,31 +121,33 @@ export function MangaSearchResult({
   }, [items]);
 
   return (
-    <SimpleGrid
-      cols={2}
-      breakpoints={[
-        { maxWidth: 'md', cols: 2 },
-        { maxWidth: 'sm', cols: 1 },
-      ]}
-    >
-      {items.map((m) => (
-        <ImageCheckbox
-          key={m.title}
-          image={m.cover || '/cover-not-found.jpg'}
-          title={m.title}
-          disabled={selected && m.title !== selected.title}
-          description={m.status}
-          onChange={(checked) => {
-            if (checked) {
-              setSelected(m);
-              onSelect(m);
-            } else {
-              setSelected(undefined);
-              onSelect(undefined);
-            }
-          }}
-        />
-      ))}
-    </SimpleGrid>
+    <ScrollArea sx={{ height: 350 }}>
+      <SimpleGrid
+        cols={2}
+        breakpoints={[
+          { maxWidth: 'md', cols: 2 },
+          { maxWidth: 'sm', cols: 1 },
+        ]}
+      >
+        {items.map((m) => (
+          <ImageCheckbox
+            key={m.title}
+            image={m.cover || '/cover-not-found.jpg'}
+            title={m.title}
+            disabled={selected && m.title !== selected.title}
+            description={m.status}
+            onChange={(checked) => {
+              if (checked) {
+                setSelected(m);
+                onSelect(m);
+              } else {
+                setSelected(undefined);
+                onSelect(undefined);
+              }
+            }}
+          />
+        ))}
+      </SimpleGrid>
+    </ScrollArea>
   );
 }

@@ -59,10 +59,10 @@ const useStyles = createStyles((theme) => ({
     paddingTop: theme.spacing.xs,
     paddingBottom: theme.spacing.xs,
     borderRadius: theme.radius.sm,
-    color: theme.colors.gray[7],
+    color: theme.colorScheme === 'dark' ? theme.colors.gray[5] : theme.colors.gray[8],
 
     '&:hover': {
-      backgroundColor: theme.colors.gray[0],
+      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.gray[9] : theme.colors.gray[0],
     },
   },
 }));

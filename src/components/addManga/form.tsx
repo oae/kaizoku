@@ -21,7 +21,7 @@ const useStyles = createStyles((theme) => ({
     right: '55px',
     width: 'calc(100% - 55px)',
     height: '50px',
-    background: 'white',
+    background: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
   },
 }));
 

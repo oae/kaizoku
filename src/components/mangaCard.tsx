@@ -59,12 +59,14 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   },
   editButton: {
     ref: getRef('editButton'),
+    backgroundColor: theme.white,
+    color: theme.colors.blue[6],
     position: 'absolute',
     right: 10,
     bottom: 10,
     display: 'none',
     '&:hover': {
-      backgroundColor: theme.white,
+      backgroundColor: theme.colors.gray[0],
     },
   },
   title: {

@@ -11,7 +11,7 @@ const useStyles = createStyles((theme) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.colors.gray[4],
+    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[4],
     cursor: 'pointer',
 
     transition: 'transform 150ms ease, box-shadow 150ms ease',
@@ -20,6 +20,10 @@ const useStyles = createStyles((theme) => ({
       transform: 'scale(1.01)',
       boxShadow: theme.shadows.md,
     },
+  },
+
+  plusIcon: {
+    color: theme.colorScheme === 'light' ? theme.colors.dark[4] : theme.colors.gray[4],
   },
 }));
 
@@ -58,7 +62,7 @@ export function AddManga({ onAdd }: { onAdd: () => void }) {
   return (
     <Tooltip label="Add a new manga" position="bottom">
       <Paper shadow="lg" p="md" radius="md" className={classes.card} onClick={() => addMangaModal(onAdd)}>
-        <IconPlus color="darkblue" opacity={0.5} size={96} />
+        <IconPlus className={classes.plusIcon} opacity={0.5} size={96} />
       </Paper>
     </Tooltip>
   );

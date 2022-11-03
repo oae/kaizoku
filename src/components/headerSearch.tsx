@@ -17,6 +17,16 @@ const useStyles = createStyles((theme) => ({
     backgroundColor: theme.white,
     cursor: 'pointer',
     outline: '0 !important',
+
+    '&:hover': {
+      backgroundColor: theme.colors.gray[0],
+    },
+  },
+
+  kbd: {
+    backgroundColor: theme.colors.gray[4],
+    borderColor: theme.colors.gray[4],
+    color: theme.black,
   },
 }));
 
@@ -87,7 +97,13 @@ export function SearchControl() {
           </Grid.Col>
           <Grid.Col span="content">
             <Group spacing={5}>
-              <Kbd py={0}>Ctrl</Kbd>+<Kbd py={0}>P</Kbd>
+              <Kbd className={classes.kbd} py={0}>
+                Ctrl
+              </Kbd>
+              +
+              <Kbd className={classes.kbd} py={0}>
+                P
+              </Kbd>
             </Group>
           </Grid.Col>
         </Grid>
