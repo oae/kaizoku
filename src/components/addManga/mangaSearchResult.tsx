@@ -121,7 +121,7 @@ export function MangaSearchResult({
   }, [items]);
 
   return (
-    <ScrollArea sx={{ height: 350 }}>
+    <ScrollArea.Autosize maxHeight={350}>
       <SimpleGrid
         cols={2}
         breakpoints={[
@@ -148,6 +148,6 @@ export function MangaSearchResult({
           />
         ))}
       </SimpleGrid>
-    </ScrollArea>
+    </ScrollArea.Autosize>
   );
 }
