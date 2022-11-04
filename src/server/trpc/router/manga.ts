@@ -175,8 +175,8 @@ export const mangaRouter = t.router({
                 mangaDetail.metadata.cover?.large ||
                 mangaDetail.metadata.cover?.medium,
               authors: mangaDetail.metadata.staff?.story ? [...mangaDetail.metadata.staff.story] : [],
-              characters: mangaDetail.metadata.characters,
-              genres: mangaDetail.metadata.genres,
+              characters: mangaDetail.metadata.characters ? [...mangaDetail.metadata.characters] : [],
+              genres: mangaDetail.metadata.genres ? [...mangaDetail.metadata.genres] : [],
               startDate: mangaDetail.metadata.startDate
                 ? new Date(
                     mangaDetail.metadata.startDate.year,
@@ -193,9 +193,9 @@ export const mangaRouter = t.router({
                 : undefined,
               status: mangaDetail.metadata.status,
               summary: mangaDetail.metadata.summary,
-              synonyms: mangaDetail.metadata.synonyms,
-              tags: mangaDetail.metadata.tags,
-              urls: mangaDetail.metadata.urls,
+              synonyms: mangaDetail.metadata.synonyms ? [...mangaDetail.metadata.synonyms] : [],
+              tags: mangaDetail.metadata.tags ? [...mangaDetail.metadata.tags] : [],
+              urls: mangaDetail.metadata.urls ? [...mangaDetail.metadata.urls] : [],
             },
           },
         },

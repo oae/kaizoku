@@ -167,7 +167,15 @@ export const updateExistingMangaMetadata = async (libraryPath: string, title: st
 
 export const search = async (source: string, keyword: string): Promise<IOutput> => {
   try {
-    const { stdout, command } = await execa('mangal', ['inline', '--source', source, '--query', keyword, '-j']);
+    const { stdout, command } = await execa('mangal', [
+      'inline',
+      '--source',
+      source,
+      '--include-anilist-manga',
+      '--query',
+      keyword,
+      '-j',
+    ]);
     logger.info(`Search manga with following command: ${command}`);
     return JSON.parse(stdout);
   } catch (err) {
@@ -216,6 +224,7 @@ export const getMangaDetail = async (source: string, title: string): Promise<Man
       'inline',
       '--source',
       source,
+      '--include-anilist-manga',
       '--query',
       title,
       '--manga',
