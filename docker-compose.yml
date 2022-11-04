@@ -49,3 +49,7 @@ services:
       - db:/var/lib/postgresql/data
     ports:
       - "${DATABASE_PORT:-5432}:5432"
+  apprise:
+    image: caronc/apprise:latest
+    ports:
+      - "9292:8000"

@@ -28,9 +28,6 @@ services:
       - KAIZOKU_PORT=3000
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - TELEGRAM_TOKEN=<token> # Don't set if you don't want telegram notifications.
-      - TELEGRAM_CHAT_ID=<chat_id>
-      - TELEGRAM_SEND_SILENTLY=0
       - PUID=<host user puid>
       - PGID=<host user guid>
       - TZ=Europe/Istanbul

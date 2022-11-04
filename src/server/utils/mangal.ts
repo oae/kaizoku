@@ -89,6 +89,58 @@ export const getAvailableSources = async () => {
   return [];
 };
 
+interface MangalConfig {
+  key: string;
+  value: string[] | boolean | number | string;
+  default: string[] | boolean | number | string;
+  description: string;
+  type: MangalConfigType;
+}
+
+enum MangalConfigType {
+  Bool = 'bool',
+  Int = 'int',
+  String = 'string',
+  StringArray = '[]string',
+}
+
+const excludedConfigs = [
+  'downloader.chapter_name_template',
+  'downloader.redownload_existing',
+  'downloader.download_cover',
+  'downloader.create_manga_dir',
+  'downloader.create_volume_dir',
+  'downloader.default_sources',
+  'downloader.path',
+  'metadata.comic_info_xml',
+  'metadata.fetch_anilist',
+  'metadata.series_json',
+  'formats.use',
+];
+
+export const getMangalConfig = async (): Promise<MangalConfig[]> => {
+  try {
+    const { stdout, command } = await execa('mangal', ['config', 'info', '-j']);
+    logger.info(`Getting mangal config with following command: ${command}`);
+    const result = JSON.parse(stdout) as MangalConfig[];
+
+    return result.filter((item) => !excludedConfigs.includes(item.key) && item.type !== '[]string');
+  } catch (err) {
+    logger.error(`Failed to get mangal config. err: ${err}`);
+  }
+
+  return [];
+};
+
+export const setMangalConfig = async (key: string, value: string | boolean | number | string[]) => {
+  try {
+    const { command } = await execa('mangal', ['config', 'set', '--key', key, '--value', `${value}`]);
+    logger.info(`set mangal config with following command: ${command}`);
+  } catch (err) {
+    logger.error(`Failed to set mangal config. err: ${err}`);
+  }
+};
+
 export const bindTitleToAnilistId = async (title: string, anilistId: string) => {
   try {
     const { command } = await execa('mangal', ['inline', 'anilist', 'set', '--name', title, '--id', anilistId]);
