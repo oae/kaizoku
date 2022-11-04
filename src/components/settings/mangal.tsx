@@ -13,7 +13,6 @@ import {
 import { IconCheck, IconX } from '@tabler/icons';
 import { nanoid } from 'nanoid';
 import { useEffect, useState } from 'react';
-import { logger } from '../../utils/logging';
 import { trpc } from '../../utils/trpc';
 
 const useStyles = createStyles((theme) => ({
@@ -152,7 +151,6 @@ function ArrayTextItem({
       onChange={(event) => setValue(event.currentTarget.value)}
       onBlur={() => {
         if (value !== initialValue && value) {
-          logger.info(`blur: ${value}`);
           onUpdate(value);
         }
       }}
@@ -174,7 +172,6 @@ export function ArrayItem({
   );
 
   useEffect(() => {
-    logger.info(value);
     onUpdate(
       configKey,
       Object.values(value).filter((i) => !!i),
