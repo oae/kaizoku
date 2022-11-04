@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.2.0](https://github.com/oae/kaizoku/compare/kaizoku-v1.1.1...kaizoku-v1.2.0) (2022-11-04)
+
+
+### Features
+
+* add apprise support ([7d6fe34](https://github.com/oae/kaizoku/commit/7d6fe34db6c77a5d1b274da036cf8669fef6058d))
+* add dark mode ([22f6689](https://github.com/oae/kaizoku/commit/22f6689f2306db619ec669497371bc92d6154ab4))
+* add komga integration ([04c521d](https://github.com/oae/kaizoku/commit/04c521de5b4b429172990fe45c579a3883fdc752))
+* add settings table ([5cb4457](https://github.com/oae/kaizoku/commit/5cb44571830b014e62984e13ba7dbbe21d334622))
+* add settings ui ([45980ec](https://github.com/oae/kaizoku/commit/45980ecb8b1883fbcc27bc159b7a89035ca96978))
+* update mangal to v4, allow updating existing manga metadata ([43b2693](https://github.com/oae/kaizoku/commit/43b26938d4d158365ceaac1b80ef9800f70e9ceb))
+
+
+### Bug Fixes
+
+* auto size search results ([f8eb9c6](https://github.com/oae/kaizoku/commit/f8eb9c65f1a08baf9f208996413ebac85ee808f8))
+* check the length of the tags and genres ([073fe01](https://github.com/oae/kaizoku/commit/073fe0166fa78c2e418f5c5a833eae370e8969da))
+* disable search if there are no library created yet ([a18d166](https://github.com/oae/kaizoku/commit/a18d1668596a6877a820a4262a792e44eef28154))
+* don't overflow on latest downlods ([52ca56b](https://github.com/oae/kaizoku/commit/52ca56b04776417a733ba98b0fc8d68b6b47c1a0))
+* focus on library input ([9abb2f8](https://github.com/oae/kaizoku/commit/9abb2f846f755ae61e61c6d1d41f92bfe35eeccb))
+* remove jobId from updateMetadata jobs ([99877bb](https://github.com/oae/kaizoku/commit/99877bb45aa543e1cfbf81afd74e8920cb3058a9))
+* remove ongoing download jobs if exist ([e9f6bfe](https://github.com/oae/kaizoku/commit/e9f6bfec237996a1b7355b0968ce5f3f15222ca9))
+* remove trailing undescores from sanitized manga names ([c8c463d](https://github.com/oae/kaizoku/commit/c8c463d6e12221af0bd130c9c47e5f75c365a5be))
+
 ## [1.1.1](https://github.com/oae/kaizoku/compare/kaizoku-v1.1.0...kaizoku-v1.1.1) (2022-10-28)
 
 
