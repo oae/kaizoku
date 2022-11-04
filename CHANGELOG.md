@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/oae/kaizoku/compare/kaizoku-v1.2.0...kaizoku-v1.2.1) (2022-11-04)
+
+
+### Bug Fixes
+
+* pass include anilist manga to search ([a93da58](https://github.com/oae/kaizoku/commit/a93da58a87e7a7b1ed9b57b81e43ac692c9d47aa))
+
 ## [1.2.0](https://github.com/oae/kaizoku/compare/kaizoku-v1.1.1...kaizoku-v1.2.0) (2022-11-04)
 
 
