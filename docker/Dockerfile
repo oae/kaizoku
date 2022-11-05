@@ -20,7 +20,7 @@ RUN apt install -y --no-install-recommends nodejs \
   libpango-1.0-0 \
   libcairo2 \
   libasound2 && \
-  npm i -g pnpm prisma
+  npm i -g pnpm
 
 ##### DEPENDENCIES
 
