@@ -11,7 +11,6 @@
     "prod": "prisma migrate deploy && pnpm start:server",
     "dev:next": "next dev",
     "build:next": "next build",
-    "build:analyze": "ANALYZE=true pnpm build:next && ANALYZE=false pnpm build:server",
     "lint": "next lint",
     "start": "next start",
     "prepare": "husky install",
