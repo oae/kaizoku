@@ -23,7 +23,7 @@ export function MadeWith({ minimized }: { minimized: boolean }): JSX.Element {
 
   if (minimized) {
     return (
-      <Tooltip withArrow label="Made with love in Exist" position="right">
+      <Tooltip withArrow label="Made with love in Turkey" position="right">
         <div style={{ display: 'inline-flex', height: '26px', lineHeight: '26px' }}>{hearth}</div>
       </Tooltip>
     );
