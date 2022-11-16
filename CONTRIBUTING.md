@@ -4,11 +4,9 @@ This document describes how to set up your development environment to build proj
 
 - [Contribution Guideline](#contribution-guideline)
   - [Formatting your source code](#formatting-your-source-code)
-  - [Linting and Verifying your Source Code](#linting-and-verifying-your-source-code)
   - [Commit Messages](#commit-messages)
     - [Examples](#examples)
   - [Versioning and Changelogs](#versioning-and-changelogs)
-
 
 ## Formatting your source code
 
