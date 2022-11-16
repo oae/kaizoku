@@ -76,8 +76,8 @@ export const getMangaPath = (libraryPath: string, title: string) => path.resolve
 
 export const getAvailableSources = async () => {
   try {
-    const { stdout, command } = await execa('mangal', ['sources', 'list', '-r']);
-    logger.info(`Get available sources with following command: ${command}`);
+    const { stdout, escapedCommand } = await execa('mangal', ['sources', 'list', '-r']);
+    logger.info(`Get available sources with following command: ${escapedCommand}`);
     return stdout
       .split('\n')
       .map((s) => s.trim())
@@ -112,6 +112,7 @@ const excludedConfigs = [
   'downloader.create_volume_dir',
   'downloader.default_sources',
   'downloader.path',
+  'downloader.stop_on_error',
   'metadata.comic_info_xml',
   'metadata.fetch_anilist',
   'metadata.series_json',
@@ -120,8 +121,8 @@ const excludedConfigs = [
 
 export const getMangalConfig = async (): Promise<MangalConfig[]> => {
   try {
-    const { stdout, command } = await execa('mangal', ['config', 'info', '-j']);
-    logger.info(`Getting mangal config with following command: ${command}`);
+    const { stdout, escapedCommand } = await execa('mangal', ['config', 'info', '-j']);
+    logger.info(`Getting mangal config with following command: ${escapedCommand}`);
     const result = JSON.parse(stdout) as MangalConfig[];
 
     return result.filter((item) => !excludedConfigs.includes(item.key) && item.type !== '[]string');
@@ -134,8 +135,8 @@ export const getMangalConfig = async (): Promise<MangalConfig[]> => {
 
 export const setMangalConfig = async (key: string, value: string | boolean | number | string[]) => {
   try {
-    const { command } = await execa('mangal', ['config', 'set', '--key', key, '--value', `${value}`]);
-    logger.info(`set mangal config with following command: ${command}`);
+    const { escapedCommand } = await execa('mangal', ['config', 'set', '--key', key, '--value', `${value}`]);
+    logger.info(`set mangal config with following command: ${escapedCommand}`);
   } catch (err) {
     logger.error(`Failed to set mangal config. err: ${err}`);
   }
@@ -143,8 +144,8 @@ export const setMangalConfig = async (key: string, value: string | boolean | num
 
 export const bindTitleToAnilistId = async (title: string, anilistId: string) => {
   try {
-    const { command } = await execa('mangal', ['inline', 'anilist', 'set', '--name', title, '--id', anilistId]);
-    logger.info(`Bind manga to anilist id with following command: ${command}`);
+    const { escapedCommand } = await execa('mangal', ['inline', 'anilist', 'set', '--name', title, '--id', anilistId]);
+    logger.info(`Bind manga to anilist id with following command: ${escapedCommand}`);
   } catch (err) {
     logger.error(`Failed to bind manga to anilist id. err: ${err}`);
   }
@@ -152,14 +153,14 @@ export const bindTitleToAnilistId = async (title: string, anilistId: string) => 
 
 export const updateExistingMangaMetadata = async (libraryPath: string, title: string) => {
   try {
-    const { command } = await execa('mangal', [
+    const { escapedCommand } = await execa('mangal', [
       'inline',
       'anilist',
       'update',
       '--path',
       getMangaPath(libraryPath, title),
     ]);
-    logger.info(`Updated existing manga metadata: ${command}`);
+    logger.info(`Updated existing manga metadata: ${escapedCommand}`);
   } catch (err) {
     logger.error(`Failed to update existing manga metadata. err: ${err}`);
   }
@@ -167,7 +168,7 @@ export const updateExistingMangaMetadata = async (libraryPath: string, title: st
 
 export const search = async (source: string, keyword: string): Promise<IOutput> => {
   try {
-    const { stdout, command } = await execa('mangal', [
+    const { stdout, escapedCommand } = await execa('mangal', [
       'inline',
       '--source',
       source,
@@ -176,7 +177,7 @@ export const search = async (source: string, keyword: string): Promise<IOutput> 
       keyword,
       '-j',
     ]);
-    logger.info(`Search manga with following command: ${command}`);
+    logger.info(`Search manga with following command: ${escapedCommand}`);
     return JSON.parse(stdout);
   } catch (err) {
     logger.error(`Failed to search manga. err: ${err}`);
@@ -189,19 +190,19 @@ export const search = async (source: string, keyword: string): Promise<IOutput> 
 
 export const getChaptersFromRemote = async (source: string, title: string): Promise<number[]> => {
   try {
-    const { stdout, command } = await execa('mangal', [
+    const { stdout, escapedCommand } = await execa('mangal', [
       'inline',
       '--source',
       source,
       '--query',
       title,
       '--manga',
-      'first',
+      'exact',
       '--chapters',
       'all',
       '-j',
     ]);
-    logger.info(`Get chapters with following command: ${command}`);
+    logger.info(`Get chapters with following command: ${escapedCommand}`);
     const output: IOutput = JSON.parse(stdout);
     if (
       output &&
@@ -220,7 +221,7 @@ export const getChaptersFromRemote = async (source: string, title: string): Prom
 
 export const getMangaDetail = async (source: string, title: string): Promise<Mangal | undefined> => {
   try {
-    const { stdout, command } = await execa('mangal', [
+    const { stdout, escapedCommand } = await execa('mangal', [
       'inline',
       '--source',
       source,
@@ -228,12 +229,12 @@ export const getMangaDetail = async (source: string, title: string): Promise<Man
       '--query',
       title,
       '--manga',
-      'first',
+      'exact',
       '--chapters',
       'all',
       '-j',
     ]);
-    logger.info(`Get manga detail with following command: ${command}`);
+    logger.info(`Get manga detail with following command: ${escapedCommand}`);
     const output: IOutput = JSON.parse(stdout);
     if (output && output.result.length === 1) {
       return output.result[0].mangal;
@@ -253,15 +254,15 @@ export const downloadChapter = async (
 ): Promise<string> => {
   try {
     logger.info(`Downloading chapter #${chapterIndex} for ${title} from ${source}`);
-    const { stdout, stderr, command } = await execa(
+    const { stdout, stderr, escapedCommand } = await execa(
       'mangal',
-      ['inline', '--source', source, '--query', title, '--manga', 'first', '--chapters', `${chapterIndex}`, '-d'],
+      ['inline', '--source', source, '--query', title, '--manga', 'exact', '--chapters', `${chapterIndex}`, '-d'],
       {
         cwd: libraryPath,
       },
     );
 
-    logger.info(`Download chapter with following command: ${command}`);
+    logger.info(`Download chapter with following command: ${escapedCommand}`);
 
     if (stderr) {
       logger.error(`Failed to download the chapter #${chapterIndex} for ${title}. Err:\n${stderr}`);
@@ -290,13 +291,18 @@ const shouldIncludeFile = (chapterFile: string) => {
 };
 
 export const getChapterFromLocal = async (chapterFile: string) => {
-  const stat = await fs.stat(chapterFile);
-  return {
-    index: getChapterIndexFromFile(chapterFile)!,
-    size: stat.size,
-    createdAt: stat.birthtime,
-    fileName: path.basename(chapterFile),
-  };
+  try {
+    const stat = await fs.stat(chapterFile);
+    return {
+      index: getChapterIndexFromFile(chapterFile)!,
+      size: stat.size,
+      createdAt: stat.birthtime,
+      fileName: path.basename(chapterFile),
+    };
+  } catch (err) {
+    logger.error(`Error occurred while getting stat from ${chapterFile}: ${err}`);
+    throw err;
+  }
 };
 
 export const getChaptersFromLocal = async (mangaDir: string): Promise<ChapterFile[]> => {
