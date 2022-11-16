@@ -15,6 +15,7 @@ mangal config set -k downloader.redownload_existing --value true
 mangal config set -k downloader.chapter_name_template --value "[{padded-index}] {chapter}"
 mangal config set -k downloader.create_manga_dir --value true
 mangal config set -k downloader.create_volume_dir --value false
+mangal config set -k downloader.stop_on_error --value true
 mangal config set -k downloader.path --value '.'
 
 exec 2>&1
