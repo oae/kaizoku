@@ -171,6 +171,136 @@ export function IntegrationSettings() {
           </Group>
         </Accordion.Panel>
       </Accordion.Item>
+
+      <Accordion.Item value="kavita">
+        <Accordion.Control icon={<Image src="/brand/kavita.png" width={20} height={20} />}>Kavita</Accordion.Control>
+        <Accordion.Panel>
+          <Group position="apart" className={classes.item} spacing="xl" noWrap>
+            <Box>
+              <Breadcrumbs
+                separator="/"
+                styles={{
+                  separator: {
+                    marginLeft: 4,
+                    marginRight: 4,
+                  },
+                  breadcrumb: {
+                    textTransform: 'capitalize',
+                    fontSize: 13,
+                    fontWeight: 500,
+                  },
+                  root: {
+                    marginBottom: 5,
+                  },
+                }}
+              >
+                Enabled
+              </Breadcrumbs>
+              <Text size="xs" color="dimmed">
+                Enable Kavita integration to trigger library scan and metadata refresh tasks
+              </Text>
+            </Box>
+            <SwitchItem
+              configKey="kavitaEnabled"
+              onUpdate={handleUpdate}
+              initialValue={settings.data.appConfig.kavitaEnabled}
+            />
+          </Group>
+          <Group position="apart" className={classes.item} spacing="xl" noWrap>
+            <Box>
+              <Breadcrumbs
+                separator="/"
+                styles={{
+                  separator: {
+                    marginLeft: 4,
+                    marginRight: 4,
+                  },
+                  breadcrumb: {
+                    textTransform: 'capitalize',
+                    fontSize: 13,
+                    fontWeight: 500,
+                  },
+                  root: {
+                    marginBottom: 5,
+                  },
+                }}
+              >
+                Host
+              </Breadcrumbs>
+              <Text size="xs" color="dimmed">
+                Kavita host or ip
+              </Text>
+            </Box>
+            <TextItem
+              configKey="kavitaHost"
+              onUpdate={handleUpdate}
+              initialValue={settings.data.appConfig.kavitaHost}
+            />
+          </Group>
+          <Group position="apart" className={classes.item} spacing="xl" noWrap>
+            <Box>
+              <Breadcrumbs
+                separator="/"
+                styles={{
+                  separator: {
+                    marginLeft: 4,
+                    marginRight: 4,
+                  },
+                  breadcrumb: {
+                    textTransform: 'capitalize',
+                    fontSize: 13,
+                    fontWeight: 500,
+                  },
+                  root: {
+                    marginBottom: 5,
+                  },
+                }}
+              >
+                Username
+              </Breadcrumbs>
+              <Text size="xs" color="dimmed">
+                Kavita user
+              </Text>
+            </Box>
+            <TextItem
+              configKey="kavitaUser"
+              onUpdate={handleUpdate}
+              initialValue={settings.data.appConfig.kavitaUser}
+            />
+          </Group>
+          <Group position="apart" className={classes.item} spacing="xl" noWrap>
+            <Box>
+              <Breadcrumbs
+                separator="/"
+                styles={{
+                  separator: {
+                    marginLeft: 4,
+                    marginRight: 4,
+                  },
+                  breadcrumb: {
+                    textTransform: 'capitalize',
+                    fontSize: 13,
+                    fontWeight: 500,
+                  },
+                  root: {
+                    marginBottom: 5,
+                  },
+                }}
+              >
+                Password
+              </Breadcrumbs>
+              <Text size="xs" color="dimmed">
+                Kavita user password
+              </Text>
+            </Box>
+            <TextItem
+              configKey="kavitaPassword"
+              onUpdate={handleUpdate}
+              initialValue={settings.data.appConfig.kavitaPassword}
+            />
+          </Group>
+        </Accordion.Panel>
+      </Accordion.Item>
     </Accordion>
   );
 }

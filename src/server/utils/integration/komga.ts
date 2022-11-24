@@ -1,5 +1,5 @@
-import { sanitizer } from '../../utils';
-import { prisma } from '../db/client';
+import { sanitizer } from '../../../utils';
+import { prisma } from '../../db/client';
 
 interface Library {
   id: string;
@@ -74,8 +74,4 @@ export const refreshMetadata = async (mangaName: string) => {
       headers,
     });
   }
-};
-
-export const runIntegrations = async () => {
-  await scanLibrary();
 };

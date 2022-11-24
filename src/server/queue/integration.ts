@@ -1,11 +1,11 @@
 import { Job, Queue, Worker } from 'bullmq';
-import { runIntegrations } from '../utils/integration';
+import { scanLibrary } from '../utils/integration';
 
 export const integrationWorker = new Worker(
   'integrationQueue',
   async (job: Job) => {
     try {
-      await runIntegrations();
+      await scanLibrary();
       await job.updateProgress(100);
     } catch (err) {
       await job.log(`${err}`);
