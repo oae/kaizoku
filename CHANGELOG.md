@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.0](https://github.com/oae/kaizoku/compare/kaizoku-v1.2.1...kaizoku-v1.3.0) (2022-11-24)
+
+
+### Features
+
+* add kavita integration ([c19ee02](https://github.com/oae/kaizoku/commit/c19ee02dbd3feaf265e3c979f5f13cbbab42de40))
+
+
+### Bug Fixes
+
+* use correct env variable ([579d8d0](https://github.com/oae/kaizoku/commit/579d8d0d3a2a4f78d4f3d45b12d8524ce65d53f7))
+* use exact parameter instead of first during manga match ([aa4e32d](https://github.com/oae/kaizoku/commit/aa4e32dd3d1ca09414498c19ce484b2603537c8f))
+
 ## [1.2.1](https://github.com/oae/kaizoku/compare/kaizoku-v1.2.0...kaizoku-v1.2.1) (2022-11-04)
 
 
