@@ -1,4 +1,3 @@
-import { logger } from '../../../utils/logging';
 import { prisma } from '../../db/client';
 
 interface Library {
@@ -17,7 +16,6 @@ interface LoginResponse {
 
 const getToken = async (baseKavitaUrl: string, username: string, password: string) => {
   const kavitaLoginUrl = new URL('/api/Account/login', baseKavitaUrl).href;
-  logger.info(`login url: ${kavitaLoginUrl}`);
   const response: LoginResponse = await (
     await fetch(kavitaLoginUrl, {
       method: 'POST',
