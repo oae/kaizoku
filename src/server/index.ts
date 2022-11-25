@@ -13,7 +13,6 @@ import { updateMetadataQueue } from './queue/updateMetadata';
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
-const port = process.env.KAIZOKU_PORT || 3000;
 
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/bull/queues');
@@ -32,6 +31,7 @@ createBullBoard({
 (async () => {
   try {
     await app.prepare();
+    const port = process.env.KAIZOKU_PORT || 3000;
     await scheduleAll();
     const server = express();
     server.use('/bull/queues', serverAdapter.getRouter()).all('*', (req: Request, res: Response) => {
