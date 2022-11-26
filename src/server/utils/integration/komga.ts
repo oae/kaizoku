@@ -54,7 +54,7 @@ export const refreshMetadata = async (mangaName: string) => {
     const headers = {
       Authorization: `Basic ${Buffer.from(`${settings.komgaUser}:${settings.komgaPassword}`).toString('base64')}`,
     };
-    const komgaSeriesUrl = new URL('/api/v1/series?size=1000', baseKomgaUrl).href;
+    const komgaSeriesUrl = new URL('/api/v1/series?unpaged=true', baseKomgaUrl).href;
 
     const series: Series = await (
       await fetch(komgaSeriesUrl, {
