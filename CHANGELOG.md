@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.1](https://github.com/oae/kaizoku/compare/kaizoku-v1.3.0...kaizoku-v1.3.1) (2022-12-10)
+
+
+### Bug Fixes
+
+* read port env variable after app.prepare ([0756894](https://github.com/oae/kaizoku/commit/0756894e29eb8be5f48dfe8f72ee21162bc2c67c))
+* replace chown usage to speed up startup ([4d68ae9](https://github.com/oae/kaizoku/commit/4d68ae9a2cb7a4e4051fca94938c596cffbf451f))
+* use unpaged param for komga series ([d4786d2](https://github.com/oae/kaizoku/commit/d4786d24eb2a7bfc22895c02dc591d5da1aa23d3))
+
 ## [1.3.0](https://github.com/oae/kaizoku/compare/kaizoku-v1.2.1...kaizoku-v1.3.0) (2022-11-24)
 
 
