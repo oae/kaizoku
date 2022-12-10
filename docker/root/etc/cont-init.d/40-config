@@ -9,8 +9,13 @@ mkdir -p /config/.config
 cp -r /mangal /config/.config
 
 # permissions
-chown -R abc:abc \
-	/app \
-	/config \
-  /logs \
-  /data
+# chown -R abc:abc \
+# 	/app \
+# 	/config \
+#   /logs \
+#   /data
+
+find /app -not -group abc -not -user abc -print0 | xargs -P 0 -0 --no-run-if-empty chown --no-dereference abc:abc
+find /config -not -group abc -not -user abc -print0 | xargs -P 0 -0 --no-run-if-empty chown --no-dereference abc:abc
+find /logs -not -group abc -not -user abc -print0 | xargs -P 0 -0 --no-run-if-empty chown --no-dereference abc:abc
+find /data -not -group abc -not -user abc -print0 | xargs -P 0 -0 --no-run-if-empty chown --no-dereference abc:abc
