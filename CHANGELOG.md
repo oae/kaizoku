@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/oae/kaizoku/compare/kaizoku-v1.3.1...kaizoku-v1.4.0) (2023-01-07)
+
+
+### Features
+
+* add refresh metadata button to cards ([cba8a74](https://github.com/oae/kaizoku/commit/cba8a74e9314b0b59d49196cd2ec97b30a9c0bc2))
+
+
+### Bug Fixes
+
+* show theme mode toggle shortcut ([f75c878](https://github.com/oae/kaizoku/commit/f75c8782572a1f19c3b5bb3a80935b4baeebd53b))
+
 ## [1.3.1](https://github.com/oae/kaizoku/compare/kaizoku-v1.3.0...kaizoku-v1.3.1) (2022-12-10)
 
 
