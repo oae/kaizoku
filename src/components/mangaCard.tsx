@@ -1,23 +1,10 @@
-import {
-  ActionIcon,
-  Alert,
-  Badge,
-  Box,
-  Button,
-  Checkbox,
-  Code,
-  createStyles,
-  Paper,
-  Skeleton,
-  Text,
-  Title,
-} from '@mantine/core';
-import { useModals } from '@mantine/modals';
+import { ActionIcon, Badge, createStyles, Paper, Skeleton, Title, Tooltip } from '@mantine/core';
 import { Prisma } from '@prisma/client';
-import { IconEdit, IconX } from '@tabler/icons';
+import { IconEdit, IconRefresh, IconX } from '@tabler/icons';
 import { contrastColor } from 'contrast-color';
-import { useState } from 'react';
 import stc from 'string-to-color';
+import { useRefreshModal } from './refreshMetadata';
+import { useRemoveModal } from './removeManga';
 import { useUpdateModal } from './updateManga';
 
 const useStyles = createStyles((theme, _params, getRef) => ({
@@ -49,6 +36,9 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     [`&:hover .${getRef('editButton')}`]: {
       display: 'flex',
     },
+    [`&:hover .${getRef('refreshButton')}`]: {
+      display: 'flex',
+    },
   },
   removeButton: {
     ref: getRef('removeButton'),
@@ -56,6 +46,18 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     right: -5,
     top: -5,
     display: 'none',
+  },
+  refreshButton: {
+    ref: getRef('refreshButton'),
+    backgroundColor: theme.white,
+    color: theme.colors.blue[6],
+    position: 'absolute',
+    right: 10,
+    bottom: 50,
+    display: 'none',
+    '&:hover': {
+      backgroundColor: theme.colors.gray[0],
+    },
   },
   editButton: {
     ref: getRef('editButton'),
@@ -93,80 +95,9 @@ interface MangaCardProps {
   manga: MangaWithLibraryAndMetadata;
   onRemove: (shouldRemoveFiles: boolean) => void;
   onUpdate: () => void;
+  onRefresh: () => void;
   onClick: () => void;
 }
-
-function RemoveModalContent({
-  title,
-  onRemove,
-  onClose,
-}: {
-  title: string;
-  onRemove: (shouldRemoveFiles: boolean) => void;
-  onClose: () => void;
-}) {
-  const [shouldRemoveFiles, setShouldRemoveFiles] = useState(false);
-  return (
-    <>
-      <Text mb={4} size="sm">
-        Are you sure you want to remove
-        <Code className="text-base font-bold" color="red">
-          {title}
-        </Code>
-        ?
-      </Text>
-      <Alert
-        icon={
-          <Checkbox
-            checked={shouldRemoveFiles}
-            color="red"
-            onChange={(event) => setShouldRemoveFiles(event.currentTarget.checked)}
-          />
-        }
-        title="Remove files?"
-        color="red"
-      >
-        This action is destructive and all downloaded files will be removed
-      </Alert>
-      <Box
-        sx={(theme) => ({
-          display: 'flex',
-          gap: theme.spacing.xs,
-          justifyContent: 'end',
-          marginTop: theme.spacing.md,
-        })}
-      >
-        <Button variant="default" color="dark" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button
-          variant="filled"
-          color="red"
-          onClick={() => {
-            onRemove(shouldRemoveFiles);
-            onClose();
-          }}
-        >
-          Remove
-        </Button>
-      </Box>
-    </>
-  );
-}
-
-const useRemoveModal = (title: string, onRemove: (shouldRemoveFiles: boolean) => void) => {
-  const modals = useModals();
-
-  const openRemoveModal = () => {
-    const id = modals.openModal({
-      title: `Remove ${title}?`,
-      centered: true,
-      children: <RemoveModalContent title={title} onRemove={onRemove} onClose={() => modals.closeModal(id)} />,
-    });
-  };
-
-  return openRemoveModal;
-};
 
 export function SkeletonMangaCard() {
   const { classes } = useStyles();
@@ -174,11 +105,11 @@ export function SkeletonMangaCard() {
   return <Skeleton radius="md" className={classes.skeletonCard} />;
 }
 
-export function MangaCard({ manga, onRemove, onUpdate, onClick }: MangaCardProps) {
+export function MangaCard({ manga, onRemove, onUpdate, onRefresh, onClick }: MangaCardProps) {
   const { classes } = useStyles();
   const removeModal = useRemoveModal(manga.title, onRemove);
+  const refreshModal = useRefreshModal(manga.title, onRefresh);
   const updateModal = useUpdateModal(manga, onUpdate);
-
   return (
     <Paper
       onClick={onClick}
@@ -202,19 +133,36 @@ export function MangaCard({ manga, onRemove, onUpdate, onClick }: MangaCardProps
       >
         <IconX size={16} />
       </ActionIcon>
-      <ActionIcon
-        color="blue"
-        variant="light"
-        size="lg"
-        radius="xl"
-        className={classes.editButton}
-        onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-          e.stopPropagation();
-          updateModal();
-        }}
-      >
-        <IconEdit size={18} />
-      </ActionIcon>
+      <Tooltip withinPortal withArrow label="Refresh Metadata" position="left">
+        <ActionIcon
+          color="teal"
+          variant="filled"
+          size="lg"
+          radius="xl"
+          className={classes.refreshButton}
+          onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+            e.stopPropagation();
+            refreshModal();
+          }}
+        >
+          <IconRefresh size={18} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip withinPortal withArrow label="Edit" position="left">
+        <ActionIcon
+          color="blue"
+          variant="light"
+          size="lg"
+          radius="xl"
+          className={classes.editButton}
+          onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+            e.stopPropagation();
+            updateModal();
+          }}
+        >
+          <IconEdit size={18} />
+        </ActionIcon>
+      </Tooltip>
       <div>
         <Badge
           sx={{ backgroundColor: stc(manga.source), color: contrastColor({ bgColor: stc(manga.source) }) }}

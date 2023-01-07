@@ -11,6 +11,7 @@ import { trpc } from '../utils/trpc';
 export default function IndexPage() {
   const libraryQuery = trpc.library.query.useQuery();
   const mangaRemove = trpc.manga.remove.useMutation();
+  const mangaRefresh = trpc.manga.refreshMetaData.useMutation();
   const router = useRouter();
 
   const mangaQuery = trpc.manga.query.useQuery();
@@ -79,6 +80,38 @@ export default function IndexPage() {
     mangaQuery.refetch();
   };
 
+  const handleRefresh = async (id: number, title: string) => {
+    try {
+      await mangaRefresh.mutateAsync({
+        id,
+      });
+      showNotification({
+        icon: <IconCheck size={18} />,
+        color: 'teal',
+        autoClose: true,
+        title: 'Manga',
+        message: (
+          <Text>
+            <Code color="blue">{title}</Code> chapters are queued for the metadata update
+          </Text>
+        ),
+      });
+    } catch (err) {
+      showNotification({
+        icon: <IconX size={18} />,
+        color: 'red',
+        autoClose: true,
+        title: 'Manga',
+        message: (
+          <Text>
+            <Code color="red">{`${err}`}</Code>
+          </Text>
+        ),
+      });
+    }
+    mangaQuery.refetch();
+  };
+
   return (
     <ScrollArea sx={{ height: 'calc(100vh - 88px)' }}>
       <Grid m={12} justify="flex-start">
@@ -91,6 +124,7 @@ export default function IndexPage() {
               <Grid.Col span="content" key={manga.id}>
                 <MangaCard
                   manga={manga}
+                  onRefresh={() => handleRefresh(manga.id, manga.title)}
                   onUpdate={() => mangaQuery.refetch()}
                   onRemove={(shouldRemoveFiles: boolean) => handleRemove(manga.id, manga.title, shouldRemoveFiles)}
                   onClick={() => router.push(`/manga/${manga.id}`)}

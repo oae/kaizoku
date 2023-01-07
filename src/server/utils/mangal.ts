@@ -219,6 +219,31 @@ export const getChaptersFromRemote = async (source: string, title: string): Prom
   return [];
 };
 
+export const getMangaMetadata = async (source: string, title: string): Promise<Metadata | undefined> => {
+  try {
+    const { stdout, escapedCommand } = await execa('mangal', [
+      'inline',
+      '--source',
+      source,
+      '--include-anilist-manga',
+      '--query',
+      title,
+      '--manga',
+      'exact',
+      '-j',
+    ]);
+    logger.info(`Get manga metadata with following command: ${escapedCommand}`);
+    const output: IOutput = JSON.parse(stdout);
+    if (output && output.result.length === 1) {
+      return output.result[0].mangal?.metadata;
+    }
+  } catch (err) {
+    logger.error(err);
+  }
+
+  return undefined;
+};
+
 export const getMangaDetail = async (source: string, title: string): Promise<Mangal | undefined> => {
   try {
     const { stdout, escapedCommand } = await execa('mangal', [

@@ -6,7 +6,14 @@ import { checkChaptersQueue, removeJob, schedule } from '../../queue/checkChapte
 import { downloadQueue, downloadWorker, removeDownloadJobs } from '../../queue/download';
 import { scheduleUpdateMetadata } from '../../queue/updateMetadata';
 import { scanLibrary } from '../../utils/integration';
-import { bindTitleToAnilistId, getAvailableSources, getMangaDetail, removeManga, search } from '../../utils/mangal';
+import {
+  bindTitleToAnilistId,
+  getAvailableSources,
+  getMangaDetail,
+  getMangaMetadata,
+  removeManga,
+  search,
+} from '../../utils/mangal';
 import { t } from '../trpc';
 
 export const mangaRouter = t.router({
@@ -312,4 +319,49 @@ export const mangaRouter = t.router({
       completed: await downloadQueue.getCompletedCount(),
     };
   }),
+  refreshMetaData: t.procedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { id } = input;
+      const mangaInDb = await ctx.prisma.manga.findUniqueOrThrow({
+        include: { library: true },
+        where: { id },
+      });
+      const metadata = await getMangaMetadata(mangaInDb.source, mangaInDb.title);
+      if (!metadata) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `Cannot find the metadata for ${mangaInDb.title}.`,
+        });
+      }
+      await ctx.prisma.metadata.update({
+        where: {
+          id: mangaInDb.metadataId,
+        },
+        data: {
+          cover: metadata.cover?.extraLarge || metadata.cover?.large || metadata.cover?.medium,
+          authors: metadata.staff?.story ? [...metadata.staff.story] : [],
+          characters: metadata.characters,
+          genres: metadata.genres,
+          startDate: metadata.startDate
+            ? new Date(metadata.startDate.year, metadata.startDate.month, metadata.startDate.day)
+            : undefined,
+          endDate: metadata.endDate
+            ? new Date(metadata.endDate.year, metadata.endDate.month, metadata.endDate.day)
+            : undefined,
+          status: metadata.status,
+          summary: metadata.summary,
+          synonyms: metadata.synonyms,
+          tags: metadata.tags,
+          urls: metadata.urls,
+        },
+      });
+      await scheduleUpdateMetadata(mangaInDb.library.path, mangaInDb.title);
+
+      return ctx.prisma.manga.findUniqueOrThrow({ include: { metadata: true, library: true }, where: { id } });
+    }),
 });
