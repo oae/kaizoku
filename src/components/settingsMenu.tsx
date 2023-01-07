@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Divider, Drawer, ScrollArea, Title } from '@mantine/core';
+import { ActionIcon, Box, Divider, Drawer, Kbd, ScrollArea, Title } from '@mantine/core';
 import { IconSettings } from '@tabler/icons';
 import { useState } from 'react';
 import { IntegrationSettings } from './settings/integration';
@@ -9,7 +9,22 @@ import { SwitchTheme } from './settings/switchTheme';
 function SettingsMenu() {
   return (
     <Box pr={20}>
-      <Divider sx={{ fontWeight: 'bolder' }} variant="dashed" my="xs" label={<Title order={3}>Theme</Title>} />
+      <Divider
+        sx={{ fontWeight: 'bolder' }}
+        variant="dashed"
+        my="xs"
+        label={
+          <>
+            <Title mr="xs" order={3}>
+              Theme
+            </Title>
+            <Kbd mr="xs">Shift</Kbd> +{' '}
+            <Kbd px="xs" ml="xs">
+              T
+            </Kbd>
+          </>
+        }
+      />
       <SwitchTheme />
       <Divider
         mt={40}
