@@ -55,13 +55,13 @@ WORKDIR /tmp
 
 RUN \
   if [ "$(uname -m)" = "x86_64" ] ; then \
-  curl -L "https://github.com/metafates/mangal/releases/download/v4.0.5/mangal_4.0.5_Linux_x86_64.tar.gz" -o mangal.tar.gz ;\
+  curl -L "https://github.com/metafates/mangal/releases/download/v4.0.6/mangal_4.0.6_Linux_x86_64.tar.gz" -o mangal.tar.gz ;\
   elif [ "$(uname -m)" = "armv6l" ] ; then \
-  curl -L "https://github.com/metafates/mangal/releases/download/v4.0.5/mangal_4.0.5_Linux_armv6.tar.gz" -o mangal.tar.gz ;\
+  curl -L "https://github.com/metafates/mangal/releases/download/v4.0.6/mangal_4.0.6_Linux_armv6.tar.gz" -o mangal.tar.gz ;\
   elif [ "$(uname -m)" = "i386" ] ; then \
-  curl -L "https://github.com/metafates/mangal/releases/download/v4.0.5/mangal_4.0.5_Linux_i386.tar.gz" -o mangal.tar.gz ;\
+  curl -L "https://github.com/metafates/mangal/releases/download/v4.0.6/mangal_4.0.6_Linux_i386.tar.gz" -o mangal.tar.gz ;\
   elif [ "$(uname -m)" = "aarch64" ] ; then \
-  curl -L "https://github.com/metafates/mangal/releases/download/v4.0.5/mangal_4.0.5_Linux_arm64.tar.gz" -o mangal.tar.gz ;\
+  curl -L "https://github.com/metafates/mangal/releases/download/v4.0.6/mangal_4.0.6_Linux_arm64.tar.gz" -o mangal.tar.gz ;\
   fi
 RUN tar xf mangal.tar.gz
 RUN mv mangal /usr/bin/mangal
