@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/oae/kaizoku/compare/kaizoku-v1.4.0...kaizoku-v1.4.1) (2023-01-14)
+
+
+### Bug Fixes
+
+* update mangal to 4.0.6 to prevent chrome crashes ([f3d2b23](https://github.com/oae/kaizoku/commit/f3d2b2330e8dfc7c86f117e64f152458f4d3f566))
+
 ## [1.4.0](https://github.com/oae/kaizoku/compare/kaizoku-v1.3.1...kaizoku-v1.4.0) (2023-01-07)
 
 
