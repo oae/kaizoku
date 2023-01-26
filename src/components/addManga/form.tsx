@@ -1,7 +1,7 @@
 import { Button, Code, createStyles, Group, LoadingOverlay, Text } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
-import { IconCheck, IconX } from '@tabler/icons';
+import { IconCheck, IconX } from '@tabler/icons-react';
 import { useState } from 'react';
 import { z } from 'zod';
 import { isCronValid } from '../../utils';

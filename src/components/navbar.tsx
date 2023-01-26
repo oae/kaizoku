@@ -21,7 +21,7 @@ import {
   IconCircleCheck,
   IconClock,
   IconFileReport,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 import { inferProcedureOutput } from '@trpc/server';
 import dayjs from 'dayjs';
 import prettyBytes from 'pretty-bytes';

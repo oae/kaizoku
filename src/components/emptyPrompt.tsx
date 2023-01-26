@@ -1,5 +1,5 @@
 import { Center, createStyles, Stack, Text, Title } from '@mantine/core';
-import { IconBooks } from '@tabler/icons';
+import { IconBooks } from '@tabler/icons-react';
 import { AddLibrary } from './addLibrary';
 
 const useStyles = createStyles((theme) => ({
@@ -17,7 +17,7 @@ export function EmptyPrompt({ onCreate }: { onCreate: () => void }) {
   return (
     <Center className={classes.root}>
       <Stack justify="center" align="center" spacing={10}>
-        <IconBooks size={48} stroke={1.5} />
+        <IconBooks size={48} strokeWidth={1.5} />
         <Title>No library found</Title>
         <Text size="sm" className={classes.description}>
           To be able to add new manga, you need to create a library

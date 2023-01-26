@@ -1,6 +1,6 @@
 import { Box, Center, SegmentedControl, useMantineColorScheme } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
-import { IconMoon, IconPalette, IconSun } from '@tabler/icons';
+import { IconMoon, IconPalette, IconSun } from '@tabler/icons-react';
 import { getCookie, setCookie } from 'cookies-next';
 import { useEffect, useState } from 'react';
 
@@ -33,7 +33,7 @@ export function SwitchTheme() {
           value: 'auto',
           label: (
             <Center>
-              <IconPalette size={16} stroke={1.5} />
+              <IconPalette size={16} strokeWidth={1.5} />
               <Box ml={10}>Auto</Box>
             </Center>
           ),
@@ -42,7 +42,7 @@ export function SwitchTheme() {
           value: 'light',
           label: (
             <Center>
-              <IconSun size={16} stroke={1.5} />
+              <IconSun size={16} strokeWidth={1.5} />
               <Box ml={10}>Light</Box>
             </Center>
           ),
@@ -51,7 +51,7 @@ export function SwitchTheme() {
           value: 'dark',
           label: (
             <Center>
-              <IconMoon size={16} stroke={1.5} />
+              <IconMoon size={16} strokeWidth={1.5} />
               <Box ml={10}>Dark</Box>
             </Center>
           ),

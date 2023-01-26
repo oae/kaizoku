@@ -1,6 +1,6 @@
 import { Box, LoadingOverlay, Select, Stack, TextInput } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
-import { IconFolderPlus } from '@tabler/icons';
+import { IconFolderPlus } from '@tabler/icons-react';
 import { useState } from 'react';
 import { getCronLabel, isCronValid, sanitizer } from '../../../utils';
 import { trpc } from '../../../utils/trpc';
@@ -57,7 +57,7 @@ export function DownloadStep({ form }: { form: UseFormReturnType<FormType> }) {
           label="Location"
           size="sm"
           disabled
-          icon={<IconFolderPlus size={18} stroke={1.5} />}
+          icon={<IconFolderPlus size={18} strokeWidth={1.5} />}
           value={downloadPath}
         />
       </Stack>

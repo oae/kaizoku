@@ -2,7 +2,7 @@ import { Box, Button, Code, LoadingOverlay, Text, TextInput } from '@mantine/cor
 import { useForm } from '@mantine/form';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
-import { IconCheck, IconFolderPlus, IconX } from '@tabler/icons';
+import { IconCheck, IconFolderPlus, IconX } from '@tabler/icons-react';
 import { useState } from 'react';
 import { trpc } from '../utils/trpc';
 

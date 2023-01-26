@@ -15,7 +15,7 @@ import {
 } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 import { getHotkeyHandler } from '@mantine/hooks';
-import { IconCheck, IconEdit, IconGitMerge } from '@tabler/icons';
+import { IconCheck, IconEdit, IconGitMerge } from '@tabler/icons-react';
 import { useState } from 'react';
 import { trpc } from '../../../utils/trpc';
 import type { FormType } from '../form';
@@ -131,10 +131,10 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
                         value={anilistId}
                         onChange={(event) => setAnilistId(event.currentTarget.value)}
                         onKeyDown={getHotkeyHandler([['Enter', handleBind]])}
-                        icon={<IconGitMerge size={18} stroke={1.5} />}
+                        icon={<IconGitMerge size={18} strokeWidth={1.5} />}
                         rightSection={
                           <ActionIcon size={32} radius="xl" color="blue" variant="filled" onClick={handleBind}>
-                            <IconCheck size={18} stroke={1.5} />
+                            <IconCheck size={18} strokeWidth={1.5} />
                           </ActionIcon>
                         }
                         rightSectionWidth={42}

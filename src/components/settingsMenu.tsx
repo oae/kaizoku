@@ -1,5 +1,5 @@
 import { ActionIcon, Box, Divider, Drawer, Kbd, ScrollArea, Title } from '@mantine/core';
-import { IconSettings } from '@tabler/icons';
+import { IconSettings } from '@tabler/icons-react';
 import { useState } from 'react';
 import { IntegrationSettings } from './settings/integration';
 import { MangalSettings } from './settings/mangal';

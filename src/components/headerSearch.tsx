@@ -1,6 +1,6 @@
 import { createStyles, Grid, Group, Image, Kbd, Text, UnstyledButton } from '@mantine/core';
 import { openSpotlight, SpotlightAction, SpotlightProvider } from '@mantine/spotlight';
-import { IconSearch } from '@tabler/icons';
+import { IconSearch } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { trpc } from '../utils/trpc';
@@ -88,7 +88,7 @@ export function SearchControl() {
       <UnstyledButton className={cx(classes.root)} onClick={() => openSpotlight()}>
         <Grid gutter={5}>
           <Grid.Col span="content" style={{ display: 'flex', alignItems: 'center' }}>
-            <IconSearch size={14} stroke={1.5} />
+            <IconSearch size={14} strokeWidth={1.5} />
           </Grid.Col>
           <Grid.Col span="auto" style={{ display: 'flex', alignItems: 'center' }}>
             <Text size="sm" color="dimmed">

@@ -1,7 +1,7 @@
 import { ActionIcon, LoadingOverlay, Text, TextInput } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 import { getHotkeyHandler } from '@mantine/hooks';
-import { IconArrowRight, IconSearch } from '@tabler/icons';
+import { IconArrowRight, IconSearch } from '@tabler/icons-react';
 import { useState } from 'react';
 import { trpc } from '../../../utils/trpc';
 import { MangaSearchResult } from '../mangaSearchResult';
@@ -45,10 +45,10 @@ export function SearchStep({ form }: { form: UseFormReturnType<FormType> }) {
         size="md"
         radius="xl"
         onKeyDown={getHotkeyHandler([['Enter', handleSearch]])}
-        icon={<IconSearch size={18} stroke={1.5} />}
+        icon={<IconSearch size={18} strokeWidth={1.5} />}
         rightSection={
           <ActionIcon size={32} radius="xl" color="blue" variant="filled" onClick={handleSearch}>
-            <IconArrowRight size={18} stroke={1.5} />
+            <IconArrowRight size={18} strokeWidth={1.5} />
           </ActionIcon>
         }
         rightSectionWidth={42}

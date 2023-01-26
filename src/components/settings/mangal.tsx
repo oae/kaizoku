@@ -10,7 +10,7 @@ import {
   Text,
   TextInput,
 } from '@mantine/core';
-import { IconCheck, IconX } from '@tabler/icons';
+import { IconCheck, IconX } from '@tabler/icons-react';
 import { nanoid } from 'nanoid';
 import { useEffect, useState } from 'react';
 import { trpc } from '../../utils/trpc';
@@ -145,7 +145,7 @@ function ArrayTextItem({
       value={value}
       rightSection={
         <ActionIcon size={18} radius="xl" color="red" variant="filled" onClick={() => onRemove()}>
-          <IconX size={16} stroke={1.5} />
+          <IconX size={16} strokeWidth={1.5} />
         </ActionIcon>
       }
       onChange={(event) => setValue(event.currentTarget.value)}

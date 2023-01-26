@@ -1,6 +1,6 @@
 import { ActionIcon, Badge, createStyles, Paper, Skeleton, Title, Tooltip } from '@mantine/core';
 import { Prisma } from '@prisma/client';
-import { IconEdit, IconRefresh, IconX } from '@tabler/icons';
+import { IconEdit, IconRefresh, IconX } from '@tabler/icons-react';
 import { contrastColor } from 'contrast-color';
 import stc from 'string-to-color';
 import { useRefreshModal } from './refreshMetadata';

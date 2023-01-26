@@ -1,5 +1,5 @@
 import { Box, Text, Tooltip } from '@mantine/core';
-import { IconHeart } from '@tabler/icons';
+import { IconHeart } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 
 export function MadeWith({ minimized }: { minimized: boolean }): JSX.Element {

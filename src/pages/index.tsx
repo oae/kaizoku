@@ -1,6 +1,6 @@
 import { Code, Grid, LoadingOverlay, ScrollArea, Text } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
-import { IconCheck, IconX } from '@tabler/icons';
+import { IconCheck, IconX } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import { AddManga } from '../components/addManga';
 

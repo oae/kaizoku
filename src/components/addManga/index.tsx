@@ -1,6 +1,6 @@
 import { createStyles, Paper, Tooltip } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { IconPlus } from '@tabler/icons';
+import { IconPlus } from '@tabler/icons-react';
 import { useMemo } from 'react';
 import { AddMangaForm } from './form';
 

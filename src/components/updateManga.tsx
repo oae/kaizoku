@@ -21,7 +21,7 @@ import { getHotkeyHandler } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { Prisma } from '@prisma/client';
-import { IconCheck, IconEdit, IconGitMerge, IconX } from '@tabler/icons';
+import { IconCheck, IconEdit, IconGitMerge, IconX } from '@tabler/icons-react';
 import { useState } from 'react';
 import { z } from 'zod';
 import { getCronLabel, isCronValid } from '../utils';
@@ -212,10 +212,10 @@ function UpdateModalContent({
                       size="md"
                       radius="xl"
                       onKeyDown={getHotkeyHandler([['Enter', handleBind]])}
-                      icon={<IconGitMerge size={18} stroke={1.5} />}
+                      icon={<IconGitMerge size={18} strokeWidth={1.5} />}
                       rightSection={
                         <ActionIcon size={32} radius="xl" color="blue" variant="filled" onClick={handleBind}>
-                          <IconCheck size={18} stroke={1.5} />
+                          <IconCheck size={18} strokeWidth={1.5} />
                         </ActionIcon>
                       }
                       rightSectionWidth={42}
