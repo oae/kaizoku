@@ -46,6 +46,10 @@ function SearchManga(query)
 	local page = Browser:page()
 	page:navigate(Base .. "/search/?name=" .. HttpUtil.query_escape(query))
 	page:waitLoad()
+  while page:has('button[ng-click="vm.NextPage()"]') == true do
+    page:element('button[ng-click="vm.NextPage()"]'):click()
+  end
+
 
 	local doc = Html.parse(page:html())
 	local mangas = {}

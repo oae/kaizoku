@@ -8,6 +8,8 @@ mkdir -p /config/.config
 
 cp -r /mangal /config/.config
 
+rm -rf /config/.cache/mangal/Mangasee_custom_mangas.json
+
 # permissions
 # chown -R abc:abc \
 # 	/app \
