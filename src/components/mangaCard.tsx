@@ -1,7 +1,8 @@
 import { ActionIcon, Badge, createStyles, Paper, Skeleton, Title, Tooltip } from '@mantine/core';
 import { Prisma } from '@prisma/client';
-import { IconEdit, IconRefresh, IconX } from '@tabler/icons-react';
+import { IconEdit, IconExclamationMark, IconRefresh, IconX } from '@tabler/icons-react';
 import { contrastColor } from 'contrast-color';
+import { motion } from 'framer-motion';
 import stc from 'string-to-color';
 import { useRefreshModal } from './refreshMetadata';
 import { useRemoveModal } from './removeManga';
@@ -59,6 +60,19 @@ const useStyles = createStyles((theme, _params, getRef) => ({
       backgroundColor: theme.colors.gray[0],
     },
   },
+  outOfSyncClass: {
+    position: 'absolute',
+    alignContent: 'center',
+    display: 'flex',
+    flexWrap: 'wrap',
+    backgroundColor: theme.colors.red[6],
+    border: `2px solid ${theme.white}`,
+    left: 8,
+    bottom: 8,
+    borderRadius: 9999,
+    width: 24,
+    height: 24,
+  },
   editButton: {
     ref: getRef('editButton'),
     backgroundColor: theme.white,
@@ -85,14 +99,16 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   },
 }));
 
-const mangaWithLibraryAndMetadata = Prisma.validator<Prisma.MangaArgs>()({
-  include: { library: true, metadata: true },
+const mangaWithLibraryAndMetadataAndOutOfSyncChapters = Prisma.validator<Prisma.MangaArgs>()({
+  include: { library: true, metadata: true, outOfSyncChapters: true },
 });
 
-type MangaWithLibraryAndMetadata = Prisma.MangaGetPayload<typeof mangaWithLibraryAndMetadata>;
+type MangaWithLibraryAndMetadataAndOutOfSyncChapters = Prisma.MangaGetPayload<
+  typeof mangaWithLibraryAndMetadataAndOutOfSyncChapters
+>;
 
 interface MangaCardProps {
-  manga: MangaWithLibraryAndMetadata;
+  manga: MangaWithLibraryAndMetadataAndOutOfSyncChapters;
   onRemove: (shouldRemoveFiles: boolean) => void;
   onUpdate: () => void;
   onRefresh: () => void;
@@ -163,6 +179,35 @@ export function MangaCard({ manga, onRemove, onUpdate, onRefresh, onClick }: Man
           <IconEdit size={18} />
         </ActionIcon>
       </Tooltip>
+
+      {manga.outOfSyncChapters.length > 0 && (
+        <Tooltip withinPortal withArrow label="This manga has out of sync chapters." position="right">
+          <motion.div
+            className={classes.outOfSyncClass}
+            initial={{
+              scale: 1,
+            }}
+            animate={{
+              scale: [1.1, 1.0],
+            }}
+            exit={{
+              scale: 1,
+            }}
+            transition={{
+              duration: 1,
+              repeat: Infinity,
+              repeatType: 'loop',
+              type: 'spring',
+              stiffness: 400,
+              damping: 10,
+              repeatDelay: 3,
+            }}
+          >
+            <IconExclamationMark color="white" strokeWidth={3} />
+          </motion.div>
+        </Tooltip>
+      )}
+
       <div>
         <Badge
           sx={{ backgroundColor: stc(manga.source), color: contrastColor({ bgColor: stc(manga.source) }) }}

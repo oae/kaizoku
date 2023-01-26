@@ -1,3 +1,4 @@
+import { OutOfSyncChapter } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import path from 'path';
 import { z } from 'zod';
@@ -11,6 +12,7 @@ import {
   getAvailableSources,
   getMangaDetail,
   getMangaMetadata,
+  getOutOfSyncChapters,
   removeManga,
   search,
 } from '../../utils/mangal';
@@ -18,7 +20,10 @@ import { t } from '../trpc';
 
 export const mangaRouter = t.router({
   query: t.procedure.query(async ({ ctx }) => {
-    return ctx.prisma.manga.findMany({ include: { metadata: true, library: true }, orderBy: { title: 'asc' } });
+    return ctx.prisma.manga.findMany({
+      include: { metadata: true, library: true, outOfSyncChapters: true },
+      orderBy: { title: 'asc' },
+    });
   }),
   sources: t.procedure.query(async () => {
     return getAvailableSources();
@@ -62,6 +67,7 @@ export const mangaRouter = t.router({
           },
           library: true,
           metadata: true,
+          outOfSyncChapters: true,
         },
         where: { id },
       });
@@ -363,5 +369,39 @@ export const mangaRouter = t.router({
       await scheduleUpdateMetadata(mangaInDb.library.path, mangaInDb.title);
 
       return ctx.prisma.manga.findUniqueOrThrow({ include: { metadata: true, library: true }, where: { id } });
+    }),
+  checkOutOfSyncChapters: t.procedure
+    .input(
+      z.object({
+        id: z.number().nullish(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { id } = input;
+      if (id) {
+        const mangaInDb = await ctx.prisma.manga.findUniqueOrThrow({
+          include: { library: true, chapters: true },
+          where: { id },
+        });
+        const mangaDir = path.resolve(mangaInDb.library.path, sanitizer(mangaInDb.title));
+        const outOfSyncChapters = await getOutOfSyncChapters(mangaDir, mangaInDb.source, mangaInDb.title);
+
+        await ctx.prisma.outOfSyncChapter.deleteMany({ where: { mangaId: mangaInDb.id } });
+        await ctx.prisma.outOfSyncChapter.createMany({
+          data: outOfSyncChapters
+            .map((outOfSyncChapterFile) => {
+              const chapter = mangaInDb.chapters.find((c) => c.fileName === outOfSyncChapterFile);
+              if (!chapter) {
+                return undefined;
+              }
+
+              return {
+                id: chapter.id,
+                mangaId: mangaInDb.id,
+              };
+            })
+            .filter((c) => c) as OutOfSyncChapter[],
+        });
+      }
     }),
 });

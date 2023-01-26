@@ -188,7 +188,7 @@ export const search = async (source: string, keyword: string): Promise<IOutput> 
   };
 };
 
-export const getChaptersFromRemote = async (source: string, title: string): Promise<number[]> => {
+export const getChaptersFromRemote = async (source: string, title: string): Promise<Chapter[]> => {
   try {
     const { stdout, escapedCommand } = await execa('mangal', [
       'inline',
@@ -210,7 +210,7 @@ export const getChaptersFromRemote = async (source: string, title: string): Prom
       output.result[0]?.mangal.chapters &&
       output.result[0]?.mangal.chapters.length > 0
     ) {
-      return output.result[0].mangal.chapters.map((c) => c.index - 1);
+      return output.result[0].mangal.chapters.map((c) => ({ ...c, index: c.index - 1 }));
     }
   } catch (err) {
     logger.error(err);
@@ -302,7 +302,7 @@ export const downloadChapter = async (
   }
 };
 
-const getChapterIndexFromFile = (chapterFile: string) => {
+export const getChapterIndexFromFile = (chapterFile: string) => {
   const indexRegexp = /.*?\[(\d+)\].*/;
   const match = indexRegexp.exec(path.basename(chapterFile));
   if (!match || match.length < 2 || !match[1]) {
@@ -346,12 +346,14 @@ export const findMissingChapterFiles = async (mangaDir: string, source: string, 
     throw new Error();
   }
   await fs.mkdir(mangaDir, { recursive: true });
-  const chapters = await fs.readdir(mangaDir);
 
-  const localChapters = chapters.filter(shouldIncludeFile).map(getChapterIndexFromFile);
+  const localChapters = (await fs.readdir(mangaDir)).filter(shouldIncludeFile);
+  const localChapterIndexList = localChapters.map(getChapterIndexFromFile);
 
   const remoteChapters = await getChaptersFromRemote(source, title);
-  return remoteChapters.filter((c) => !localChapters.includes(c));
+  const remoteChapterIndexList = remoteChapters.map((r) => r.index);
+
+  return remoteChapterIndexList.filter((c) => !localChapterIndexList.includes(c));
 };
 
 export const createLibrary = async (libraryPath: string) => {
@@ -360,4 +362,14 @@ export const createLibrary = async (libraryPath: string) => {
 
 export const removeManga = async (mangaDir: string) => {
   await fs.rm(mangaDir, { recursive: true, force: true });
+};
+
+export const getOutOfSyncChapters = async (mangaDir: string, source: string, title: string) => {
+  const localChapterNames = (await fs.readdir(mangaDir)).filter(shouldIncludeFile);
+  const remoteChapters = await getChaptersFromRemote(source, title);
+  const remoteChapterNames = remoteChapters.map(
+    (r) => `[${String(r.index + 1).padStart(4, '0')}]_${sanitizer(r.name)}.cbz`,
+  );
+
+  return localChapterNames.filter((l) => !remoteChapterNames.includes(l));
 };

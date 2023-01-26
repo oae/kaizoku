@@ -19,16 +19,17 @@ model Library {
 }
 
 model Manga {
-  id         Int       @id @default(autoincrement())
-  createdAt  DateTime  @default(now())
-  title      String    @unique
-  interval   String
-  source     String
-  library    Library   @relation(fields: [libraryId], references: [id], onDelete: Cascade)
-  libraryId  Int
-  chapters   Chapter[]
-  metadata   Metadata  @relation(fields: [metadataId], references: [id])
-  metadataId Int       @unique
+  id                Int                 @id @default(autoincrement())
+  createdAt         DateTime            @default(now())
+  title             String              @unique
+  interval          String
+  source            String
+  library           Library             @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+  libraryId         Int
+  chapters          Chapter[]
+  metadata          Metadata            @relation(fields: [metadataId], references: [id])
+  metadataId        Int                 @unique
+  outOfSyncChapters OutOfSyncChapter[]
 }
 
 model Chapter {
@@ -39,6 +40,12 @@ model Chapter {
   size      Int
   manga     Manga    @relation(fields: [mangaId], references: [id], onDelete: Cascade)
   mangaId   Int
+}
+
+model OutOfSyncChapter {
+  id      Int   @id
+  manga   Manga @relation(fields: [mangaId], references: [id], onDelete: Cascade)
+  mangaId Int
 }
 
 model Metadata {
