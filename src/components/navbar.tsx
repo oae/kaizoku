@@ -21,6 +21,7 @@ import {
   IconCircleCheck,
   IconClock,
   IconFileReport,
+  IconRefreshAlert,
 } from '@tabler/icons-react';
 import { inferProcedureOutput } from '@trpc/server';
 import dayjs from 'dayjs';
@@ -165,18 +166,30 @@ function ActivityItem({
   icon,
   count,
   href,
+  onClick,
   color,
 }: {
   name: string;
   icon: ReactNode;
   count: number;
-  href: string;
+  href?: string;
+  onClick?: () => void;
   color: MantineColor;
 }) {
   const { classes } = useStyles();
 
   return (
-    <NextLink target="_blank" href={href} className={classes.activity}>
+    <NextLink
+      target="_blank"
+      href={href || '#'}
+      className={classes.activity}
+      onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+        if (onClick) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+    >
       <Grid gutter={5}>
         <Grid.Col span="content" style={{ display: 'flex', alignItems: 'center' }}>
           {icon}
@@ -194,6 +207,11 @@ function ActivityItem({
     </NextLink>
   );
 }
+
+ActivityItem.defaultProps = {
+  href: undefined,
+  onClick: undefined,
+};
 
 type ActivityType = inferProcedureOutput<AppRouter['manga']['activity']>;
 
@@ -234,6 +252,13 @@ function Activity({ data }: { data: ActivityType }) {
         color="dark"
         count={data.completed}
         href="/bull/queues/queue/downloadQueue?status=completed"
+      />
+      <ActivityItem
+        icon={<IconRefreshAlert size={20} strokeWidth={1.5} />}
+        name="Out of Sync"
+        color="violet"
+        count={data.outOfSync}
+        onClick={() => {}}
       />
     </>
   );

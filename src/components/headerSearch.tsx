@@ -42,7 +42,7 @@ export function SearchControl() {
   useEffect(() => {
     if (mangaQuery.data) {
       const mangaActions: SpotlightAction[] = mangaQuery.data.map((m) => ({
-        title: m.title,
+        title: `${m.title} ${m.outOfSyncChapters.length > 0 ? ' (Out of Sync)' : ''}`,
         description: `${m.metadata.summary.split(' ').slice(0, 50).join(' ')}...`,
         group: m.source,
         icon: (
@@ -73,7 +73,6 @@ export function SearchControl() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addMangaModal, mangaQuery.data, router]);
-
   return (
     <SpotlightProvider
       actions={actions}

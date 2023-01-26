@@ -1,10 +1,13 @@
-import { OutOfSyncChapter } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
+import { nanoid } from 'nanoid';
 import path from 'path';
 import { z } from 'zod';
 import { isCronValid, sanitizer } from '../../../utils';
 import { checkChaptersQueue, removeJob, schedule } from '../../queue/checkChapters';
+import { checkOutOfSyncChaptersQueue } from '../../queue/checkOutOfSyncChapters';
 import { downloadQueue, downloadWorker, removeDownloadJobs } from '../../queue/download';
+import { fixOutOfSyncChaptersQueue } from '../../queue/fixOutOfSyncChapters';
 import { scheduleUpdateMetadata } from '../../queue/updateMetadata';
 import { scanLibrary } from '../../utils/integration';
 import {
@@ -12,17 +15,22 @@ import {
   getAvailableSources,
   getMangaDetail,
   getMangaMetadata,
-  getOutOfSyncChapters,
   removeManga,
   search,
 } from '../../utils/mangal';
 import { t } from '../trpc';
 
+const mangaWithLibraryAndChapters = Prisma.validator<Prisma.MangaArgs>()({
+  include: { library: true, chapters: true },
+});
+
+export type MangaWithLibraryAndChapters = Prisma.MangaGetPayload<typeof mangaWithLibraryAndChapters>;
+
 export const mangaRouter = t.router({
   query: t.procedure.query(async ({ ctx }) => {
     return ctx.prisma.manga.findMany({
       include: { metadata: true, library: true, outOfSyncChapters: true },
-      orderBy: { title: 'asc' },
+      orderBy: [{ outOfSyncChapters: { _count: 'desc' } }, { title: 'asc' }],
     });
   }),
   sources: t.procedure.query(async () => {
@@ -316,13 +324,18 @@ export const mangaRouter = t.router({
       },
     });
   }),
-  activity: t.procedure.query(async () => {
+  activity: t.procedure.query(async ({ ctx }) => {
+    const mangaWithOutOfSyncChapters = await ctx.prisma.outOfSyncChapter.findMany({
+      select: { mangaId: true },
+      distinct: ['mangaId'],
+    });
     return {
       active: await downloadQueue.getActiveCount(),
       queued: await downloadQueue.getWaitingCount(),
       scheduled: await checkChaptersQueue.getDelayedCount(),
       failed: await downloadQueue.getFailedCount(),
       completed: await downloadQueue.getCompletedCount(),
+      outOfSync: mangaWithOutOfSyncChapters.length,
     };
   }),
   refreshMetaData: t.procedure
@@ -377,31 +390,65 @@ export const mangaRouter = t.router({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      const inProgressCount = (
+        await Promise.all([
+          checkOutOfSyncChaptersQueue.getActiveCount(),
+          checkOutOfSyncChaptersQueue.getWaitingCount(),
+          fixOutOfSyncChaptersQueue.getActiveCount(),
+          fixOutOfSyncChaptersQueue.getWaitingCount(),
+        ])
+      ).reduce((acc, curr) => acc + curr, 0);
+      if (inProgressCount > 0) {
+        throw new TRPCError({
+          code: 'PRECONDITION_FAILED',
+          message: 'There is another active job running. Please wait until it finishes',
+        });
+      }
       const { id } = input;
       if (id) {
-        const mangaInDb = await ctx.prisma.manga.findUniqueOrThrow({
-          include: { library: true, chapters: true },
-          where: { id },
+        await checkOutOfSyncChaptersQueue.add(nanoid(), { mangaId: id });
+      } else {
+        const allMangas = await ctx.prisma.manga.findMany();
+        await checkOutOfSyncChaptersQueue.addBulk(
+          allMangas.map((m) => ({
+            data: { mangaId: m.id },
+            name: nanoid(),
+          })),
+        );
+      }
+    }),
+  fixOutOfSyncChapters: t.procedure
+    .input(
+      z.object({
+        id: z.number().nullish(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const inProgressCount = (
+        await Promise.all([
+          checkOutOfSyncChaptersQueue.getActiveCount(),
+          checkOutOfSyncChaptersQueue.getWaitingCount(),
+          fixOutOfSyncChaptersQueue.getActiveCount(),
+          fixOutOfSyncChaptersQueue.getWaitingCount(),
+        ])
+      ).reduce((acc, curr) => acc + curr, 0);
+      if (inProgressCount > 0) {
+        throw new TRPCError({
+          code: 'PRECONDITION_FAILED',
+          message: 'There is another active job running. Please wait until it finishes',
         });
-        const mangaDir = path.resolve(mangaInDb.library.path, sanitizer(mangaInDb.title));
-        const outOfSyncChapters = await getOutOfSyncChapters(mangaDir, mangaInDb.source, mangaInDb.title);
-
-        await ctx.prisma.outOfSyncChapter.deleteMany({ where: { mangaId: mangaInDb.id } });
-        await ctx.prisma.outOfSyncChapter.createMany({
-          data: outOfSyncChapters
-            .map((outOfSyncChapterFile) => {
-              const chapter = mangaInDb.chapters.find((c) => c.fileName === outOfSyncChapterFile);
-              if (!chapter) {
-                return undefined;
-              }
-
-              return {
-                id: chapter.id,
-                mangaId: mangaInDb.id,
-              };
-            })
-            .filter((c) => c) as OutOfSyncChapter[],
-        });
+      }
+      const { id } = input;
+      if (id) {
+        await fixOutOfSyncChaptersQueue.add(nanoid(), { mangaId: id });
+      } else {
+        const allMangas = await ctx.prisma.manga.findMany();
+        await fixOutOfSyncChaptersQueue.addBulk(
+          allMangas.map((m) => ({
+            data: { mangaId: m.id },
+            name: nanoid(),
+          })),
+        );
       }
     }),
 });

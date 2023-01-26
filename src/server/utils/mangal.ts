@@ -364,6 +364,10 @@ export const removeManga = async (mangaDir: string) => {
   await fs.rm(mangaDir, { recursive: true, force: true });
 };
 
+export const removeChapter = async (mangaDir: string, chapterFileName: string) => {
+  await fs.rm(path.join(mangaDir, chapterFileName), { force: true });
+};
+
 export const getOutOfSyncChapters = async (mangaDir: string, source: string, title: string) => {
   const localChapterNames = (await fs.readdir(mangaDir)).filter(shouldIncludeFile);
   const remoteChapters = await getChaptersFromRemote(source, title);

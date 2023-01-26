@@ -1,7 +1,7 @@
 import { Job, Queue, Worker } from 'bullmq';
 import { sendNotification } from '../utils/notification';
 
-export interface IDownloadWorkerData {
+export interface INotificationWorkerData {
   chapterIndex: number;
   chapterFileName: string;
   mangaTitle: string;
@@ -12,7 +12,7 @@ export interface IDownloadWorkerData {
 export const notificationWorker = new Worker(
   'notificationQueue',
   async (job: Job) => {
-    const { chapterIndex, chapterFileName, mangaTitle, source, url }: IDownloadWorkerData = job.data;
+    const { chapterIndex, chapterFileName, mangaTitle, source, url }: INotificationWorkerData = job.data;
     try {
       await sendNotification(
         'Chapter grabbed',

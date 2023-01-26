@@ -8,7 +8,6 @@ export default function MangaPage() {
   const router = useRouter();
   const { id } = router.query;
 
-  const checkOutOfSyncChaptersMutation = trpc.manga.checkOutOfSyncChapters.useMutation();
   const mangaQuery = trpc.manga.get.useQuery(
     {
       id: parseInt(id as string, 10),
@@ -34,15 +33,7 @@ export default function MangaPage() {
         <MangaDetail manga={mangaQuery.data} />
       </Box>
       <Box sx={{ marginTop: 20, overflow: 'hidden', flex: 1 }}>
-        <ChaptersTable
-          manga={mangaQuery.data}
-          onCheckOutOfSync={async () => {
-            await checkOutOfSyncChaptersMutation.mutateAsync({
-              id: mangaQuery.data.id,
-            });
-            mangaQuery.refetch();
-          }}
-        />
+        <ChaptersTable manga={mangaQuery.data} />
       </Box>
     </Box>
   );

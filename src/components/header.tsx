@@ -1,6 +1,8 @@
 import { Box, Container, createStyles, Group, Header, Title, UnstyledButton } from '@mantine/core';
 import Image from 'next/image';
 import Link from 'next/link';
+import { CheckOutOfSyncChaptersButton } from './checkOutOfSyncChaptersButton';
+import { FixOutOfSyncChaptersButton } from './fixOutOfSyncChaptersButton';
 import { SearchControl } from './headerSearch';
 import { SettingsMenuButton } from './settingsMenu';
 
@@ -47,6 +49,8 @@ export function KaizokuHeader() {
 
           <Group position="center" spacing={5}>
             <SearchControl />
+            <FixOutOfSyncChaptersButton />
+            <CheckOutOfSyncChaptersButton />
             <SettingsMenuButton />
           </Group>
         </Box>

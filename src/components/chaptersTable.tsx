@@ -3,8 +3,8 @@ import { DataTable } from 'mantine-datatable';
 
 import dayjs from 'dayjs';
 
-import { ActionIcon, Center, Tooltip } from '@mantine/core';
-import { IconAlertTriangle, IconCheck, IconRefresh } from '@tabler/icons-react';
+import { Center, Tooltip } from '@mantine/core';
+import { IconAlertTriangle, IconCheck } from '@tabler/icons-react';
 import prettyBytes from 'pretty-bytes';
 import { useEffect, useState } from 'react';
 
@@ -18,13 +18,7 @@ export type MangaWithMetadataAndChaptersAndOutOfSyncChaptersAndLibrary = Prisma.
 
 const PAGE_SIZE = 100;
 
-export function ChaptersTable({
-  manga,
-  onCheckOutOfSync,
-}: {
-  manga: MangaWithMetadataAndChaptersAndOutOfSyncChaptersAndLibrary;
-  onCheckOutOfSync: () => void;
-}) {
+export function ChaptersTable({ manga }: { manga: MangaWithMetadataAndChaptersAndOutOfSyncChaptersAndLibrary }) {
   const [page, setPage] = useState(1);
   const [records, setRecords] = useState(manga.chapters.slice(0, PAGE_SIZE));
 
@@ -64,21 +58,9 @@ export function ChaptersTable({
           title: (
             <Center>
               <span>Status</span>
-              <Tooltip withArrow label="Check for out of sync chapters">
-                <ActionIcon
-                  variant="transparent"
-                  color="blue"
-                  onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                    e.stopPropagation();
-                    onCheckOutOfSync();
-                  }}
-                >
-                  <IconRefresh size={16} />
-                </ActionIcon>
-              </Tooltip>
             </Center>
           ),
-          width: 90,
+          width: 70,
           render: ({ id }) =>
             manga.outOfSyncChapters.find((c) => c.id === id) ? (
               <Tooltip withArrow label="This chapter is out of sync with the source.">

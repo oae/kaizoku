@@ -5,7 +5,9 @@ import express, { Request, Response } from 'express';
 import next from 'next';
 import { logger } from '../utils/logging';
 import { checkChaptersQueue, scheduleAll } from './queue/checkChapters';
+import { checkOutOfSyncChaptersQueue } from './queue/checkOutOfSyncChapters';
 import { downloadQueue } from './queue/download';
+import { fixOutOfSyncChaptersQueue } from './queue/fixOutOfSyncChapters';
 import { integrationQueue } from './queue/integration';
 import { notificationQueue } from './queue/notify';
 import { updateMetadataQueue } from './queue/updateMetadata';
@@ -24,6 +26,8 @@ createBullBoard({
     new BullAdapter(notificationQueue),
     new BullAdapter(updateMetadataQueue),
     new BullAdapter(integrationQueue),
+    new BullAdapter(checkOutOfSyncChaptersQueue),
+    new BullAdapter(fixOutOfSyncChaptersQueue),
   ],
   serverAdapter,
 });
