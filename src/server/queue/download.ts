@@ -3,15 +3,9 @@ import { Job, Queue, Worker } from 'bullmq';
 import { sanitizer } from '../../utils';
 import { logger } from '../../utils/logging';
 import { prisma } from '../db/client';
-import { downloadChapter, getChapterFromLocal, getMangaPath, removeManga } from '../utils/mangal';
+import { downloadChapter, getChapterFromLocal } from '../utils/mangal';
 import { integrationQueue } from './integration';
 import { notificationQueue } from './notify';
-
-const mangaWithLibraryAndMetadata = Prisma.validator<Prisma.MangaArgs>()({
-  include: { library: true, metadata: true },
-});
-
-type MangaWithLibraryAndMetadata = Prisma.MangaGetPayload<typeof mangaWithLibraryAndMetadata>;
 
 const mangaWithChaptersAndLibrary = Prisma.validator<Prisma.MangaArgs>()({
   include: { chapters: true, library: true },
@@ -19,19 +13,22 @@ const mangaWithChaptersAndLibrary = Prisma.validator<Prisma.MangaArgs>()({
 
 type MangaWithChaptersAndLibrary = Prisma.MangaGetPayload<typeof mangaWithChaptersAndLibrary>;
 export interface IDownloadWorkerData {
-  manga: MangaWithLibraryAndMetadata;
+  mangaId: number;
   chapterIndex: number;
 }
 
 export const downloadWorker = new Worker(
   'downloadQueue',
   async (job: Job) => {
-    const { chapterIndex, manga }: IDownloadWorkerData = job.data;
+    const { chapterIndex, mangaId }: IDownloadWorkerData = job.data;
     let filePath;
     try {
-      const mangaInDb = await prisma.manga.findUnique({ where: { id: manga.id } });
+      const mangaInDb = await prisma.manga.findUnique({
+        where: { id: mangaId },
+        include: { library: true, metadata: true },
+      });
       if (!mangaInDb) {
-        job.log(`Manga ${manga.title} with id ${manga.id} is removed from db.`);
+        job.log(`Manga with id ${mangaId} is removed from db.`);
         downloadWorker.on('completed', async ({ id }) => {
           if (id === job.id) {
             await job.remove();
@@ -39,12 +36,12 @@ export const downloadWorker = new Worker(
         });
         return;
       }
-      filePath = await downloadChapter(manga.title, manga.source, chapterIndex, manga.library.path);
+      filePath = await downloadChapter(mangaInDb.title, mangaInDb.source, chapterIndex, mangaInDb.library.path);
       const chapter = await getChapterFromLocal(filePath);
 
       await prisma.chapter.deleteMany({
         where: {
-          mangaId: manga.id,
+          mangaId: mangaInDb.id,
           index: chapterIndex,
         },
       });
@@ -52,24 +49,20 @@ export const downloadWorker = new Worker(
       const chapterInDb = await prisma.chapter.create({
         data: {
           ...chapter,
-          mangaId: manga.id,
+          mangaId: mangaInDb.id,
         },
       });
-      await notificationQueue.add(`notify_${sanitizer(manga.title)}_${chapterInDb.id}`, {
+      await notificationQueue.add(`notify_${sanitizer(mangaInDb.title)}_${chapterInDb.id}`, {
         chapterIndex,
         chapterFileName: chapter.fileName,
-        mangaTitle: manga.title,
-        source: manga.source,
-        url: manga.metadata.urls.find((url) => url.includes('anilist')),
+        mangaTitle: mangaInDb.title,
+        source: mangaInDb.source,
+        url: mangaInDb.metadata.urls.find((url) => url.includes('anilist')),
       });
       await integrationQueue.add('run_integrations', null);
       await job.updateProgress(100);
     } catch (err) {
       await job.log(`${err}`);
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2003' && filePath) {
-        await removeManga(getMangaPath(manga.library.path, manga.title));
-        await job.log(`Removed ${manga.title} folder because it was not found in db`);
-      }
       throw err;
     }
   },

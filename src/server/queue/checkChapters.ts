@@ -83,7 +83,7 @@ const checkChapters = async (manga: MangaWithLibraryAndMetadata) => {
       },
       name: `${sanitizer(manga.title)}_chapter#${chapterIndex}_download`,
       data: {
-        manga,
+        mangaId: manga.id,
         chapterIndex,
       },
     })),
@@ -100,8 +100,12 @@ export const checkChaptersQueue = new Queue('checkChaptersQueue', {
 export const checkChaptersWorker = new Worker(
   'checkChaptersQueue',
   async (job: Job) => {
-    const { manga }: { manga: MangaWithLibraryAndMetadata } = job.data;
-    await checkChapters(manga);
+    const { mangaId } = job.data;
+    const mangaInDb = await prisma.manga.findUniqueOrThrow({
+      include: { library: true, metadata: true },
+      where: { id: mangaId },
+    });
+    await checkChapters(mangaInDb);
     await job.updateProgress(100);
   },
   {
@@ -145,7 +149,7 @@ export const schedule = async (manga: MangaWithLibraryAndMetadata, runImmediatel
   await checkChaptersQueue.add(
     jobId,
     {
-      manga,
+      mangaId: manga.id,
     },
     {
       jobId,
