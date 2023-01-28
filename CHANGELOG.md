@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.5.0](https://github.com/oae/kaizoku/compare/kaizoku-v1.4.1...kaizoku-v1.5.0) (2023-01-28)
+
+
+### Features
+
+* add ability to fix out-of-sync chapters ([6100e6c](https://github.com/oae/kaizoku/commit/6100e6c8809b133e52d714e2be0091bfbc447100))
+* show out of sync chapters for each manga ([6b4dd53](https://github.com/oae/kaizoku/commit/6b4dd53a8ef4cc3e33d5cdcee1d13654905b0fbb))
+
+
+### Bug Fixes
+
+* add jobid for bulk operations ([e0a939b](https://github.com/oae/kaizoku/commit/e0a939b7ec90651441dcb2fd03c8e39c1086ff76))
+* check if the remote source has any chapters before marking ([a4d787d](https://github.com/oae/kaizoku/commit/a4d787d5390859b59299480ade6db332e8c738e6))
+* remove leftover chapters when fixing out-of-sync ones ([5713cd6](https://github.com/oae/kaizoku/commit/5713cd6f0cf51cda801c6007792e9a2bc91b52cf))
+* remove title on smaller screens ([eb918d8](https://github.com/oae/kaizoku/commit/eb918d8969298195fadecf7b9d4b3b61f14a5175))
+* search all mangas from mangasee ([de19737](https://github.com/oae/kaizoku/commit/de197373a1b3935b72cc9df16a22a4998974b3f2))
+
 ## [1.4.1](https://github.com/oae/kaizoku/compare/kaizoku-v1.4.0...kaizoku-v1.4.1) (2023-01-14)
 
 
