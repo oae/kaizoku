@@ -371,6 +371,10 @@ export const removeChapter = async (mangaDir: string, chapterFileName: string) =
 export const getOutOfSyncChapters = async (mangaDir: string, source: string, title: string) => {
   const localChapters = await getChaptersFromLocal(mangaDir);
   const remoteChapters = await getChaptersFromRemote(source, title);
+  if (remoteChapters.length === 0) {
+    logger.info('Source may not be available. I will not mark any chapter for removal.');
+    return [];
+  }
   const remoteChaptersWithIndex = remoteChapters.map((r) => ({
     fileName: `[${String(r.index + 1).padStart(4, '0')}]_${sanitizer(r.name)}.cbz`,
     index: r.index + 1,
