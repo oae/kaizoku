@@ -114,7 +114,7 @@ export default function IndexPage() {
 
   return (
     <ScrollArea sx={{ height: 'calc(100vh - 88px)' }}>
-      <Grid m={12} justify="flex-start">
+      <Grid m={0} justify="flex-start">
         <Grid.Col span="content">
           <AddManga onAdd={() => mangaQuery.refetch()} />
         </Grid.Col>
