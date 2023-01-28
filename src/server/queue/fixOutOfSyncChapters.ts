@@ -2,8 +2,8 @@ import { Job, Queue, Worker } from 'bullmq';
 import path from 'path';
 import { sanitizer } from '../../utils';
 import { prisma } from '../db/client';
-import { downloadChapter, getChapterFromLocal, removeChapter } from '../utils/mangal';
-import { integrationQueue } from './integration';
+import { removeChapter } from '../utils/mangal';
+import { schedule } from './checkChapters';
 
 export interface IFixOutOfSyncChaptersWorkerData {
   mangaId: number;
@@ -15,7 +15,7 @@ export const fixOutOfSyncChaptersWorker = new Worker(
     const { mangaId }: IFixOutOfSyncChaptersWorkerData = job.data;
     try {
       const mangaInDb = await prisma.manga.findUniqueOrThrow({
-        include: { library: true, outOfSyncChapters: true, chapters: true },
+        include: { library: true, outOfSyncChapters: true, chapters: true, metadata: true },
         where: { id: mangaId },
       });
       const mangaPath = path.resolve(mangaInDb.library.path, sanitizer(mangaInDb.title));
@@ -26,25 +26,13 @@ export const fixOutOfSyncChaptersWorker = new Worker(
           if (!chapter) {
             return;
           }
-          const filePath = await downloadChapter(
-            mangaInDb.title,
-            mangaInDb.source,
-            chapter.index,
-            mangaInDb.library.path,
-          );
           await removeChapter(mangaPath, chapter.fileName);
           await prisma.outOfSyncChapter.delete({ where: { id: outOfSyncChapter.id } });
           await prisma.chapter.delete({ where: { id: outOfSyncChapter.id } });
-          const newChapter = await getChapterFromLocal(filePath);
-          await prisma.chapter.create({
-            data: {
-              ...newChapter,
-              mangaId,
-            },
-          });
         }),
       );
-      await integrationQueue.add('run_integrations', null);
+
+      await schedule(mangaInDb, true);
       await job.updateProgress(100);
     } catch (err) {
       await job.log(`${err}`);

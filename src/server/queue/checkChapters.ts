@@ -1,8 +1,8 @@
 import { Prisma } from '@prisma/client';
 import { Job, Queue, Worker } from 'bullmq';
 import path from 'path';
-import { logger } from '../../utils/logging';
 import { sanitizer } from '../../utils';
+import { logger } from '../../utils/logging';
 import { prisma } from '../db/client';
 import { findMissingChapterFiles, getChaptersFromLocal } from '../utils/mangal';
 import { downloadQueue } from './download';
@@ -13,10 +13,8 @@ const mangaWithLibraryAndMetadata = Prisma.validator<Prisma.MangaArgs>()({
 
 export type MangaWithLibraryAndMetadata = Prisma.MangaGetPayload<typeof mangaWithLibraryAndMetadata>;
 
-const checkChapters = async (manga: MangaWithLibraryAndMetadata) => {
-  logger.info(`Checking for new chapters: ${manga.title}`);
+export const syncDbWithFiles = async (manga: MangaWithLibraryAndMetadata) => {
   const mangaDir = path.resolve(manga.library.path, sanitizer(manga.title));
-  const missingChapterFiles = await findMissingChapterFiles(mangaDir, manga.source, manga.title);
 
   const localChapters = await getChaptersFromLocal(mangaDir);
   const dbChapters = await prisma.chapter.findMany({
@@ -26,11 +24,17 @@ const checkChapters = async (manga: MangaWithLibraryAndMetadata) => {
   });
 
   const dbOnlyChapters = dbChapters.filter(
-    (dbChapter) => localChapters.findIndex((localChapter) => localChapter.index === dbChapter.index) < 0,
+    (dbChapter) =>
+      localChapters.findIndex(
+        (localChapter) => localChapter.fileName === dbChapter.fileName && localChapter.index === dbChapter.index,
+      ) < 0,
   );
 
   const missingDbChapters = localChapters.filter(
-    (localChapter) => dbChapters.findIndex((dbChapter) => dbChapter.index === localChapter.index) < 0,
+    (localChapter) =>
+      dbChapters.findIndex(
+        (dbChapter) => dbChapter.fileName === localChapter.fileName && dbChapter.index === localChapter.index,
+      ) < 0,
   );
 
   await prisma.$transaction([
@@ -48,6 +52,13 @@ const checkChapters = async (manga: MangaWithLibraryAndMetadata) => {
       })),
     }),
   ]);
+};
+
+const checkChapters = async (manga: MangaWithLibraryAndMetadata) => {
+  logger.info(`Checking for new chapters: ${manga.title}`);
+  const mangaDir = path.resolve(manga.library.path, sanitizer(manga.title));
+  const missingChapterFiles = await findMissingChapterFiles(mangaDir, manga.source, manga.title);
+  await syncDbWithFiles(manga);
 
   if (missingChapterFiles.length === 0) {
     logger.info(`There are no missing chapter files for ${manga.title}`);

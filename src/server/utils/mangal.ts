@@ -369,11 +369,14 @@ export const removeChapter = async (mangaDir: string, chapterFileName: string) =
 };
 
 export const getOutOfSyncChapters = async (mangaDir: string, source: string, title: string) => {
-  const localChapterNames = (await fs.readdir(mangaDir)).filter(shouldIncludeFile);
+  const localChapters = await getChaptersFromLocal(mangaDir);
   const remoteChapters = await getChaptersFromRemote(source, title);
-  const remoteChapterNames = remoteChapters.map(
-    (r) => `[${String(r.index + 1).padStart(4, '0')}]_${sanitizer(r.name)}.cbz`,
-  );
+  const remoteChaptersWithIndex = remoteChapters.map((r) => ({
+    fileName: `[${String(r.index + 1).padStart(4, '0')}]_${sanitizer(r.name)}.cbz`,
+    index: r.index + 1,
+  }));
 
-  return localChapterNames.filter((l) => !remoteChapterNames.includes(l));
+  return localChapters.filter(
+    (l) => !remoteChaptersWithIndex.find((r) => l.index + 1 === r.index && l.fileName === r.fileName),
+  );
 };
