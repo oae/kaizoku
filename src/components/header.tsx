@@ -21,6 +21,9 @@ const useStyles = createStyles((theme) => ({
   },
 
   title: {
+    [`@media (max-width: ${theme.breakpoints.xs}px)`]: {
+      display: 'none',
+    },
     fontFamily: 'Ninja Naruto Regular, Inter',
     lineHeight: '56px',
     fontWeight: 300,
