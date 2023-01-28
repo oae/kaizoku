@@ -411,6 +411,9 @@ export const mangaRouter = t.router({
         const allMangas = await ctx.prisma.manga.findMany();
         await checkOutOfSyncChaptersQueue.addBulk(
           allMangas.map((m) => ({
+            opts: {
+              jobId: nanoid(),
+            },
             data: { mangaId: m.id },
             name: nanoid(),
           })),
@@ -445,6 +448,9 @@ export const mangaRouter = t.router({
         const allMangas = await ctx.prisma.manga.findMany();
         await fixOutOfSyncChaptersQueue.addBulk(
           allMangas.map((m) => ({
+            opts: {
+              jobId: nanoid(),
+            },
             data: { mangaId: m.id },
             name: nanoid(),
           })),
