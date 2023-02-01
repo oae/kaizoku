@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/oae/kaizoku/compare/kaizoku-v1.5.0...kaizoku-v1.5.1) (2023-02-01)
+
+
+### Bug Fixes
+
+* try other date information from fs for `Download Date` if birthtime is not present ([d01aa98](https://github.com/oae/kaizoku/commit/d01aa985fa22e867b17e2d3e9a444e759129d18d))
+
 ## [1.5.0](https://github.com/oae/kaizoku/compare/kaizoku-v1.4.1...kaizoku-v1.5.0) (2023-01-28)
 
 
