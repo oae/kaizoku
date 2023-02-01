@@ -99,7 +99,7 @@ jobs:
         if: ${{ needs.release-please.outputs.release_created }}
 
       - name: Build
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: docker/Dockerfile
