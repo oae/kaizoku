@@ -318,10 +318,20 @@ const shouldIncludeFile = (chapterFile: string) => {
 export const getChapterFromLocal = async (chapterFile: string) => {
   try {
     const stat = await fs.stat(chapterFile);
+    let createdAt = new Date();
+
+    if (stat.birthtime.getTime() !== 0) {
+      createdAt = stat.birthtime;
+    } else if (stat.ctime.getTime() !== 0) {
+      createdAt = stat.ctime;
+    } else if (stat.mtime.getTime() !== 0) {
+      createdAt = stat.mtime;
+    }
+
     return {
       index: getChapterIndexFromFile(chapterFile)!,
       size: stat.size,
-      createdAt: stat.birthtime,
+      createdAt,
       fileName: path.basename(chapterFile),
     };
   } catch (err) {

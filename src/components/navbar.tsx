@@ -267,8 +267,12 @@ function Activity({ data }: { data: ActivityType }) {
 export function KaizokuNavbar() {
   const { classes } = useStyles();
 
-  const historyQuery = trpc.manga.history.useQuery();
-  const activityQuery = trpc.manga.activity.useQuery();
+  const historyQuery = trpc.manga.history.useQuery(undefined, {
+    refetchInterval: 5 * 1000,
+  });
+  const activityQuery = trpc.manga.activity.useQuery(undefined, {
+    refetchInterval: 5 * 1000,
+  });
   const libraryQuery = trpc.library.query.useQuery();
 
   if (!libraryQuery.data) {
