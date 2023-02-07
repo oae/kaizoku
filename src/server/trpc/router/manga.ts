@@ -12,6 +12,7 @@ import { scheduleUpdateMetadata } from '../../queue/updateMetadata';
 import { scanLibrary } from '../../utils/integration';
 import {
   bindTitleToAnilistId,
+  clearCache,
   getAvailableSources,
   getMangaDetail,
   getMangaMetadata,
@@ -405,6 +406,7 @@ export const mangaRouter = t.router({
         });
       }
       const { id } = input;
+      await clearCache();
       if (id) {
         await checkOutOfSyncChaptersQueue.add(nanoid(), { mangaId: id });
       } else {

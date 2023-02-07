@@ -378,6 +378,21 @@ export const removeChapter = async (mangaDir: string, chapterFileName: string) =
   await fs.rm(path.join(mangaDir, chapterFileName), { force: true });
 };
 
+export const clearCache = async () => {
+  try {
+    const { stdout, escapedCommand } = await execa('mangal', ['where', '--cache']);
+    logger.info(`Getting mangal cache path with following command: ${escapedCommand}`);
+    const cachedFiles = await fs.readdir(stdout);
+    await Promise.all(
+      cachedFiles
+        .filter((cachedFile) => cachedFile.endsWith('json') && cachedFile.indexOf('anilist') < 0)
+        .map(async (cachedJson) => fs.rm(path.join(stdout, cachedJson), { force: true })),
+    );
+  } catch (err) {
+    logger.error(`Failed to remove mangal cache. err: ${err}`);
+  }
+};
+
 export const getOutOfSyncChapters = async (mangaDir: string, source: string, title: string) => {
   const localChapters = await getChaptersFromLocal(mangaDir);
   const remoteChapters = await getChaptersFromRemote(source, title);
