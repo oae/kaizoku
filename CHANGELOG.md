@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.1](https://github.com/oae/kaizoku/compare/kaizoku-v1.6.0...kaizoku-v1.6.1) (2023-02-07)
+
+
+### Bug Fixes
+
+* clear mangal cache when checking out of sync chapters ([6578201](https://github.com/oae/kaizoku/commit/6578201736b2c7e523f1e2a0518802dd7fb3154c))
+* use correct height for badge ([1ffdcae](https://github.com/oae/kaizoku/commit/1ffdcaed4b1ed8c17842f639dc74a2b5ee861a21))
+
 ## [1.6.0](https://github.com/oae/kaizoku/compare/kaizoku-v1.5.1...kaizoku-v1.6.0) (2023-02-07)
 
 
