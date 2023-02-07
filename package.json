@@ -1,6 +1,6 @@
 {
   "name": "kaizoku",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "author": "Alperen Elhan <alperen@elhan.io>",
   "private": true,
   "scripts": {

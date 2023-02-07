@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.6.0](https://github.com/oae/kaizoku/compare/kaizoku-v1.5.1...kaizoku-v1.6.0) (2023-02-07)
+
+
+### Features
+
+* add links to navbar history items ([67bb111](https://github.com/oae/kaizoku/commit/67bb111e77457dba768703ce36a4504936dfacc0))
+
+
+### Bug Fixes
+
+* use binary engine ([#75](https://github.com/oae/kaizoku/issues/75)) ([08662bb](https://github.com/oae/kaizoku/commit/08662bb72ffa75704d67a4a1aac1d2bd861341bc))
+* use smaller card and title ([9dc7536](https://github.com/oae/kaizoku/commit/9dc7536767e218803a6a78ca349eb9012be138d4))
+
 ## [1.5.1](https://github.com/oae/kaizoku/compare/kaizoku-v1.5.0...kaizoku-v1.5.1) (2023-02-01)
 
 
