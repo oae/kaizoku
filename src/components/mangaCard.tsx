@@ -10,13 +10,13 @@ import { useUpdateModal } from './updateManga';
 
 const useStyles = createStyles((theme, _params, getRef) => ({
   skeletonCard: {
-    height: 350,
-    width: 210,
+    height: 320,
+    width: 200,
   },
   card: {
     position: 'relative',
-    height: 350,
-    width: 210,
+    height: 320,
+    width: 200,
     cursor: 'pointer',
     display: 'flex',
     flexDirection: 'column',
@@ -216,7 +216,7 @@ export function MangaCard({ manga, onRemove, onUpdate, onRefresh, onClick }: Man
         >
           {manga.source}
         </Badge>
-        <Title order={3} className={classes.title}>
+        <Title order={5} className={classes.title}>
           {manga.title}
         </Title>
       </div>

@@ -6,8 +6,8 @@ import { AddMangaForm } from './form';
 
 const useStyles = createStyles((theme) => ({
   card: {
-    height: 350,
-    width: 210,
+    height: 320,
+    width: 200,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
