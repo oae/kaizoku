@@ -30,6 +30,7 @@ import prettyBytes from 'pretty-bytes';
 import { NextLink } from '@mantine/next';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { ReactNode, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { AppRouter } from '../server/trpc/router';
 import { trpc } from '../utils/trpc';
 import { MadeWith } from './madeWith';
@@ -47,6 +48,9 @@ const useStyles = createStyles((theme) => ({
   },
   history: {
     textDecoration: 'none',
+  },
+  historyItem: {
+    cursor: 'pointer',
   },
   badge: {
     padding: 5,
@@ -142,6 +146,7 @@ function HistoryItem({ chapter }: { chapter: HistoryItemType }) {
 
 function History({ data }: { data: HistoryType }) {
   const { classes } = useStyles();
+  const router = useRouter();
 
   return (
     <Timeline lineWidth={2} className={classes.history}>
@@ -149,6 +154,8 @@ function History({ data }: { data: HistoryType }) {
         return (
           <Timeline.Item
             key={chapter.id}
+            className={classes.historyItem}
+            onClick={() => router.push(`/manga/${chapter.mangaId}`)}
             lineVariant="dotted"
             bullet={<Image mt={20} alt="header" src={chapter.manga.metadata.cover} height={40} width={26} />}
             title={<HistoryItemTitle chapter={chapter} />}
