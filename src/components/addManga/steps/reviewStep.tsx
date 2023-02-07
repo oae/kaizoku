@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Badge,
+  Box,
   createStyles,
   Divider,
   Grid,
@@ -188,7 +189,7 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
                   <Tooltip label={genre} key={genre}>
                     <div style={{ maxWidth: 100 }}>
                       <Badge color="indigo" variant="light" size="xs" fullWidth>
-                        {genre}
+                        <Box className="h-3">{genre}</Box>
                       </Badge>
                     </div>
                   </Tooltip>
@@ -204,7 +205,7 @@ export function ReviewStep({ form }: { form: UseFormReturnType<FormType> }) {
                   <Tooltip label={tag} key={tag}>
                     <div style={{ maxWidth: 100 }}>
                       <Badge color="violet" variant="light" size="xs" fullWidth>
-                        {tag}
+                        <Box className="h-3">{tag}</Box>
                       </Badge>
                     </div>
                   </Tooltip>

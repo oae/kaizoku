@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Badge,
+  Box,
   Button,
   Code,
   createStyles,
@@ -290,7 +291,7 @@ function UpdateModalContent({
                 <Tooltip label={genre} key={genre}>
                   <div style={{ maxWidth: 100 }}>
                     <Badge color="indigo" variant="light" size="xs" fullWidth>
-                      {genre}
+                      <Box className="h-3">{genre}</Box>
                     </Badge>
                   </div>
                 </Tooltip>
@@ -306,7 +307,7 @@ function UpdateModalContent({
                 <Tooltip label={tag} key={tag}>
                   <div style={{ maxWidth: 100 }}>
                     <Badge color="violet" variant="light" size="xs" fullWidth>
-                      {tag}
+                      <Box className="h-3">{tag}</Box>
                     </Badge>
                   </div>
                 </Tooltip>

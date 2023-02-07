@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, createStyles, Paper, Skeleton, Title, Tooltip } from '@mantine/core';
+import { ActionIcon, Badge, Box, createStyles, Paper, Skeleton, Title, Tooltip } from '@mantine/core';
 import { Prisma } from '@prisma/client';
 import { IconEdit, IconExclamationMark, IconRefresh, IconX } from '@tabler/icons-react';
 import { contrastColor } from 'contrast-color';
@@ -214,7 +214,7 @@ export function MangaCard({ manga, onRemove, onUpdate, onRefresh, onClick }: Man
           className={classes.badge}
           size="xs"
         >
-          {manga.source}
+          <Box className="h-3">{manga.source}</Box>
         </Badge>
         <Title order={5} className={classes.title}>
           {manga.title}

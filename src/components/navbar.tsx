@@ -132,12 +132,22 @@ function HistoryItem({ chapter }: { chapter: HistoryItemType }) {
       </Text>
       <SimpleGrid cols={2} mt={4}>
         <Tooltip label={time}>
-          <Badge variant="light" size="xs" color="cyan" leftSection={<IconClock size={12} />}>
-            {time}
+          <Badge
+            variant="light"
+            size="xs"
+            color="cyan"
+            leftSection={<IconClock className="flex justify-center align-middle" size={12} />}
+          >
+            <Box className="h-3">{time}</Box>
           </Badge>
         </Tooltip>
-        <Badge variant="light" size="xs" color="violet" leftSection={<IconFileReport size={12} />}>
-          {prettyBytes(chapter.size)}
+        <Badge
+          variant="light"
+          size="xs"
+          color="violet"
+          leftSection={<IconFileReport className="flex justify-center align-middle" size={12} />}
+        >
+          <Box className="h-3">{prettyBytes(chapter.size)}</Box>
         </Badge>
       </SimpleGrid>
     </>

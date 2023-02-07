@@ -1,4 +1,4 @@
-import { Badge, createStyles, Divider, Grid, Group, Image, Spoiler, Text, Title } from '@mantine/core';
+import { Badge, Box, createStyles, Divider, Grid, Group, Image, Spoiler, Text, Title } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { Prisma } from '@prisma/client';
 import { IconExternalLink } from '@tabler/icons-react';
@@ -97,7 +97,7 @@ export function MangaDetail({ manga }: { manga: MangaWithMetadataAndChapters }) 
           <Group spacing={0}>
             {manga.metadata.synonyms.map((synonym) => (
               <Badge key={synonym} color="gray" variant="filled" size="xs" m={2}>
-                {synonym}
+                <Box className="h-3">{synonym}</Box>
               </Badge>
             ))}
           </Group>
@@ -110,7 +110,7 @@ export function MangaDetail({ manga }: { manga: MangaWithMetadataAndChapters }) 
           >
             Checking{' '}
             <Badge component="span" color="blue" variant="filled" size="xs">
-              {getCronLabel(manga.interval)}
+              <Box className="h-3">{getCronLabel(manga.interval)}</Box>
             </Badge>{' '}
             from{' '}
             <Badge
@@ -120,7 +120,7 @@ export function MangaDetail({ manga }: { manga: MangaWithMetadataAndChapters }) 
               size="xs"
               sx={{ backgroundColor: stc(manga.source), color: contrastColor({ bgColor: stc(manga.source) }) }}
             >
-              {manga.source}
+              <Box className="h-3">{manga.source}</Box>
             </Badge>
           </Group>
           <Divider sx={{ fontWeight: 'bolder' }} variant="dashed" my="xs" label="Status" />
@@ -134,7 +134,7 @@ export function MangaDetail({ manga }: { manga: MangaWithMetadataAndChapters }) 
           <Group spacing={0}>
             {manga.metadata.genres.map((genre) => (
               <Badge key={genre} color="indigo" variant="light" size="xs" m={2}>
-                {genre}
+                <Box className="h-3">{genre}</Box>
               </Badge>
             ))}
           </Group>
@@ -142,7 +142,7 @@ export function MangaDetail({ manga }: { manga: MangaWithMetadataAndChapters }) 
           <Group spacing={0}>
             {manga.metadata.tags.map((tag) => (
               <Badge key={tag} color="violet" variant="light" size="xs" m={2}>
-                {tag}
+                <Box className="h-3">{tag}</Box>
               </Badge>
             ))}
           </Group>
