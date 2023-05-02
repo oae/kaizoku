@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "NODE_ENV=development ts-node --project tsconfig.server.json src/server/index.ts",
+    "dev_windows": "set NODE_ENV=development&&ts-node --project tsconfig.server.json src/server/index.ts",
     "build": "pnpm build:next && pnpm build:server",
     "build:server": "tsc --project tsconfig.server.json",
     "start:server": "NODE_ENV=production node dist/server/index.js",
