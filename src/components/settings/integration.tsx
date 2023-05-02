@@ -299,6 +299,37 @@ export function IntegrationSettings() {
               initialValue={settings.data.appConfig.kavitaPassword}
             />
           </Group>
+          <Group position="apart" className={classes.item} spacing="xl" noWrap>
+            <Box>
+              <Breadcrumbs
+                separator="/"
+                styles={{
+                  separator: {
+                    marginLeft: 4,
+                    marginRight: 4,
+                  },
+                  breadcrumb: {
+                    textTransform: 'capitalize',
+                    fontSize: 13,
+                    fontWeight: 500,
+                  },
+                  root: {
+                    marginBottom: 5,
+                  },
+                }}
+              >
+                Libraries
+              </Breadcrumbs>
+              <Text size="xs" color="dimmed">
+                Blank for all, or comma seperated
+              </Text>
+            </Box>
+            <TextItem
+              configKey="kavitaLibraries"
+              onUpdate={handleUpdate}
+              initialValue={settings.data.appConfig.kavitaLibraries}
+            />
+          </Group>
         </Accordion.Panel>
       </Accordion.Item>
     </Accordion>

@@ -83,4 +83,5 @@ model Settings {
   kavitaHost           String?
   kavitaUser           String?
   kavitaPassword       String?
+  kavitaLibraries      String?
 }
