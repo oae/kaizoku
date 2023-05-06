@@ -79,6 +79,7 @@ model Settings {
   komgaHost            String?
   komgaUser            String?
   komgaPassword        String?
+  komgaLibraries       String[] @default([])
   kavitaEnabled        Boolean  @default(false)
   kavitaHost           String?
   kavitaUser           String?
