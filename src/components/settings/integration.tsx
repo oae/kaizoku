@@ -1,6 +1,6 @@
 import { Accordion, Box, Breadcrumbs, createStyles, Group, Image, Text } from '@mantine/core';
 import { trpc } from '../../utils/trpc';
-import { SwitchItem, TextItem } from './mangal';
+import { ArrayItem, SwitchItem, TextItem } from './mangal';
 
 const useStyles = createStyles((theme) => ({
   item: {
@@ -35,7 +35,7 @@ export function IntegrationSettings() {
   const update = trpc.settings.update.useMutation();
   const settings = trpc.settings.query.useQuery();
 
-  const handleUpdate = async (key: string, value: boolean | string | number) => {
+  const handleUpdate = async (key: string, value: boolean | string | number | string[]) => {
     await update.mutateAsync({
       key,
       value,
@@ -297,6 +297,38 @@ export function IntegrationSettings() {
               configKey="kavitaPassword"
               onUpdate={handleUpdate}
               initialValue={settings.data.appConfig.kavitaPassword}
+            />
+          </Group>
+          <Group position="apart" className={classes.item} spacing="xl" noWrap>
+            <Box>
+              <Breadcrumbs
+                separator="/"
+                styles={{
+                  separator: {
+                    marginLeft: 4,
+                    marginRight: 4,
+                  },
+                  breadcrumb: {
+                    textTransform: 'capitalize',
+                    fontSize: 13,
+                    fontWeight: 500,
+                  },
+                  root: {
+                    marginBottom: 5,
+                  },
+                }}
+              >
+                Libraries
+              </Breadcrumbs>
+              <Text size="xs" color="dimmed">
+                Scan specific Kavita libraries
+              </Text>
+            </Box>
+            <ArrayItem
+              configKey="kavitaLibraries"
+              onUpdate={handleUpdate}
+              initialValue={settings.data.appConfig.kavitaLibraries}
+              itemName="Library"
             />
           </Group>
         </Accordion.Panel>

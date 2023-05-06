@@ -278,6 +278,7 @@ export function NotificationSettings() {
               configKey="appriseUrls"
               onUpdate={handleUpdate}
               initialValue={settings.data.appConfig.appriseUrls}
+              itemName="URL"
             />
           </Group>
         </Accordion.Panel>

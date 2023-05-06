@@ -1,6 +1,7 @@
 import { prisma } from '../../db/client';
 
 interface Library {
+  name: string;
   id: string;
 }
 
@@ -57,14 +58,18 @@ export const scanLibrary = async () => {
       })
     ).json();
 
+    const includedLibraries = settings.kavitaLibraries;
+
     await Promise.all(
-      libraries.map(async (library) => {
-        const kavitaLibraryUrl = new URL(`/api/Library/scan?libraryId=${library.id}&force=false`, baseKavitaUrl).href;
-        await fetch(kavitaLibraryUrl, {
-          method: 'POST',
-          headers,
-        });
-      }),
+      libraries
+        .filter((library) => (includedLibraries.length > 0 ? includedLibraries.includes(library.name) : library.name))
+        .map(async (library) => {
+          const kavitaLibraryUrl = new URL(`/api/Library/scan?libraryId=${library.id}&force=false`, baseKavitaUrl).href;
+          await fetch(kavitaLibraryUrl, {
+            method: 'POST',
+            headers,
+          });
+        }),
     );
   }
 };

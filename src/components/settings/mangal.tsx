@@ -162,10 +162,12 @@ export function ArrayItem({
   configKey,
   initialValue,
   onUpdate,
+  itemName,
 }: {
   configKey: string;
   initialValue: string[];
   onUpdate: (configKey: string, value: string[]) => void;
+  itemName: string;
 }) {
   const [value, setValue] = useState<{ [key: string]: string }>(
     initialValue.reduce((acc, v) => ({ ...acc, [nanoid()]: v }), {}),
@@ -202,7 +204,7 @@ export function ArrayItem({
         );
       })}
       <Button fullWidth onClick={() => setValue({ ...value, [nanoid()]: '' })}>
-        Add Url
+        Add {itemName}
       </Button>
     </Box>
   );
