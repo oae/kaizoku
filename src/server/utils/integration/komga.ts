@@ -2,6 +2,7 @@ import { sanitizer } from '../../../utils';
 import { prisma } from '../../db/client';
 
 interface Library {
+  name: string;
   id: string;
 }
 
@@ -32,14 +33,18 @@ export const scanLibrary = async () => {
       })
     ).json();
 
+    const includedLibraries = settings.komgaLibraries;
+
     await Promise.all(
-      libraries.map(async (library) => {
-        const komgaLibraryUrl = new URL(`/api/v1/libraries/${library.id}/scan`, baseKomgaUrl).href;
-        await fetch(komgaLibraryUrl, {
-          method: 'POST',
-          headers,
-        });
-      }),
+      libraries
+        .filter((library) => (includedLibraries.length > 0 ? includedLibraries.includes(library.name) : library.name))
+        .map(async (library) => {
+          const komgaLibraryUrl = new URL(`/api/v1/libraries/${library.id}/scan`, baseKomgaUrl).href;
+          await fetch(komgaLibraryUrl, {
+            method: 'POST',
+            headers,
+          });
+        }),
     );
   }
 };
