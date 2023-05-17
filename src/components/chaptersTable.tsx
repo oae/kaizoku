@@ -27,7 +27,7 @@ export function ChaptersTable({ manga }: { manga: MangaWithMetadataAndChaptersAn
   const Router = useRouter();
   const origin =
     typeof window !== 'undefined' && window.location.origin ? window.location.origin : 'http://localhost:3000';
-  const downloadPath = `${sanitizer(manga.title)}`;
+  const sanitizedTitle = `${sanitizer(manga.title)}`;
 
   useEffect(() => {
     const from = (page - 1) * PAGE_SIZE;
@@ -38,7 +38,7 @@ export function ChaptersTable({ manga }: { manga: MangaWithMetadataAndChaptersAn
   return (
     <DataTable
       onCellClick={({ record }) => {
-        Router.push(`${origin}/api/read/title=${downloadPath}&fileName=${record.fileName}`);
+        Router.push(`${origin}/api/read/title=${sanitizedTitle}&fileName=${record.fileName}`);
       }}
       withBorder
       withColumnBorders

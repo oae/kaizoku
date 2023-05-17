@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import { readFileSync } from 'fs';
 import { NextApiRequest, NextApiResponse } from 'next';
 import path from 'path';
 
@@ -13,9 +13,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       if (fileName.split('.')[1] !== 'pdf') res.send('ERR: Incorrect File type. File is not of type application/pdf');
 
       const filePath = path.resolve(`/data/${title}/${fileName}`);
-      const imageBuffer = fs.readFileSync(filePath);
+      const pdfBuffer = readFileSync(filePath);
       res.setHeader('Content-Type', 'application/pdf');
-      return res.send(imageBuffer);
+      return res.send(pdfBuffer);
     }
   }
 
