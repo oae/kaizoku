@@ -9,7 +9,13 @@ umask 022
 mangal config set -k metadata.comic_info_xml --value true
 mangal config set -k metadata.fetch_anilist --value true
 mangal config set -k metadata.series_json --value true
-mangal config set -k formats.use --value "cbz"
+
+if [[ -z "${ENABLE_PDF}" ]]; then
+  mangal config set -k formats.use --value "cbz"
+else
+  mangal config set -k formats.use --value "pdf"
+fi
+
 mangal config set -k downloader.download_cover --value true
 mangal config set -k downloader.redownload_existing --value true
 mangal config set -k downloader.chapter_name_template --value "[{padded-index}] {chapter}"
