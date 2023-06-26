@@ -28,7 +28,7 @@ export default function MangaPage() {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 88px)' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ flexBasis: 'fit-content' }}>
         <MangaDetail manga={mangaQuery.data} />
       </Box>
