@@ -216,6 +216,16 @@ export function MangaCard({ manga, onRemove, onUpdate, onRefresh, onClick }: Man
         >
           <Box className="h-3">{manga.source}</Box>
         </Badge>
+        <Badge
+          sx={{
+            backgroundColor: stc(manga.metadata.status),
+            color: contrastColor({ bgColor: stc(manga.metadata.status) }),
+          }}
+          className={classes.badge}
+          size="xs"
+        >
+          <Box className="h-3">{manga.metadata.status}</Box>
+        </Badge>
         <Title order={5} className={classes.title}>
           {manga.title}
         </Title>
