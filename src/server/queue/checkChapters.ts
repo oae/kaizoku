@@ -94,6 +94,8 @@ export const checkChaptersQueue = new Queue('checkChaptersQueue', {
   connection: {
     host: process.env.REDIS_HOST,
     port: parseInt(process.env.REDIS_PORT || '6379', 10),
+    username: parseString(process.env.REDIS_USER || null),
+    password: parseString(process.env.REDIS_PASS || null),
   },
 });
 
@@ -113,6 +115,8 @@ export const checkChaptersWorker = new Worker(
     connection: {
       host: process.env.REDIS_HOST,
       port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      username: parseString(process.env.REDIS_USER || null),
+      password: parseString(process.env.REDIS_PASS || null),
     },
   },
 );
