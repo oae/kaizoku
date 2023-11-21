@@ -49,6 +49,8 @@ export const checkOutOfSyncChaptersWorker = new Worker(
     connection: {
       host: process.env.REDIS_HOST,
       port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      username: parseString(process.env.REDIS_USER || null),
+      password: parseString(process.env.REDIS_PASS || null),
     },
     concurrency: 1,
   },
@@ -58,6 +60,8 @@ export const checkOutOfSyncChaptersQueue = new Queue('checkOutOfSyncChaptersQueu
   connection: {
     host: process.env.REDIS_HOST,
     port: parseInt(process.env.REDIS_PORT || '6379', 10),
+    username: parseString(process.env.REDIS_USER || null),
+    password: parseString(process.env.REDIS_PASS || null),
   },
   defaultJobOptions: {
     removeOnComplete: true,
