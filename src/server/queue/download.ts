@@ -3,7 +3,7 @@ import { Job, Queue, Worker } from 'bullmq';
 import { sanitizer } from '../../utils';
 import { logger } from '../../utils/logging';
 import { prisma } from '../db/client';
-import { downloadChapter, getChapterFromLocal } from '../utils/mangal';
+import { downloadChapter, getChapter, getChapterFromLocal } from '../utils/mangal';
 import { integrationQueue } from './integration';
 import { notificationQueue } from './notify';
 
@@ -15,6 +15,13 @@ type MangaWithChaptersAndLibrary = Prisma.MangaGetPayload<typeof mangaWithChapte
 export interface IDownloadWorkerData {
   mangaId: number;
   chapterIndex: number;
+}
+
+interface Download {
+  index: number;
+  size: number;
+  createdAt: Date;
+  fileName: string;
 }
 
 export const downloadWorker = new Worker(
@@ -36,8 +43,27 @@ export const downloadWorker = new Worker(
         });
         return;
       }
-      filePath = await downloadChapter(mangaInDb.title, mangaInDb.source, chapterIndex, mangaInDb.library.path);
-      const chapter = await getChapterFromLocal(filePath);
+      const download = async (index: number, up: boolean): Promise<Download> => {
+        const chapter = await getChapter(mangaInDb.title, mangaInDb.source, index, mangaInDb.library.path);
+        if (chapter.index === chapterIndex) {
+          filePath = await downloadChapter(mangaInDb.title, mangaInDb.source, index, mangaInDb.library.path);
+
+          return getChapterFromLocal(filePath);
+        }
+        if (up) {
+          return download(index + 1, true);
+        }
+        if (index === 0) {
+          throw new Error(`Not found chapter ${chapterIndex}`);
+        }
+        return download(index - 1, false);
+      };
+      let chapter;
+      try {
+        chapter = await download(chapterIndex, true);
+      } catch (error) {
+        chapter = await download(chapterIndex, false);
+      }
 
       await prisma.chapter.deleteMany({
         where: {
