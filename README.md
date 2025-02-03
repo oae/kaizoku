@@ -1,3 +1,13 @@
+---
+
+## ⚠️ Kaizoku is now archived and will not be maintained anymore ⚠️
+
+- I suggest using [Suwayomi](https://github.com/Suwayomi/Suwayomi-Server) (For downloads) and [Komf](https://github.com/Snd-R/komf/) (For metatada) with [Komga](https://komga.org/) or [Kavita](https://www.kavitareader.com/).
+
+- Kaizoku still works as is. But there is a new fork by [@ElryGH](https://github.com/ElryGH) that you can check out at [kaizoku-next](https://github.com/ElryGH/kaizoku-next)
+
+---
+
 # <img width="32px" src="./public/kaizoku.png" alt="Kaizoku"></img> Kaizoku
 
 Kaizoku is self-hosted manga downloader.
