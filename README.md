@@ -1,88 +1,29 @@
-# <img width="32px" src="./public/kaizoku.png" alt="Kaizoku"></img> Kaizoku
+# Create T3 App
 
-Kaizoku is self-hosted manga downloader.
+This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
 
-![Home Page](https://i.imgur.com/KT9LrtX.png)
+## What's next? How do I make an app with this?
 
-|                   Detail Page                   |                   Search                   |
-| :---------------------------------------------: | :----------------------------------------: |
-| ![Detail Page](https://i.imgur.com/uWgZ9KA.png) | ![Search](https://i.imgur.com/XP4coVD.png) |
+We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
 
-## Deployment
+If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
 
-You can deploy Kaizoku with following docker-compose file
+- [Next.js](https://nextjs.org)
+- [NextAuth.js](https://next-auth.js.org)
+- [Prisma](https://prisma.io)
+- [Drizzle](https://orm.drizzle.team)
+- [Tailwind CSS](https://tailwindcss.com)
+- [tRPC](https://trpc.io)
 
-```yaml
-version: '3'
+## Learn More
 
-volumes:
-  db:
-  redis:
+To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
 
-services:
-  app:
-    container_name: kaizoku
-    image: ghcr.io/oae/kaizoku:latest
-    environment:
-      - DATABASE_URL=postgresql://kaizoku:kaizoku@db:5432/kaizoku
-      - KAIZOKU_PORT=3000
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - PUID=<host user puid>
-      - PGID=<host user guid>
-      - TZ=Europe/Istanbul
-    volumes:
-      - <path_to_library>:/data
-      - <path_to_config>:/config
-      - <path_to_logs>:/logs
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - '3000:3000'
-  redis:
-    image: redis:7-alpine
-    volumes:
-      - redis:/data
-  db:
-    image: postgres:alpine
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U kaizoku']
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    environment:
-      - POSTGRES_USER=kaizoku
-      - POSTGRES_DB=kaizoku
-      - POSTGRES_PASSWORD=kaizoku
-    volumes:
-      - db:/var/lib/postgresql/data
-```
+- [Documentation](https://create.t3.gg/)
+- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
 
-## Development
+You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
 
-### Requirements
+## How do I deploy this?
 
-- node 18
-- pnpm
-- docker
-- [mangal](https://github.com/metafates/mangal)
-
-### Start the Kaizoku
-
-```bash
-git clone https://github.com/oae/kaizoku.git
-cd ./kaizoku/
-cp .env.example .env
-pnpm i
-docker compose up -d redis db
-pnpm prisma migrate deploy
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the page.
-
-## Credits
-
-Kaizoku uses amazing [mangal](https://github.com/metafates/mangal) by [@metafates](https://github.com/metafates) as it's downloader.
+Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
