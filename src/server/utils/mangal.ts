@@ -302,6 +302,52 @@ export const downloadChapter = async (
   }
 };
 
+export interface ChapterMangal {
+  name: string;
+  url: string;
+  index: number;
+  id: number;
+  volume: number;
+  pages: null | number;
+}
+export const getChapter = async (
+  title: string,
+  source: string,
+  chapterIndex: number,
+  libraryPath: string,
+): Promise<ChapterMangal> => {
+  try {
+    logger.info(`Get chapter #${chapterIndex} for ${title} from ${source}`);
+    const { stdout, stderr, escapedCommand } = await execa(
+      'mangal',
+      ['inline', '--source', source, '--query', title, '--manga', 'exact', '--chapters', `${chapterIndex}`, '-j'],
+      {
+        cwd: libraryPath,
+      },
+    );
+
+    logger.info(`Get chapter with following command: ${escapedCommand}`);
+
+    if (stderr) {
+      logger.error(`Failed to get the chapter #${chapterIndex} for ${title}. Err:\n${stderr}`);
+      throw new Error(stderr);
+    } else {
+      logger.info(`Get chapter #${chapterIndex} for ${title}. Result:\n${stdout}`);
+    }
+    const response = JSON.parse(stdout.trim());
+    if (Array.isArray(response?.result) && response?.result.length > 0) {
+      const chapters = response?.result[0].mangal.chapters;
+      if (Array.isArray(chapters) && chapters.length > 0) {
+        return response?.result[0].mangal.chapters[0];
+      }
+    }
+    throw new Error('Failed to Get the chapter');
+  } catch (err) {
+    logger.error(`Failed to Get the chapter #${chapterIndex} for ${title}. Err:\n${err}`);
+    throw err;
+  }
+};
+
 export const getChapterIndexFromFile = (chapterFile: string) => {
   const indexRegexp = /.*?\[(\d+)\].*/;
   const match = indexRegexp.exec(path.basename(chapterFile));
