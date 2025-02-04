@@ -75,7 +75,7 @@ jobs:
         if: ${{ needs.release-please.outputs.release_created }}
 
       - name: Login to Github Packages
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
@@ -83,7 +83,7 @@ jobs:
         if: ${{ needs.release-please.outputs.release_created }}
 
       - name: Login to Docker hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
