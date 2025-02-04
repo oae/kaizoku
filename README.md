@@ -79,7 +79,7 @@ services:
 - docker
 - [mangal](https://github.com/metafates/mangal)
 
-### Start the Kaizoku
+### Start Kaizoku
 
 ```bash
 git clone https://github.com/oae/kaizoku.git

@@ -71,6 +71,8 @@ export const downloadWorker = new Worker(
     connection: {
       host: process.env.REDIS_HOST,
       port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      username: parseString(process.env.REDIS_USER || null),
+      password: parseString(process.env.REDIS_PASS || null),
     },
   },
 );
@@ -79,6 +81,8 @@ export const downloadQueue = new Queue('downloadQueue', {
   connection: {
     host: process.env.REDIS_HOST,
     port: parseInt(process.env.REDIS_PORT || '6379', 10),
+    username: parseString(process.env.REDIS_USER || null),
+    password: parseString(process.env.REDIS_PASS || null),
   },
   defaultJobOptions: {
     attempts: 20,
