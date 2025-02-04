@@ -169,6 +169,38 @@ export function IntegrationSettings() {
               initialValue={settings.data.appConfig.komgaPassword}
             />
           </Group>
+          <Group position="apart" className={classes.item} spacing="xl" noWrap>
+            <Box>
+              <Breadcrumbs
+                separator="/"
+                styles={{
+                  separator: {
+                    marginLeft: 4,
+                    marginRight: 4,
+                  },
+                  breadcrumb: {
+                    textTransform: 'capitalize',
+                    fontSize: 13,
+                    fontWeight: 500,
+                  },
+                  root: {
+                    marginBottom: 5,
+                  },
+                }}
+              >
+                Libraries
+              </Breadcrumbs>
+              <Text size="xs" color="dimmed">
+                Scan specific Komga libraries
+              </Text>
+            </Box>
+            <ArrayItem
+              configKey="komgaLibraries"
+              onUpdate={handleUpdate}
+              initialValue={settings.data.appConfig.komgaLibraries}
+              itemName="Library"
+            />
+          </Group>
         </Accordion.Panel>
       </Accordion.Item>
 
